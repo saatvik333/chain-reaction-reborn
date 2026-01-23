@@ -26,6 +26,7 @@ class MainApp extends ConsumerWidget {
     final themeState = ref.watch(themeProvider);
 
     return MaterialApp(
+      title: 'Chain Reaction Reborn',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: themeState.isDarkMode ? Brightness.dark : Brightness.light,

@@ -5,6 +5,8 @@ import '../features/game/presentation/providers/theme_provider.dart';
 import '../widgets/pill_button.dart';
 import '../core/constants/app_strings.dart';
 import '../core/constants/app_dimensions.dart';
+import '../core/theme/app_theme.dart';
+import '../features/shop/presentation/providers/shop_provider.dart';
 
 class PurchaseScreen extends ConsumerWidget {
   const PurchaseScreen({super.key});
@@ -12,6 +14,9 @@ class PurchaseScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
+    final shopState = ref.watch(shopProvider);
+
+    final paidThemes = AppThemes.all.where((t) => t.isPremium).toList();
 
     return Scaffold(
       backgroundColor: theme.bg,
@@ -46,42 +51,34 @@ class PurchaseScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionHeader(AppStrings.removeAdsHeader, theme),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildShopItem(
-                  title: AppStrings.adFreeTitle,
-                  subtitle: AppStrings.adFreeSubtitle,
-                  price:
-                      '\$2.99', // Price usually backend dynamic, but keeping string for now
-                  theme: theme,
-                ),
-
-                const SizedBox(height: AppDimensions.paddingXL),
-                Divider(color: theme.border, thickness: 1),
-                const SizedBox(height: AppDimensions.paddingXL),
-
                 _buildSectionHeader(AppStrings.themePacksHeader, theme),
                 const SizedBox(height: AppDimensions.paddingL),
-                _buildShopItem(
-                  title: AppStrings.retroThemeTitle,
-                  subtitle: AppStrings.retroThemeSubtitle,
-                  price: '\$0.99',
-                  theme: theme,
-                ),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildShopItem(
-                  title: AppStrings.neonThemeTitle,
-                  subtitle: AppStrings.neonThemeSubtitle,
-                  price: '\$0.99',
-                  theme: theme,
-                ),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildShopItem(
-                  title: AppStrings.pastelThemeTitle,
-                  subtitle: AppStrings.pastelThemeSubtitle,
-                  price: '\$0.99',
-                  theme: theme,
-                ),
+
+                ...paidThemes.map((targetTheme) {
+                  final isOwned = shopState.isOwned(targetTheme.name);
+                  return Column(
+                    children: [
+                      _buildShopItem(
+                        title: '${targetTheme.name} Theme',
+                        subtitle: isOwned
+                            ? 'Currently owned'
+                            : 'Unlock this theme',
+                        price: isOwned
+                            ? 'OWNED'
+                            : (targetTheme.price ?? '\$0.99'),
+                        onTap: isOwned
+                            ? null
+                            : () async {
+                                await ref
+                                    .read(shopProvider.notifier)
+                                    .purchaseTheme(targetTheme.name);
+                              },
+                        theme: theme,
+                      ),
+                      const SizedBox(height: AppDimensions.paddingL),
+                    ],
+                  );
+                }),
 
                 const SizedBox(height: AppDimensions.paddingXL),
                 Divider(color: theme.border, thickness: 1),
@@ -100,7 +97,18 @@ class PurchaseScreen extends ConsumerWidget {
                 const SizedBox(height: AppDimensions.paddingXL),
                 PillButton(
                   text: AppStrings.restorePurchasesButton,
-                  onTap: () {},
+                  onTap: () async {
+                    await ref.read(shopProvider.notifier).restorePurchases();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Purchases restored',
+                          style: TextStyle(color: theme.bg),
+                        ),
+                        backgroundColor: theme.fg,
+                      ),
+                    );
+                  },
                   width: double.infinity,
                 ),
                 const SizedBox(height: AppDimensions.paddingL),
@@ -128,42 +136,57 @@ class PurchaseScreen extends ConsumerWidget {
     required String title,
     required String subtitle,
     required String price,
+    VoidCallback? onTap,
     required ThemeState theme,
   }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: theme.fg,
-                fontSize: AppDimensions.fontM,
-                fontWeight: FontWeight.w600,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: theme.fg,
+                    fontSize: AppDimensions.fontM,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: theme.subtitle,
+                    fontSize: AppDimensions.fontS,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(
-                color: theme.subtitle,
-                fontSize: AppDimensions.fontS,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: onTap == null ? theme.surface : theme.fg,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                price,
+                style: TextStyle(
+                  color: onTap == null ? theme.subtitle : theme.bg,
+                  fontSize: AppDimensions.fontS,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
         ),
-        Text(
-          price,
-          style: TextStyle(
-            color: theme.fg,
-            fontSize: AppDimensions.fontM,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

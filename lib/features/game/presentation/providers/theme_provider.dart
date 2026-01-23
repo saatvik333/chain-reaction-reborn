@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -58,7 +59,11 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
   }
 
   Future<void> _loadSettings() async {
-    final isDarkMode = await _settingsRepository.getDarkMode() ?? true;
+    final platformBrightness = PlatformDispatcher.instance.platformBrightness;
+    final defaultDarkMode = platformBrightness == Brightness.dark;
+
+    final isDarkMode =
+        await _settingsRepository.getDarkMode() ?? defaultDarkMode;
     final isSoundOn = await _settingsRepository.getSoundOn() ?? true;
     final isHapticOn = await _settingsRepository.getHapticOn() ?? true;
     final themeName = await _settingsRepository.getThemeName();

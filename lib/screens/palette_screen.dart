@@ -6,6 +6,8 @@ import '../widgets/pill_button.dart';
 import 'purchase_screen.dart';
 import '../core/constants/app_strings.dart';
 import '../core/constants/app_dimensions.dart';
+import '../features/shop/presentation/providers/shop_provider.dart';
+import '../features/shop/presentation/widgets/theme_preview_dialog.dart';
 
 class PaletteScreen extends ConsumerWidget {
   const PaletteScreen({super.key});
@@ -13,6 +15,7 @@ class PaletteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(themeProvider);
+    final shopState = ref.watch(shopProvider);
 
     return Scaffold(
       backgroundColor: themeState.bg,
@@ -67,12 +70,27 @@ class PaletteScreen extends ConsumerWidget {
                     final theme = AppThemes.all[index];
                     final isSelected =
                         theme.name == themeState.currentTheme.name;
+
+                    // Logic: Owned if NOT premium OR if in shop purchased list
+                    final isOwned =
+                        !theme.isPremium || shopState.isOwned(theme.name);
+
                     return _ThemeRow(
                       theme: theme,
                       isSelected: isSelected,
+                      isLocked: !isOwned,
                       isDarkMode: themeState.isDarkMode,
                       onTap: () {
-                        ref.read(themeProvider.notifier).setTheme(theme);
+                        if (isOwned) {
+                          ref.read(themeProvider.notifier).setTheme(theme);
+                        } else {
+                          // Show Preview Dialog
+                          showDialog(
+                            context: context,
+                            builder: (_) =>
+                                ThemePreviewDialog(themeToPreview: theme),
+                          );
+                        }
                       },
                       textColor: themeState.fg,
                       backgroundColor: themeState.bg,
@@ -104,6 +122,7 @@ class PaletteScreen extends ConsumerWidget {
 class _ThemeRow extends StatelessWidget {
   final AppTheme theme;
   final bool isSelected;
+  final bool isLocked;
   final bool isDarkMode;
   final VoidCallback onTap;
   final Color textColor;
@@ -112,6 +131,7 @@ class _ThemeRow extends StatelessWidget {
   const _ThemeRow({
     required this.theme,
     required this.isSelected,
+    required this.isLocked,
     required this.isDarkMode,
     required this.onTap,
     required this.textColor,
@@ -141,11 +161,22 @@ class _ThemeRow extends StatelessWidget {
                         : textColor,
                     size: AppDimensions.iconM,
                   ),
+                )
+              else if (isLocked)
+                Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: Icon(
+                    Icons.lock,
+                    color: textColor.withValues(alpha: 0.5),
+                    size: AppDimensions.iconM,
+                  ),
                 ),
               Text(
                 theme.name,
                 style: TextStyle(
-                  color: textColor,
+                  color: isLocked
+                      ? textColor.withValues(alpha: 0.5)
+                      : textColor,
                   fontSize: AppDimensions.fontL,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),
@@ -165,9 +196,14 @@ class _ThemeRow extends StatelessWidget {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: color,
+                      color: isLocked ? color.withValues(alpha: 0.3) : color,
                       shape: BoxShape.circle,
-                      border: Border.all(color: backgroundColor, width: 2),
+                      border: Border.all(
+                        color: isLocked
+                            ? backgroundColor.withValues(alpha: 0.5)
+                            : backgroundColor,
+                        width: 2,
+                      ),
                     ),
                   ),
                 );

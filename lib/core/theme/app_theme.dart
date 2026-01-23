@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum AtomShape { circle, square, roundedSquare, diamond }
+
 /// Represents a complete color theme for the application.
 /// Supports both light and dark modes with a standardized 10-color palette.
 class AppTheme {
@@ -20,6 +22,10 @@ class AppTheme {
   final Color aqua;
   final Color orange;
 
+  // Shop properties
+  final bool isPremium;
+  final String? price;
+
   const AppTheme({
     required this.name,
     required this.bgDark,
@@ -33,6 +39,8 @@ class AppTheme {
     required this.purple,
     required this.aqua,
     required this.orange,
+    this.isPremium = false,
+    this.price,
   });
 
   /// Get background color based on dark mode
@@ -104,10 +112,11 @@ class AppThemes {
     purple: Color(0xFF7B1FA2),
     aqua: Color(0xFF00ACC1),
     orange: Color(0xFFF57C00),
+    isPremium: false,
   );
 
-  static const AppTheme gruvbox = AppTheme(
-    name: 'Gruvbox',
+  static const AppTheme earthy = AppTheme(
+    name: 'Earthy',
     bgDark: Color(0xFF282828),
     bgLight: Color(0xFFFBF1C7),
     fgDark: Color(0xFFEBDBB2),
@@ -119,75 +128,46 @@ class AppThemes {
     purple: Color(0xFFB16286),
     aqua: Color(0xFF689D6A),
     orange: Color(0xFFD65D0E),
+    isPremium: true,
+    price: '\$0.99',
   );
 
-  static const AppTheme catppuccin = AppTheme(
-    name: 'Catppuccin',
-    bgDark: Color(0xFF1E1E2E),
-    bgLight: Color(0xFFEFF1F5),
-    fgDark: Color(0xFFCDD6F4),
-    fgLight: Color(0xFF4C4F69),
-    red: Color(0xFFF38BA8),
-    green: Color(0xFFA6E3A1),
-    yellow: Color(0xFFF9E2AF),
-    blue: Color(0xFF89B4FA),
-    purple: Color(0xFFCBA6F7),
-    aqua: Color(0xFF94E2D5),
-    orange: Color(0xFFFAB387),
+  static const AppTheme pastel = AppTheme(
+    name: 'Pastel',
+    bgDark: Color(0xFF262626),
+    bgLight: Color(0xFFFFFDF5),
+    fgDark: Color(0xFFF5F5F5),
+    fgLight: Color(0xFF404040),
+    // Increased contrast/separation while keeping pastel vibe
+    red: Color(0xFFFF6961), // Pastel Red
+    green: Color(0xFF77DD77), // Pastel Green
+    yellow: Color(0xFFFDFD96), // Pastel Yellow
+    blue: Color(0xFF84B6F4), // Pastel Blue
+    purple: Color(0xFFB39EB5), // Pastel Purple
+    aqua: Color(0xFF76D7C4), // Pastel Teal/Aqua
+    orange: Color(0xFFFFB347), // Pastel Orange
+    isPremium: true,
+    price: '\$0.99',
   );
 
-  static const AppTheme everforest = AppTheme(
-    name: 'Everforest',
-    bgDark: Color(0xFF2B3339),
-    bgLight: Color(0xFFFDF6E3),
-    fgDark: Color(0xFFD3C6AA),
-    fgLight: Color(0xFF5C6A72),
-    red: Color(0xFFE67E80),
-    green: Color(0xFFA7C080),
-    yellow: Color(0xFFDBBC7F),
-    blue: Color(0xFF7FBBB3),
-    purple: Color(0xFFD699B6),
-    aqua: Color(0xFF83C092),
-    orange: Color(0xFFE69875),
-  );
-
-  static const AppTheme nord = AppTheme(
-    name: 'Nord',
-    bgDark: Color(0xFF2E3440),
-    bgLight: Color(0xFFECEFF4),
-    fgDark: Color(0xFFECEFF4),
-    fgLight: Color(0xFF2E3440),
-    red: Color(0xFFBF616A),
-    green: Color(0xFFA3BE8C),
-    yellow: Color(0xFFEBCB8B),
-    blue: Color(0xFF81A1C1),
-    purple: Color(0xFFB48EAD),
-    aqua: Color(0xFF88C0D0),
-    orange: Color(0xFFD08770),
-  );
-
-  static const AppTheme rosePine = AppTheme(
-    name: 'Rose Pine',
-    bgDark: Color(0xFF191724),
-    bgLight: Color(0xFFFAF4ED),
-    fgDark: Color(0xFFE0DEF4),
-    fgLight: Color(0xFF575279),
-    red: Color(0xFFEB6F92),
-    green: Color(0xFF31748F),
-    yellow: Color(0xFFF6C177),
-    blue: Color(0xFF9CCFD8),
-    purple: Color(0xFFC4A7E7),
-    aqua: Color(0xFF56949F),
-    orange: Color(0xFFEBBCBA),
+  static const AppTheme amoled = AppTheme(
+    name: 'Amoled',
+    bgDark: Color(0xFF000000), // Deep Arcade Black
+    bgLight: Color(0xFFFFFFFF), // Classic Console Gray
+    fgDark: Color(0xFFFFFFFF), // Crisp White Text (Fixes clash with Green)
+    fgLight: Color(0xFF000000),
+    // 8-Bit / Arcade Palette (High Saturation)
+    red: Color(0xFFFF0000), // Red
+    green: Color(0xFF00FF00), // Green
+    yellow: Color(0xFFFFFF00), // Yellow
+    blue: Color(0xFF0000FF), // Blue
+    purple: Color(0xFF800080), // Purple
+    aqua: Color(0xFF00FFFF), // Aqua
+    orange: Color(0xFFFFA500), // Orange
+    isPremium: true,
+    price: '\$0.99',
   );
 
   /// List of all available themes.
-  static const List<AppTheme> all = [
-    defaultTheme,
-    gruvbox,
-    catppuccin,
-    everforest,
-    nord,
-    rosePine,
-  ];
+  static const List<AppTheme> all = [defaultTheme, earthy, pastel, amoled];
 }
