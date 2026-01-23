@@ -8,6 +8,9 @@ void main() {
     await tester.pumpWidget(const MainApp());
 
     // Verify that our app builds.
-    expect(find.text('Chain Reaction'), findsOneWidget);
+    // Verify that our app builds and shows Home Screen elements.
+    expect(find.text('Start Game'), findsOneWidget);
+    expect(find.text('PLAYERS'), findsOneWidget);
+    expect(find.text('GRID SIZE'), findsOneWidget);
   });
 }
