@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
 
-class CustomPopup extends StatelessWidget {
+class CustomPopup extends ConsumerWidget {
   final Widget child;
   final double? width;
   final EdgeInsetsGeometry? padding;
@@ -9,8 +10,8 @@ class CustomPopup extends StatelessWidget {
   const CustomPopup({super.key, required this.child, this.width, this.padding});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
 
     return Dialog(
       backgroundColor: Colors.transparent,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
-import '../constants/app_strings.dart';
-import '../constants/app_dimensions.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
+import '../core/constants/app_strings.dart';
+import '../core/constants/app_dimensions.dart';
 import 'game_screen.dart';
 import 'info_screen.dart';
 import 'palette_screen.dart';
@@ -10,14 +11,14 @@ import 'settings_screen.dart';
 import '../widgets/game_selector.dart';
 import '../widgets/pill_button.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _playerCount = 2;
   final List<String> _gridSizes = [
     AppStrings.gridSizeXSmall,
@@ -30,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
+    final theme = ref.watch(themeProvider);
 
     return Scaffold(
       backgroundColor: theme.bg,

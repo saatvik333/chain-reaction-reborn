@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
-import '../constants/app_dimensions.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
+import '../core/constants/app_dimensions.dart';
 
-class GameSelector extends StatelessWidget {
+class GameSelector extends ConsumerWidget {
   final String label;
   final String value;
   final VoidCallback onPrevious;
@@ -17,8 +18,8 @@ class GameSelector extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
 
     return Column(
       mainAxisSize: MainAxisSize.min,

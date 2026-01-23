@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
-import '../providers/player_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
 import '../widgets/pill_button.dart';
-import '../constants/app_strings.dart';
-import '../constants/app_dimensions.dart';
+import '../core/constants/app_strings.dart';
+import '../core/constants/app_dimensions.dart';
 
-class WinnerScreen extends StatelessWidget {
+class WinnerScreen extends ConsumerWidget {
   final int winnerPlayerIndex;
   final int totalMoves;
   final String gameDuration;
@@ -20,12 +20,13 @@ class WinnerScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     final winnerColor = theme.currentTheme.getPlayerColor(
       winnerPlayerIndex,
       theme.isDarkMode,
     );
+    final winnerName = ref.read(playerNamesProvider).getName(winnerPlayerIndex);
 
     return Scaffold(
       backgroundColor: theme.bg,
@@ -61,7 +62,7 @@ class WinnerScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppDimensions.paddingL),
               Text(
-                PlayerScope.of(context).getName(winnerPlayerIndex),
+                winnerName,
                 style: TextStyle(
                   color: theme.fg,
                   fontSize: AppDimensions.fontXXL,
@@ -112,7 +113,7 @@ class WinnerScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(String label, String value, ThemeProvider theme) {
+  Widget _buildStatRow(String label, String value, ThemeState theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

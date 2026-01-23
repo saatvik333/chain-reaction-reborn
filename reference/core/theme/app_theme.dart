@@ -8,7 +8,6 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.player1, // Default accent
       fontFamily: 'Roboto', // Or standard
-      
       // Text Theme
       textTheme: const TextTheme(
         headlineMedium: TextStyle(
@@ -17,14 +16,8 @@ class AppTheme {
           fontWeight: FontWeight.w500,
           letterSpacing: 1.0,
         ),
-        bodyLarge: TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 16,
-        ),
-        bodyMedium: TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 14,
-        ),
+        bodyLarge: TextStyle(color: AppColors.textPrimary, fontSize: 16),
+        bodyMedium: TextStyle(color: AppColors.textSecondary, fontSize: 14),
       ),
 
       // Button Theme (Pill shape)

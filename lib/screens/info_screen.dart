@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
+import '../features/game/presentation/providers/theme_provider.dart';
 import '../widgets/pill_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../constants/app_strings.dart';
-import '../constants/app_dimensions.dart';
+import '../core/constants/app_strings.dart';
+import '../core/constants/app_dimensions.dart';
 
-class InfoScreen extends StatelessWidget {
+class InfoScreen extends ConsumerWidget {
   const InfoScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
 
     return Scaffold(
       backgroundColor: theme.bg,
@@ -115,7 +117,7 @@ class InfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, ThemeProvider theme) {
+  Widget _buildSectionHeader(String title, ThemeState theme) {
     return Text(
       title,
       style: TextStyle(
@@ -127,7 +129,7 @@ class InfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBulletPoint(String text, ThemeProvider theme) {
+  Widget _buildBulletPoint(String text, ThemeState theme) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -154,7 +156,7 @@ class InfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, ThemeProvider theme) {
+  Widget _buildInfoRow(String label, String value, ThemeState theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -181,7 +183,7 @@ class InfoScreen extends StatelessWidget {
     String label,
     IconData icon,
     VoidCallback onTap,
-    ThemeProvider theme,
+    ThemeState theme,
   ) {
     return GestureDetector(
       onTap: onTap,

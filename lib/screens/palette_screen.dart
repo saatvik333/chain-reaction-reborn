@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
-import '../models/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
+import '../core/theme/app_theme.dart';
 import '../widgets/pill_button.dart';
 import 'purchase_screen.dart';
-import '../constants/app_strings.dart';
-import '../constants/app_dimensions.dart';
+import '../core/constants/app_strings.dart';
+import '../core/constants/app_dimensions.dart';
 
-class PaletteScreen extends StatelessWidget {
+class PaletteScreen extends ConsumerWidget {
   const PaletteScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final themeProvider = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeState = ref.watch(themeProvider);
 
     return Scaffold(
-      backgroundColor: themeProvider.bg,
+      backgroundColor: themeState.bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -22,7 +23,7 @@ class PaletteScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: themeProvider.fg,
+            color: themeState.fg,
             size: AppDimensions.iconM,
           ),
           onPressed: () => Navigator.of(context).pop(),
@@ -30,7 +31,7 @@ class PaletteScreen extends StatelessWidget {
         title: Text(
           AppStrings.themesTitle,
           style: TextStyle(
-            color: themeProvider.fg,
+            color: themeState.fg,
             fontSize: AppDimensions.fontXL,
             fontWeight: FontWeight.w600,
           ),
@@ -48,7 +49,7 @@ class PaletteScreen extends StatelessWidget {
               Text(
                 AppStrings.availableThemesHeader,
                 style: TextStyle(
-                  color: themeProvider.subtitle,
+                  color: themeState.subtitle,
                   fontSize: AppDimensions.fontXS,
                   fontWeight: FontWeight.bold,
                   letterSpacing: AppDimensions.letterSpacingHeader,
@@ -59,19 +60,22 @@ class PaletteScreen extends StatelessWidget {
                 child: ListView.separated(
                   itemCount: AppThemes.all.length,
                   separatorBuilder: (context, index) => Divider(
-                    color: themeProvider.border,
+                    color: themeState.border,
                     height: AppDimensions.paddingXL,
                   ),
                   itemBuilder: (context, index) {
                     final theme = AppThemes.all[index];
                     final isSelected =
-                        theme.name == themeProvider.currentTheme.name;
+                        theme.name == themeState.currentTheme.name;
                     return _ThemeRow(
                       theme: theme,
                       isSelected: isSelected,
-                      onTap: () => themeProvider.setTheme(theme),
-                      textColor: themeProvider.fg,
-                      backgroundColor: themeProvider.bg,
+                      isDarkMode: themeState.isDarkMode,
+                      onTap: () {
+                        ref.read(themeProvider.notifier).setTheme(theme);
+                      },
+                      textColor: themeState.fg,
+                      backgroundColor: themeState.bg,
                     );
                   },
                 ),
@@ -100,6 +104,7 @@ class PaletteScreen extends StatelessWidget {
 class _ThemeRow extends StatelessWidget {
   final AppTheme theme;
   final bool isSelected;
+  final bool isDarkMode;
   final VoidCallback onTap;
   final Color textColor;
   final Color backgroundColor;
@@ -107,6 +112,7 @@ class _ThemeRow extends StatelessWidget {
   const _ThemeRow({
     required this.theme,
     required this.isSelected,
+    required this.isDarkMode,
     required this.onTap,
     required this.textColor,
     required this.backgroundColor,
@@ -114,6 +120,9 @@ class _ThemeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final playerColors = theme.playerColors(isDarkMode);
+    final paletteColors = theme.paletteColors(isDarkMode);
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -127,13 +136,8 @@ class _ThemeRow extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 12.0),
                   child: Icon(
                     Icons.check_circle,
-                    color:
-                        theme
-                            .playerColors(ThemeScope.of(context).isDarkMode)
-                            .isNotEmpty
-                        ? theme.playerColors(
-                            ThemeScope.of(context).isDarkMode,
-                          )[0]
+                    color: playerColors.isNotEmpty
+                        ? playerColors[0]
                         : textColor,
                     size: AppDimensions.iconM,
                   ),
@@ -153,27 +157,21 @@ class _ThemeRow extends StatelessWidget {
             width: 180,
             child: Stack(
               alignment: Alignment.centerRight,
-              children: List.generate(
-                theme.paletteColors(ThemeScope.of(context).isDarkMode).length,
-                (index) {
-                  final colors = theme.paletteColors(
-                    ThemeScope.of(context).isDarkMode,
-                  );
-                  final color = colors[colors.length - 1 - index];
-                  return Positioned(
-                    right: index * 14.0,
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: backgroundColor, width: 2),
-                      ),
+              children: List.generate(paletteColors.length, (index) {
+                final color = paletteColors[paletteColors.length - 1 - index];
+                return Positioned(
+                  right: index * 14.0,
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: backgroundColor, width: 2),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              }),
             ),
           ),
         ],

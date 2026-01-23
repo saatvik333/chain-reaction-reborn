@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
-import '../providers/player_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/theme_provider.dart';
+import '../features/game/presentation/providers/player_names_provider.dart';
 import '../widgets/edit_player_dialog.dart';
 import '../widgets/pill_button.dart';
-import '../constants/app_strings.dart';
-import '../constants/app_dimensions.dart';
+import '../core/constants/app_strings.dart';
+import '../core/constants/app_dimensions.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final themeProvider = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeState = ref.watch(themeProvider);
+    final themeNotifier = ref.read(themeProvider.notifier);
+    final playerNamesState = ref.watch(playerNamesProvider);
 
     return Scaffold(
-      backgroundColor: themeProvider.bg,
+      backgroundColor: themeState.bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -22,7 +25,7 @@ class SettingsScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: themeProvider.fg,
+            color: themeState.fg,
             size: AppDimensions.iconM,
           ),
           onPressed: () => Navigator.of(context).pop(),
@@ -30,7 +33,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(
           AppStrings.settingsTitle,
           style: TextStyle(
-            color: themeProvider.fg,
+            color: themeState.fg,
             fontSize: AppDimensions.fontXL,
             fontWeight: FontWeight.w600,
           ),
@@ -46,42 +49,39 @@ class SettingsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionHeader(
-                  AppStrings.preferencesHeader,
-                  themeProvider,
-                ),
+                _buildSectionHeader(AppStrings.preferencesHeader, themeState),
                 const SizedBox(height: AppDimensions.paddingL),
                 _buildToggleRow(
                   AppStrings.soundEffects,
                   AppStrings.soundEffectsSubtitle,
-                  themeProvider.isSoundOn,
-                  (val) => themeProvider.toggleSound(val),
-                  themeProvider,
+                  themeState.isSoundOn,
+                  (val) => themeNotifier.setSoundOn(val),
+                  themeState,
                 ),
                 const SizedBox(height: AppDimensions.paddingL),
                 _buildToggleRow(
                   AppStrings.hapticFeedback,
                   AppStrings.hapticFeedbackSubtitle,
-                  themeProvider.isHapticOn,
-                  (val) => themeProvider.toggleHaptic(val),
-                  themeProvider,
+                  themeState.isHapticOn,
+                  (val) => themeNotifier.setHapticOn(val),
+                  themeState,
                 ),
                 const SizedBox(height: AppDimensions.paddingL),
                 _buildToggleRow(
                   AppStrings.darkMode,
                   AppStrings.darkModeSubtitle,
-                  themeProvider.isDarkMode,
-                  (val) => themeProvider.setDarkMode(val),
-                  themeProvider,
+                  themeState.isDarkMode,
+                  (val) => themeNotifier.setDarkMode(val),
+                  themeState,
                 ),
 
                 const SizedBox(height: AppDimensions.paddingXL),
-                Divider(color: themeProvider.border, thickness: 1),
+                Divider(color: themeState.border, thickness: 1),
                 const SizedBox(height: AppDimensions.paddingXL),
 
                 _buildSectionHeader(
                   AppStrings.playerSettingsHeader,
-                  themeProvider,
+                  themeState,
                 ),
                 const SizedBox(height: AppDimensions.paddingL),
 
@@ -94,13 +94,14 @@ class SettingsScreen extends StatelessWidget {
                     mainAxisSpacing: AppDimensions.paddingM,
                     childAspectRatio: 2.5,
                   ),
-                  itemCount: themeProvider.playerColors.length,
+                  itemCount: themeState.playerColors.length,
                   itemBuilder: (context, index) {
                     final playerIndex = index + 1;
                     return _buildPlayerSettingItem(
                       playerIndex,
-                      themeProvider.playerColors[index],
-                      themeProvider,
+                      themeState.playerColors[index],
+                      themeState,
+                      playerNamesState.getName(playerIndex),
                       context,
                     );
                   },
@@ -110,7 +111,7 @@ class SettingsScreen extends StatelessWidget {
                 PillButton(
                   text: AppStrings.resetSettings,
                   onTap: () {
-                    PlayerScope.of(context).resetNames();
+                    ref.read(playerNamesProvider.notifier).resetNames();
                   },
                   width: double.infinity,
                 ),
@@ -123,7 +124,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, ThemeProvider theme) {
+  Widget _buildSectionHeader(String title, ThemeState theme) {
     return Text(
       title,
       style: TextStyle(
@@ -140,7 +141,7 @@ class SettingsScreen extends StatelessWidget {
     String subtitle,
     bool value,
     Function(bool) onChanged,
-    ThemeProvider theme,
+    ThemeState theme,
   ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -184,12 +185,10 @@ class SettingsScreen extends StatelessWidget {
   Widget _buildPlayerSettingItem(
     int playerIndex,
     Color color,
-    ThemeProvider theme,
+    ThemeState theme,
+    String playerName,
     BuildContext context,
   ) {
-    final playerProvider = PlayerScope.of(context);
-    final playerName = playerProvider.getName(playerIndex);
-
     return GestureDetector(
       onTap: () {
         showDialog(

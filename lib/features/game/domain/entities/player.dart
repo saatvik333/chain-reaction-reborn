@@ -1,6 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'dart:ui';
 
 /// Represents a player in the game.
+///
+/// Players are immutable and identified by a unique ID.
+@immutable
 class Player {
   final String id;
   final String name;
@@ -15,4 +19,7 @@ class Player {
 
   @override
   int get hashCode => id.hashCode;
+
+  @override
+  String toString() => 'Player(id: $id, name: $name)';
 }

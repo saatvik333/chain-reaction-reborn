@@ -1,16 +1,14 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../providers/theme_provider.dart';
-import '../providers/player_provider.dart';
-import '../widgets/game_menu_dialog.dart';
-import '../models/game_state.dart';
-import '../models/player.dart';
-import '../logic/game_engine.dart';
-import '../constants/app_dimensions.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/constants/app_dimensions.dart';
+import '../features/game/domain/entities/player.dart';
+import '../features/game/presentation/providers/providers.dart';
+import '../features/game/presentation/widgets/widgets.dart';
 import 'winner_screen.dart';
+import '../widgets/game_menu_dialog.dart';
 
-class GameScreen extends StatefulWidget {
+class GameScreen extends ConsumerStatefulWidget {
   final int playerCount;
   final String gridSize;
 
@@ -21,163 +19,85 @@ class GameScreen extends StatefulWidget {
   });
 
   @override
-  State<GameScreen> createState() => _GameScreenState();
+  ConsumerState<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
-  GameState? _gameState;
-  StreamSubscription<GameState>? _explosionSubscription;
-  bool _initialized = false;
-
+class _GameScreenState extends ConsumerState<GameScreen> {
   @override
   void initState() {
     super.initState();
-    // Don't call _initializeGame here - context is not available yet
-  }
-
-  @override
-  void dispose() {
-    _explosionSubscription?.cancel();
-    super.dispose();
+    // Initialize game after first frame to ensure providers are ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeGame();
+    });
   }
 
   void _initializeGame() {
-    if (_initialized) return;
-    _initialized = true;
-
-    // Build players list using theme colors
-    final themeProvider = ThemeScope.of(context);
-    final playerProvider = PlayerScope.of(context);
-    final playerColors = themeProvider.playerColors;
+    final playerNames = ref.read(playerNamesProvider);
+    final themeState = ref.read(themeProvider);
+    final playerColors = themeState.playerColors;
 
     final players = List.generate(widget.playerCount, (index) {
       final playerIndex = index + 1;
       return Player(
         id: 'player_$playerIndex',
-        name: playerProvider.getName(playerIndex),
+        name: playerNames.getName(playerIndex),
         color: playerColors[index % playerColors.length],
       );
     });
 
-    _gameState = GameEngine.initializeGame(players, gridSize: widget.gridSize);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Initialize game here since we need context for ThemeScope
-    if (!_initialized) {
-      _initializeGame();
-    }
+    ref
+        .read(gameStateProvider.notifier)
+        .initGame(players, gridSize: widget.gridSize);
   }
 
   void _handleCellTap(int x, int y) {
-    final gameState = _gameState;
-    if (gameState == null) return;
-    if (gameState.isGameOver || gameState.isProcessing) return;
-    if (!GameEngine.isValidMove(gameState, x, y)) return;
+    if (!ref.read(gameStateProvider.notifier).isValidMove(x, y)) return;
 
-    final theme = ThemeScope.of(context);
+    final themeState = ref.read(themeProvider);
 
     // Trigger feedback
-    if (theme.isHapticOn) {
+    if (themeState.isHapticOn) {
       HapticFeedback.lightImpact();
     }
-    if (theme.isSoundOn) {
+    if (themeState.isSoundOn) {
       SystemSound.play(SystemSoundType.click);
     }
 
-    // Listen to the stream of game states during explosions
-    _explosionSubscription?.cancel();
-    _explosionSubscription = GameEngine.placeAtom(gameState, x, y).listen(
-      (newState) {
-        setState(() {
-          _gameState = newState;
-        });
-      },
-      onDone: () {
-        final currentState = _gameState;
-        if (currentState == null) return;
-
-        // After explosions complete, check for win or advance turn
-        if (!currentState.isGameOver) {
-          setState(() {
-            _gameState = GameEngine.nextTurn(currentState);
-          });
-        }
-
-        // Navigate to winner screen if game over
-        final finalState = _gameState;
-        if (finalState != null &&
-            finalState.isGameOver &&
-            finalState.winner != null) {
-          final winnerIndex =
-              finalState.players.indexOf(finalState.winner!) + 1;
-          if (mounted) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => WinnerScreen(
-                  winnerPlayerIndex: winnerIndex,
-                  totalMoves: finalState.totalMoves,
-                  gameDuration: finalState.formattedDuration,
-                  territoryPercentage: finalState.territoryPercentage,
-                ),
-              ),
-            );
-          }
-        }
-      },
-    );
+    ref.read(gameStateProvider.notifier).placeAtom(x, y);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
-    final gameState = _gameState;
+    _listenForGameEnd();
+
+    final gameState = ref.watch(gameStateProvider);
+    final themeState = ref.watch(themeProvider);
 
     // Show loading if game not initialized yet
     if (gameState == null) {
       return Scaffold(
-        backgroundColor: theme.bg,
+        backgroundColor: themeState.bg,
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     final currentPlayer = gameState.currentPlayer;
-    final playerColor = currentPlayer.color;
-    final rows = gameState.rows;
-    final cols = gameState.cols;
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) {
         if (didPop) return;
-        showDialog(
-          context: context,
-          barrierColor: Colors.black.withValues(alpha: 0.8),
-          builder: (context) => GameMenuDialog(
-            playerCount: widget.playerCount,
-            gridSize: widget.gridSize,
-          ),
-        );
+        _showMenuDialog(context);
       },
       child: Scaffold(
-        backgroundColor: theme.bg,
+        backgroundColor: themeState.bg,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.menu, color: theme.fg),
-            onPressed: () {
-              showDialog(
-                context: context,
-                barrierColor: Colors.black.withValues(alpha: 0.8),
-                builder: (context) => GameMenuDialog(
-                  playerCount: widget.playerCount,
-                  gridSize: widget.gridSize,
-                ),
-              );
-            },
+            icon: Icon(Icons.menu, color: themeState.fg),
+            onPressed: () => _showMenuDialog(context),
           ),
           title: Row(
             mainAxisSize: MainAxisSize.min,
@@ -186,7 +106,7 @@ class _GameScreenState extends State<GameScreen> {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: playerColor,
+                  color: currentPlayer.color,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -194,7 +114,7 @@ class _GameScreenState extends State<GameScreen> {
               Text(
                 currentPlayer.name,
                 style: TextStyle(
-                  color: playerColor,
+                  color: currentPlayer.color,
                   fontSize: AppDimensions.fontL,
                   fontWeight: FontWeight.w600,
                 ),
@@ -219,138 +139,45 @@ class _GameScreenState extends State<GameScreen> {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(AppDimensions.gridPadding),
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: cols / rows,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: theme.border),
-                  ),
-                  child: Column(
-                    children: List.generate(rows, (row) {
-                      return Expanded(
-                        child: Row(
-                          children: List.generate(cols, (col) {
-                            final cell = gameState.grid[row][col];
-                            Color cellColor = Colors.transparent;
-
-                            if (cell.ownerId != null) {
-                              final owner = gameState.players.firstWhere(
-                                (p) => p.id == cell.ownerId,
-                                orElse: () => gameState.players.first,
-                              );
-                              cellColor = owner.color;
-                            }
-
-                            return Expanded(
-                              child: GestureDetector(
-                                onTap: () => _handleCellTap(col, row),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: theme.border.withValues(
-                                        alpha: 0.5,
-                                      ),
-                                      width: 0.5,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: _buildAtoms(
-                                      cellColor,
-                                      cell.atomCount,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-            ),
+            child: GameGrid(onCellTap: _handleCellTap),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildAtoms(Color color, int count) {
-    if (color == Colors.transparent || count == 0) return const SizedBox();
+  void _listenForGameEnd() {
+    ref.listen(gameStateProvider, (previous, next) {
+      if (next != null && next.isGameOver && next.winner != null) {
+        final winnerIndex = next.players.indexOf(next.winner!) + 1;
 
-    if (count == 1) {
-      return _buildAtomCircle(color);
-    } else if (count == 2) {
-      return Stack(
-        children: [
-          Transform.translate(
-            offset: const Offset(-6, -6),
-            child: _buildAtomCircle(color),
-          ),
-          Transform.translate(
-            offset: const Offset(6, 6),
-            child: _buildAtomCircle(color),
-          ),
-        ],
-      );
-    } else if (count == 3) {
-      return Stack(
-        children: [
-          Transform.translate(
-            offset: const Offset(0, -8),
-            child: _buildAtomCircle(color),
-          ),
-          Transform.translate(
-            offset: const Offset(-7, 5),
-            child: _buildAtomCircle(color),
-          ),
-          Transform.translate(
-            offset: const Offset(7, 5),
-            child: _buildAtomCircle(color),
-          ),
-        ],
-      );
-    } else {
-      // 4+ atoms: show 4 in a diamond pattern
-      return Stack(
-        children: [
-          Transform.translate(
-            offset: const Offset(0, -8),
-            child: _buildAtomCircle(color),
-          ),
-          Transform.translate(
-            offset: const Offset(-8, 0),
-            child: _buildAtomCircle(color),
-          ),
-          Transform.translate(
-            offset: const Offset(8, 0),
-            child: _buildAtomCircle(color),
-          ),
-          Transform.translate(
-            offset: const Offset(0, 8),
-            child: _buildAtomCircle(color),
-          ),
-        ],
-      );
-    }
+        // Navigate to winner screen
+        // Use addPostFrameCallback to avoid navigation during build
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => WinnerScreen(
+                  winnerPlayerIndex: winnerIndex,
+                  totalMoves: next.totalMoves,
+                  gameDuration: next.formattedDuration,
+                  territoryPercentage: next.territoryPercentage,
+                ),
+              ),
+            );
+          }
+        });
+      }
+    });
   }
 
-  Widget _buildAtomCircle(Color color) {
-    return Container(
-      width: AppDimensions.orbSizeSmall,
-      height: AppDimensions.orbSizeSmall,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.4),
-            blurRadius: 8,
-            spreadRadius: 1,
-          ),
-        ],
+  void _showMenuDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.8),
+      builder: (context) => GameMenuDialog(
+        playerCount: widget.playerCount,
+        gridSize: widget.gridSize,
       ),
     );
   }

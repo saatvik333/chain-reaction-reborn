@@ -1,4 +1,9 @@
+import 'package:flutter/foundation.dart';
+
 /// Represents a single cell on the game grid.
+///
+/// Cells are immutable and contain position, capacity, atom count, and owner.
+@immutable
 class Cell {
   final int x;
   final int y;
@@ -36,4 +41,26 @@ class Cell {
 
   /// Whether the cell is about to explode.
   bool get isAtCriticalMass => atomCount > capacity;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Cell &&
+          runtimeType == other.runtimeType &&
+          x == other.x &&
+          y == other.y &&
+          capacity == other.capacity &&
+          atomCount == other.atomCount &&
+          ownerId == other.ownerId;
+
+  @override
+  int get hashCode =>
+      x.hashCode ^
+      y.hashCode ^
+      capacity.hashCode ^
+      atomCount.hashCode ^
+      ownerId.hashCode;
+
+  @override
+  String toString() => 'Cell(x: $x, y: $y, atoms: $atomCount, owner: $ownerId)';
 }

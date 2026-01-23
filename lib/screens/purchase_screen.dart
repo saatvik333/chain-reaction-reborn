@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
+import '../features/game/presentation/providers/theme_provider.dart';
 import '../widgets/pill_button.dart';
-import '../constants/app_strings.dart';
-import '../constants/app_dimensions.dart';
+import '../core/constants/app_strings.dart';
+import '../core/constants/app_dimensions.dart';
 
-class PurchaseScreen extends StatelessWidget {
+class PurchaseScreen extends ConsumerWidget {
   const PurchaseScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
 
     return Scaffold(
       backgroundColor: theme.bg,
@@ -110,7 +112,7 @@ class PurchaseScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, ThemeProvider theme) {
+  Widget _buildSectionHeader(String title, ThemeState theme) {
     return Text(
       title,
       style: TextStyle(
@@ -126,7 +128,7 @@ class PurchaseScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required String price,
-    required ThemeProvider theme,
+    required ThemeState theme,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

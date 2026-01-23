@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
 import 'custom_popup.dart';
 import 'pill_button.dart';
 import '../screens/game_screen.dart';
-import '../constants/app_strings.dart';
-import '../constants/app_dimensions.dart';
+import '../core/constants/app_strings.dart';
+import '../core/constants/app_dimensions.dart';
 
-class GameMenuDialog extends StatelessWidget {
+class GameMenuDialog extends ConsumerWidget {
   final int playerCount;
   final String gridSize;
 
@@ -17,8 +18,8 @@ class GameMenuDialog extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
 
     return CustomPopup(
       child: Column(

@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
+import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
+import 'package:chain_reaction/screens/game_screen.dart';
+import 'package:chain_reaction/features/game/presentation/widgets/game_grid.dart';
+
+class MockSettingsRepository implements SettingsRepository {
+  @override
+  Future<bool?> getDarkMode() async => true;
+  @override
+  Future<bool?> getSoundOn() async => true;
+  @override
+  Future<bool?> getHapticOn() async => true;
+  @override
+  Future<String?> getThemeName() async => 'Default';
+
+  @override
+  Future<void> setDarkMode(bool value) async {}
+  @override
+  Future<void> setSoundOn(bool value) async {}
+  @override
+  Future<void> setHapticOn(bool value) async {}
+  @override
+  Future<void> setThemeName(String value) async {}
+}
+
+void main() {
+  testWidgets('GameScreen should render GameGrid and atoms', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(
+            MockSettingsRepository(),
+          ),
+        ],
+        child: const MaterialApp(
+          home: GameScreen(playerCount: 2, gridSize: 'Small'),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(GameGrid), findsOneWidget);
+  });
+}

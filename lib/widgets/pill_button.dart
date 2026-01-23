@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../providers/theme_provider.dart';
-import '../constants/app_dimensions.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/game/presentation/providers/providers.dart';
+import '../core/constants/app_dimensions.dart';
 
-class PillButton extends StatelessWidget {
+class PillButton extends ConsumerWidget {
   final String text;
   final VoidCallback onTap;
   final double? width;
@@ -21,8 +22,8 @@ class PillButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = ThemeScope.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     final effectiveBorderColor = borderColor ?? theme.border;
     final effectiveTextColor = textColor ?? theme.fg;
 

@@ -36,6 +36,12 @@ dependencies:
   cupertino_icons: ^1.0.8
   url_launcher: ^6.3.2
   audioplayers: ^6.5.1
+  
+  # State Management
+  flutter_riverpod: ^2.6.1
+  
+  # Local Storage
+  shared_preferences: ^2.3.4
 
 dev_dependencies:
   flutter_test:

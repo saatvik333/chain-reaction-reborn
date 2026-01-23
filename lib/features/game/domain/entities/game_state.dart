@@ -1,7 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'cell.dart';
 import 'player.dart';
 
 /// Represents the complete state of a game session.
+///
+/// GameState is immutable; use [copyWith] to derive new states.
+@immutable
 class GameState {
   final List<List<Cell>> grid;
   final List<Player> players;
@@ -49,22 +53,40 @@ class GameState {
   /// Total cells in the grid.
   int get totalCells => rows * cols;
 
-  /// Get cells owned by the winner.
-  int get winnerCellCount {
-    if (winner == null) return 0;
+  /// Get the number of cells owned by a specific player.
+  int cellCountForPlayer(String playerId) {
     int count = 0;
     for (var row in grid) {
       for (var cell in row) {
-        if (cell.ownerId == winner!.id) count++;
+        if (cell.ownerId == playerId) count++;
       }
     }
     return count;
+  }
+
+  /// Get cells owned by the winner.
+  int get winnerCellCount {
+    if (winner == null) return 0;
+    return cellCountForPlayer(winner!.id);
   }
 
   /// Territory percentage for the winner.
   int get territoryPercentage {
     if (totalCells == 0) return 0;
     return ((winnerCellCount / totalCells) * 100).round();
+  }
+
+  /// Get all unique owner IDs currently on the board.
+  Set<String> get activeOwnerIds {
+    final owners = <String>{};
+    for (var row in grid) {
+      for (var cell in row) {
+        if (cell.ownerId != null) {
+          owners.add(cell.ownerId!);
+        }
+      }
+    }
+    return owners;
   }
 
   /// Game duration.
@@ -107,4 +129,8 @@ class GameState {
       endTime: endTime ?? this.endTime,
     );
   }
+
+  @override
+  String toString() =>
+      'GameState(turn: $turnCount, player: ${currentPlayer.name}, gameOver: $isGameOver)';
 }
