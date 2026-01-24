@@ -14,7 +14,8 @@ class GameGrid extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch precise parts of the state to optimize rebuilds
     final grid = ref.watch(gridProvider);
-    final theme = ref.watch(themeProvider).currentTheme;
+    final themeState = ref.watch(themeProvider);
+    final theme = themeState.currentTheme;
     final isDark = ref.watch(isDarkModeProvider);
     final borderColor = theme.border(isDark);
     final players = ref.watch(gameStateProvider.select((s) => s?.players));
@@ -64,6 +65,8 @@ class GameGrid extends ConsumerWidget {
                               borderColor: borderColor,
                               cellColor: cellColor,
                               onTap: () => onCellTap(col, row),
+                              isAtomRotationOn: themeState.isAtomRotationOn,
+                              isAtomVibrationOn: themeState.isAtomVibrationOn,
                             );
                           }),
                         ),

@@ -46,6 +46,10 @@ class AppStrings {
   static const String resetSettings = 'Reset Settings';
   static const String on = 'ON';
   static const String off = 'OFF';
+  static const String atomRotation = 'Atom Rotation';
+  static const String atomRotationSubtitle = 'Spinning animation';
+  static const String atomVibration = 'Atom Vibration';
+  static const String atomVibrationSubtitle = 'Critical mass shake';
 
   // Edit Player
   static const String editPlayerTitle = 'Edit Player';

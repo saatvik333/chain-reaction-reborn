@@ -24,6 +24,15 @@ class MockSettingsRepository implements SettingsRepository {
   Future<void> setHapticOn(bool value) async {}
   @override
   Future<void> setThemeName(String value) async {}
+
+  @override
+  Future<bool?> getAtomRotationOn() async => true;
+  @override
+  Future<void> setAtomRotationOn(bool value) async {}
+  @override
+  Future<bool?> getAtomVibrationOn() async => true;
+  @override
+  Future<void> setAtomVibrationOn(bool value) async {}
 }
 
 void main() {

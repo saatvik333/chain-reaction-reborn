@@ -51,4 +51,27 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<void> setThemeName(String value) async {
     await _prefs.setString(_keyThemeName, value);
   }
+
+  static const String _keyAtomRotationOn = 'isAtomRotationOn';
+  static const String _keyAtomVibrationOn = 'isAtomVibrationOn';
+
+  @override
+  Future<bool?> getAtomRotationOn() async {
+    return _prefs.getBool(_keyAtomRotationOn);
+  }
+
+  @override
+  Future<void> setAtomRotationOn(bool value) async {
+    await _prefs.setBool(_keyAtomRotationOn, value);
+  }
+
+  @override
+  Future<bool?> getAtomVibrationOn() async {
+    return _prefs.getBool(_keyAtomVibrationOn);
+  }
+
+  @override
+  Future<void> setAtomVibrationOn(bool value) async {
+    await _prefs.setBool(_keyAtomVibrationOn, value);
+  }
 }

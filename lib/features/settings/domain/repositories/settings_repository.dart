@@ -23,4 +23,16 @@ abstract interface class SettingsRepository {
 
   /// Saves the theme name.
   Future<void> setThemeName(String value);
+
+  /// Loads the saved atom rotation preference.
+  Future<bool?> getAtomRotationOn();
+
+  /// Saves the atom rotation preference.
+  Future<void> setAtomRotationOn(bool value);
+
+  /// Loads the saved atom vibration preference.
+  Future<bool?> getAtomVibrationOn();
+
+  /// Saves the atom vibration preference.
+  Future<void> setAtomVibrationOn(bool value);
 }

@@ -8,6 +8,8 @@ class CellWidget extends StatelessWidget {
   final Color borderColor;
   final Color cellColor;
   final VoidCallback onTap;
+  final bool isAtomRotationOn;
+  final bool isAtomVibrationOn;
 
   const CellWidget({
     super.key,
@@ -15,12 +17,16 @@ class CellWidget extends StatelessWidget {
     required this.borderColor,
     required this.cellColor,
     required this.onTap,
+    this.isAtomRotationOn = true,
+    this.isAtomVibrationOn = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    // A cell is unstable (wobbling/spinning fast) if it's full
-    final isUnstable = cell.atomCount >= cell.capacity;
+    // A cell is unstable (wobbling/spinning fast) only if it's overflowing (exploding)
+    // This keeps full cells (Critical Mass) running at the stable speed
+    final isUnstable = cell.atomCount > cell.capacity;
+    final isCritical = cell.atomCount == cell.capacity;
 
     return Expanded(
       child: GestureDetector(
@@ -42,6 +48,9 @@ class CellWidget extends StatelessWidget {
               color: cellColor,
               count: cell.atomCount,
               isUnstable: isUnstable,
+              isCritical: isCritical,
+              isAtomRotationOn: isAtomRotationOn,
+              isAtomVibrationOn: isAtomVibrationOn,
             ),
           ),
         ),

@@ -12,12 +12,16 @@ class ThemeState {
   final bool isDarkMode;
   final bool isSoundOn;
   final bool isHapticOn;
+  final bool isAtomRotationOn;
+  final bool isAtomVibrationOn;
 
   const ThemeState({
     required this.currentTheme,
     this.isDarkMode = true,
     this.isSoundOn = true,
     this.isHapticOn = true,
+    this.isAtomRotationOn = true,
+    this.isAtomVibrationOn = true,
   });
 
   // Resolved colors for convenience
@@ -39,12 +43,16 @@ class ThemeState {
     bool? isDarkMode,
     bool? isSoundOn,
     bool? isHapticOn,
+    bool? isAtomRotationOn,
+    bool? isAtomVibrationOn,
   }) {
     return ThemeState(
       currentTheme: currentTheme ?? this.currentTheme,
       isDarkMode: isDarkMode ?? this.isDarkMode,
       isSoundOn: isSoundOn ?? this.isSoundOn,
       isHapticOn: isHapticOn ?? this.isHapticOn,
+      isAtomRotationOn: isAtomRotationOn ?? this.isAtomRotationOn,
+      isAtomVibrationOn: isAtomVibrationOn ?? this.isAtomVibrationOn,
     );
   }
 }
@@ -66,6 +74,10 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
         await _settingsRepository.getDarkMode() ?? defaultDarkMode;
     final isSoundOn = await _settingsRepository.getSoundOn() ?? true;
     final isHapticOn = await _settingsRepository.getHapticOn() ?? true;
+    final isAtomRotationOn =
+        await _settingsRepository.getAtomRotationOn() ?? true;
+    final isAtomVibrationOn =
+        await _settingsRepository.getAtomVibrationOn() ?? true;
     final themeName = await _settingsRepository.getThemeName();
 
     final theme = AppThemes.all.firstWhere(
@@ -78,6 +90,8 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
       isDarkMode: isDarkMode,
       isSoundOn: isSoundOn,
       isHapticOn: isHapticOn,
+      isAtomRotationOn: isAtomRotationOn,
+      isAtomVibrationOn: isAtomVibrationOn,
     );
   }
 
@@ -130,6 +144,22 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
     if (state.isHapticOn != value) {
       state = state.copyWith(isHapticOn: value);
       _settingsRepository.setHapticOn(value);
+    }
+  }
+
+  /// Sets atom rotation on/off.
+  void setAtomRotationOn(bool value) {
+    if (state.isAtomRotationOn != value) {
+      state = state.copyWith(isAtomRotationOn: value);
+      _settingsRepository.setAtomRotationOn(value);
+    }
+  }
+
+  /// Sets atom vibration on/off.
+  void setAtomVibrationOn(bool value) {
+    if (state.isAtomVibrationOn != value) {
+      state = state.copyWith(isAtomVibrationOn: value);
+      _settingsRepository.setAtomVibrationOn(value);
     }
   }
 }

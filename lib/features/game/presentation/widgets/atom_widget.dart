@@ -7,21 +7,28 @@ class AtomWidget extends StatefulWidget {
   final Color color;
   final int count;
   final bool isUnstable;
+  final bool isCritical;
+  final bool isAtomRotationOn;
+  final bool isAtomVibrationOn;
 
   const AtomWidget({
     super.key,
     required this.color,
     required this.count,
     this.isUnstable = false,
+    this.isCritical = false,
+    this.isAtomRotationOn = true,
+    this.isAtomVibrationOn = true,
   });
 
   @override
   State<AtomWidget> createState() => _AtomWidgetState();
 }
 
-class _AtomWidgetState extends State<AtomWidget>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+class _AtomWidgetState extends State<AtomWidget> with TickerProviderStateMixin {
+  late final AnimationController _rotationController;
+  late final AnimationController _vibrationController;
+  late final Animation<double> _vibrationAnimation;
 
   // Constants for rotation speeds
   static const Duration _stableDuration = Duration(milliseconds: 4000);
@@ -30,7 +37,19 @@ class _AtomWidgetState extends State<AtomWidget>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
+    _rotationController = AnimationController(vsync: this);
+
+    // Setup vibration: fast, short repeating animation
+    _vibrationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 50),
+    );
+
+    // Create a predictable shake pattern (e.g., -1 to 1)
+    _vibrationAnimation = Tween<double>(begin: -1.0, end: 1.0).animate(
+      CurvedAnimation(parent: _vibrationController, curve: Curves.linear),
+    );
+
     _checkAnimation();
   }
 
@@ -38,36 +57,48 @@ class _AtomWidgetState extends State<AtomWidget>
   void didUpdateWidget(AtomWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.count != oldWidget.count ||
-        widget.isUnstable != oldWidget.isUnstable) {
+        widget.isUnstable != oldWidget.isUnstable ||
+        widget.isCritical != oldWidget.isCritical ||
+        widget.isAtomRotationOn != oldWidget.isAtomRotationOn ||
+        widget.isAtomVibrationOn != oldWidget.isAtomVibrationOn) {
       _checkAnimation();
     }
   }
 
   void _checkAnimation() {
-    if (widget.count > 1) {
-      // Logic reworked:
-      // Instead of complex scaling which causes mismatches, we use two distinct
-      // energy states: Stable (Idle) and Unstable (Critical).
-      // This ensures a 2-atom edge cluster (Critical) and a 3-atom center cluster (Critical)
-      // spin with the exact same angular velocity, providing visual consistency.
+    // 1. Handle Rotation
+    // Only rotate if setting is ON AND (count > 1).
+    if (widget.isAtomRotationOn && widget.count > 1) {
+      final targetDuration = widget.isUnstable
+          ? _unstableDuration
+          : _stableDuration;
 
-      final targetDuration =
-          widget.isUnstable ? _unstableDuration : _stableDuration;
+      _rotationController.duration = targetDuration;
 
-      _controller.duration = targetDuration;
-
-      if (!_controller.isAnimating) {
-        _controller.repeat();
+      if (!_rotationController.isAnimating) {
+        _rotationController.repeat();
       }
     } else {
-      // Single atoms don't spin
-      _controller.stop();
+      _rotationController.stop();
+    }
+
+    // 2. Handle Vibration (Only if Critical and NOT yet Unstable/Exploding)
+    // If it's exploding (Unstable), the fast spin is enough.
+    // Only vibrate if setting is ON.
+    if (widget.isAtomVibrationOn && widget.isCritical && !widget.isUnstable) {
+      if (!_vibrationController.isAnimating) {
+        _vibrationController.repeat(reverse: true);
+      }
+    } else {
+      _vibrationController.stop();
+      _vibrationController.reset();
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _rotationController.dispose();
+    _vibrationController.dispose();
     super.dispose();
   }
 
@@ -78,11 +109,26 @@ class _AtomWidgetState extends State<AtomWidget>
     }
 
     return AnimatedBuilder(
-      animation: _controller,
+      animation: Listenable.merge([_rotationController, _vibrationController]),
       builder: (context, child) {
-        return Transform.rotate(
-          angle: _controller.value * 2 * math.pi,
-          child: child,
+        // Calculate vibration offset
+        double offsetX = 0;
+        double offsetY = 0;
+
+        if (_vibrationController.isAnimating) {
+          // Simple pseudo-random shake based on controller value
+          // using sine/cosine to make it feel organic but fast
+          final val = _vibrationAnimation.value;
+          offsetX = val * 0.8; // Max 0.8 pixel vibration
+          offsetY = (1 - val.abs()) * 0.8 * (val > 0 ? 1 : -1);
+        }
+
+        return Transform.translate(
+          offset: Offset(offsetX, offsetY),
+          child: Transform.rotate(
+            angle: _rotationController.value * 2 * math.pi,
+            child: child,
+          ),
         );
       },
       child: AnimatedSwitcher(
@@ -90,10 +136,7 @@ class _AtomWidgetState extends State<AtomWidget>
         switchInCurve: Curves.elasticOut,
         switchOutCurve: Curves.easeIn,
         transitionBuilder: (child, animation) {
-          return ScaleTransition(
-            scale: animation,
-            child: child,
-          );
+          return ScaleTransition(scale: animation, child: child);
         },
         child: _buildAtomLayout(widget.count),
       ),

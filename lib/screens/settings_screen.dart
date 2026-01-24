@@ -68,6 +68,22 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppDimensions.paddingL),
                 _buildToggleRow(
+                  AppStrings.atomRotation,
+                  AppStrings.atomRotationSubtitle,
+                  themeState.isAtomRotationOn,
+                  (val) => themeNotifier.setAtomRotationOn(val),
+                  themeState,
+                ),
+                const SizedBox(height: AppDimensions.paddingL),
+                _buildToggleRow(
+                  AppStrings.atomVibration,
+                  AppStrings.atomVibrationSubtitle,
+                  themeState.isAtomVibrationOn,
+                  (val) => themeNotifier.setAtomVibrationOn(val),
+                  themeState,
+                ),
+                const SizedBox(height: AppDimensions.paddingL),
+                _buildToggleRow(
                   AppStrings.darkMode,
                   AppStrings.darkModeSubtitle,
                   themeState.isDarkMode,
