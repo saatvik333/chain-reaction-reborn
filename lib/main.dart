@@ -6,8 +6,14 @@ import 'package:chain_reaction/screens/home_screen.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 
+import 'package:chain_reaction/core/theme/custom_transitions.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
@@ -54,6 +60,15 @@ class MainApp extends ConsumerWidget {
           onSurface: themeState.fg,
           error: themeState.currentTheme.red,
           onError: Colors.white,
+        ),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: FluidFadePageTransitionsBuilder(),
+            TargetPlatform.iOS: FluidFadePageTransitionsBuilder(),
+            TargetPlatform.macOS: FluidFadePageTransitionsBuilder(),
+            TargetPlatform.windows: FluidFadePageTransitionsBuilder(),
+            TargetPlatform.linux: FluidFadePageTransitionsBuilder(),
+          },
         ),
       ),
       home: const HomeScreen(),

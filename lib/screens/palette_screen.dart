@@ -5,6 +5,7 @@ import '../core/theme/app_theme.dart';
 import '../widgets/pill_button.dart';
 import 'purchase_screen.dart';
 import '../core/constants/app_strings.dart';
+import 'package:chain_reaction/widgets/fade_entry_widget.dart';
 import '../core/constants/app_dimensions.dart';
 import '../features/shop/presentation/providers/shop_provider.dart';
 import '../features/shop/presentation/widgets/theme_preview_dialog.dart';
@@ -75,25 +76,28 @@ class PaletteScreen extends ConsumerWidget {
                     final isOwned =
                         !theme.isPremium || shopState.isOwned(theme.name);
 
-                    return _ThemeRow(
-                      theme: theme,
-                      isSelected: isSelected,
-                      isLocked: !isOwned,
-                      isDarkMode: themeState.isDarkMode,
-                      onTap: () {
-                        if (isOwned) {
-                          ref.read(themeProvider.notifier).setTheme(theme);
-                        } else {
-                          // Show Preview Dialog
-                          showDialog(
-                            context: context,
-                            builder: (_) =>
-                                ThemePreviewDialog(themeToPreview: theme),
-                          );
-                        }
-                      },
-                      textColor: themeState.fg,
-                      backgroundColor: themeState.bg,
+                    return FadeEntryWidget(
+                      delay: Duration(milliseconds: index * 50),
+                      child: _ThemeRow(
+                        theme: theme,
+                        isSelected: isSelected,
+                        isLocked: !isOwned,
+                        isDarkMode: themeState.isDarkMode,
+                        onTap: () {
+                          if (isOwned) {
+                            ref.read(themeProvider.notifier).setTheme(theme);
+                          } else {
+                            // Show Preview Dialog
+                            showDialog(
+                              context: context,
+                              builder: (_) =>
+                                  ThemePreviewDialog(themeToPreview: theme),
+                            );
+                          }
+                        },
+                        textColor: themeState.fg,
+                        backgroundColor: themeState.bg,
+                      ),
                     );
                   },
                 ),
@@ -196,12 +200,10 @@ class _ThemeRow extends StatelessWidget {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: isLocked ? color.withValues(alpha: 0.3) : color,
+                      color: color,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isLocked
-                            ? backgroundColor.withValues(alpha: 0.5)
-                            : backgroundColor,
+                        color: backgroundColor,
                         width: 2,
                       ),
                     ),

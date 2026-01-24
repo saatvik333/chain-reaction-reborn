@@ -99,6 +99,7 @@ class PurchaseScreen extends ConsumerWidget {
                   text: AppStrings.restorePurchasesButton,
                   onTap: () async {
                     await ref.read(shopProvider.notifier).restorePurchases();
+                    if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(

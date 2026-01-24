@@ -19,18 +19,30 @@ class CellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // A cell is unstable (wobbling/spinning fast) if it's full
+    final isUnstable = cell.atomCount >= cell.capacity;
+
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
           decoration: BoxDecoration(
+            color: cell.ownerId != null
+                ? cellColor.withValues(alpha: 0.1)
+                : Colors.transparent,
             border: Border.all(
               color: borderColor.withValues(alpha: 0.5),
               width: 0.5,
             ),
           ),
           child: Center(
-            child: AtomWidget(color: cellColor, count: cell.atomCount),
+            child: AtomWidget(
+              color: cellColor,
+              count: cell.atomCount,
+              isUnstable: isUnstable,
+            ),
           ),
         ),
       ),

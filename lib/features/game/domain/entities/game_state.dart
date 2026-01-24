@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'cell.dart';
 import 'player.dart';
+import 'flying_atom.dart';
 
 /// Represents the complete state of a game session.
 ///
@@ -9,6 +10,7 @@ import 'player.dart';
 class GameState {
   final List<List<Cell>> grid;
   final List<Player> players;
+  final List<FlyingAtom> flyingAtoms;
   final int currentPlayerIndex;
   final bool isGameOver;
   final Player? winner;
@@ -31,6 +33,7 @@ class GameState {
   GameState({
     required this.grid,
     required this.players,
+    this.flyingAtoms = const [],
     this.currentPlayerIndex = 0,
     this.isGameOver = false,
     this.winner,
@@ -107,6 +110,7 @@ class GameState {
   GameState copyWith({
     List<List<Cell>>? grid,
     List<Player>? players,
+    List<FlyingAtom>? flyingAtoms,
     int? currentPlayerIndex,
     bool? isGameOver,
     Player? winner,
@@ -119,6 +123,7 @@ class GameState {
     return GameState(
       grid: grid ?? this.grid,
       players: players ?? this.players,
+      flyingAtoms: flyingAtoms ?? this.flyingAtoms,
       currentPlayerIndex: currentPlayerIndex ?? this.currentPlayerIndex,
       isGameOver: isGameOver ?? this.isGameOver,
       winner: winner ?? this.winner,
@@ -132,5 +137,5 @@ class GameState {
 
   @override
   String toString() =>
-      'GameState(turn: $turnCount, player: ${currentPlayer.name}, gameOver: $isGameOver)';
+      'GameState(turn: $turnCount, player: ${currentPlayer.name}, gameOver: $isGameOver, flying: ${flyingAtoms.length})';
 }

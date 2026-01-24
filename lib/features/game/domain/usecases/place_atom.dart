@@ -1,6 +1,6 @@
 import 'dart:collection';
+import 'package:uuid/uuid.dart';
 import '../entities/entities.dart';
-import '../../../../core/constants/app_dimensions.dart';
 
 /// Use case for placing an atom on the grid.
 ///
@@ -47,7 +47,7 @@ class PlaceAtomUseCase {
     return cell.ownerId == null || cell.ownerId == state.currentPlayer.id;
   }
 
-  /// Handles chain explosions using a queue-based approach.
+  /// Handles chain explosions using a queue-based approach with flight animation phases.
   Stream<GameState> _propagateExplosions(
     GameState state,
     Queue<Cell> explosionQueue,
@@ -56,9 +56,12 @@ class PlaceAtomUseCase {
     final rows = grid.length;
     final cols = grid[0].length;
     final currentOwnerId = state.currentPlayer.id;
+    final currentPlayer = state.currentPlayer; // Used for color
+
+    const uuid = Uuid();
 
     while (explosionQueue.isNotEmpty) {
-      // Check win condition during explosions
+      // 1. Check Win Condition
       if (_checkWinnerDuringExplosion(grid, state.players)) {
         final owners = _getUniqueOwners(grid);
         if (owners.length == 1) {
@@ -74,28 +77,78 @@ class PlaceAtomUseCase {
         }
       }
 
+      // 2. Identify Cells Exploding in this Wave
+      // We process ALL currently critical cells in one wave for better visual sync
+      // But adhering to the queue logic: let's process one cell at a time or
+      // maybe batch them? Standard Chain Reaction often cascades.
+      // Let's stick to the queue but process the "flight" for the popped cell.
+
       final explodingCell = explosionQueue.removeFirst();
       final cx = explodingCell.x;
       final cy = explodingCell.y;
 
-      // Re-check capacity in case it changed
+      // Re-check capacity in case it changed (already exploded in this wave?)
+      // Actually, if it was added to queue, it was critical.
+      // But if multiple explosions target this cell, it might have changed.
+      // We should check current grid state.
       if (!grid[cy][cx].isAtCriticalMass) continue;
 
-      final criticalMass = grid[cy][cx].capacity + 1;
-      final newAtomCount = grid[cy][cx].atomCount - criticalMass;
+      // 3. Prepare Explosion Data
+      // final criticalMass = grid[cy][cx].capacity + 1; // e.g. cap 3 (explodes at 4) -> remove 4
+      // Standard rules: Corner (cap 1) explodes at 2. removes 2? No.
+      // Corner splits into 2 neighbors. Edge into 3. Center into 4.
+      // So we remove exactly 'neighbors.length' atoms?
+      // Yes, in standard chain reaction, the exploding cell loses 'neighbors.length' atoms.
+      // Which equals 'capacity'.
+      // Wait. Corner (cap 1). Neighbors 2.
+      // Explodes when atomCount > capacity (i.e. 2).
+      // Removes 2. Remaining 0.
+      // Edge (cap 2). Neighbors 3. Explodes at 3? No, explodes when > capacity.
+      // Edge (cap 2) means "Holds 2 max". Explodes at 3.
+      // Removes 3 atoms.
+      // Center (cap 3) means "Holds 3 max". Explodes at 4. Removes 4.
 
+      // So we remove 'neighbors.length' atoms.
+      final neighbors = _getNeighbors(cx, cy, rows, cols);
+      final atomsToRemove = neighbors.length; // 2, 3, or 4
+
+      final newAtomCount = grid[cy][cx].atomCount - atomsToRemove;
+
+      // 4. Phase 1: Remove atoms from source, Spawn Flying Atoms
       grid[cy][cx] = grid[cy][cx].copyWith(
         atomCount: newAtomCount,
         clearOwner: newAtomCount <= 0,
       );
 
-      final neighbors = _getNeighbors(cx, cy, rows, cols);
+      final flyingAtoms = <FlyingAtom>[];
+      for (final n in neighbors) {
+        flyingAtoms.add(
+          FlyingAtom(
+            id: uuid.v4(),
+            fromX: cx,
+            fromY: cy,
+            toX: n.x,
+            toY: n.y,
+            color: currentPlayer.color,
+          ),
+        );
+      }
+
+      // Yield State: Source empty, atoms flying
+      yield state.copyWith(
+        grid: _copyGrid(grid),
+        flyingAtoms: flyingAtoms,
+      );
+
+      // Wait for flight
+      await Future.delayed(const Duration(milliseconds: 250)); // Flight duration
+
+      // 5. Phase 2: Land Atoms
       for (final n in neighbors) {
         final neighbor = grid[n.y][n.x];
-
         grid[n.y][n.x] = neighbor.copyWith(
           atomCount: neighbor.atomCount + 1,
-          ownerId: currentOwnerId,
+          ownerId: currentOwnerId, // Conquered!
         );
 
         if (grid[n.y][n.x].isAtCriticalMass) {
@@ -103,20 +156,24 @@ class PlaceAtomUseCase {
         }
       }
 
-      yield state.copyWith(grid: _copyGrid(grid));
-      await Future.delayed(
-        Duration(milliseconds: AppDimensions.explosionDurationMs),
+      // Yield State: Atoms landed (flying cleared)
+      yield state.copyWith(
+        grid: _copyGrid(grid),
+        flyingAtoms: [], // Clear flying atoms
       );
+      
+      // Small delay between cascades? Or just proceed?
+      // Original game is quite fast. The flight delay handles the pacing.
     }
   }
 
   /// Gets orthogonal neighbors of a cell.
   List<({int x, int y})> _getNeighbors(int x, int y, int rows, int cols) {
     final neighbors = <({int x, int y})>[];
-    if (x > 0) neighbors.add((x: x - 1, y: y));
-    if (x < cols - 1) neighbors.add((x: x + 1, y: y));
-    if (y > 0) neighbors.add((x: x, y: y - 1));
-    if (y < rows - 1) neighbors.add((x: x, y: y + 1));
+    if (y > 0) neighbors.add((x: x, y: y - 1)); // Top
+    if (x < cols - 1) neighbors.add((x: x + 1, y: y)); // Right
+    if (y < rows - 1) neighbors.add((x: x, y: y + 1)); // Bottom
+    if (x > 0) neighbors.add((x: x - 1, y: y)); // Left
     return neighbors;
   }
 
@@ -139,6 +196,8 @@ class PlaceAtomUseCase {
         }
       }
     }
+    // Need > 1 atoms total to prevent "win" on empty board start or mid-calc
+    // Actually, simple check: if only 1 owner remains AND they have atoms.
     return owners.length == 1 && totalAtoms > 1;
   }
 

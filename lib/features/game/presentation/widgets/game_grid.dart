@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers.dart';
 import 'cell_widget.dart';
+import 'flying_atom_widget.dart';
 
-/// Renders the game grid with cells.
+/// Renders the game grid with cells and flying atoms.
 class GameGrid extends ConsumerWidget {
   final Function(int x, int y) onCellTap;
 
@@ -17,6 +18,9 @@ class GameGrid extends ConsumerWidget {
     final isDark = ref.watch(isDarkModeProvider);
     final borderColor = theme.border(isDark);
     final players = ref.watch(gameStateProvider.select((s) => s?.players));
+    final flyingAtoms = ref.watch(
+      gameStateProvider.select((s) => s?.flyingAtoms ?? []),
+    );
 
     if (grid == null || players == null) {
       return const Center(child: CircularProgressIndicator());
@@ -30,34 +34,54 @@ class GameGrid extends ConsumerWidget {
         aspectRatio: cols / rows,
         child: Container(
           decoration: BoxDecoration(border: Border.all(color: borderColor)),
-          child: Column(
-            children: List.generate(rows, (row) {
-              return Expanded(
-                child: Row(
-                  children: List.generate(cols, (col) {
-                    final cell = grid[row][col];
-                    Color cellColor = Colors.transparent;
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final cellWidth = constraints.maxWidth / cols;
+              final cellHeight = constraints.maxHeight / rows;
+              final cellSize = Size(cellWidth, cellHeight);
 
-                    if (cell.ownerId != null) {
-                      final owner = players.firstWhere(
-                        (p) => p.id == cell.ownerId,
-                        orElse: () => players.first,
+              return Stack(
+                children: [
+                  // Layer 1: The Grid
+                  Column(
+                    children: List.generate(rows, (row) {
+                      return Expanded(
+                        child: Row(
+                          children: List.generate(cols, (col) {
+                            final cell = grid[row][col];
+                            Color cellColor = Colors.transparent;
+
+                            if (cell.ownerId != null) {
+                              final owner = players.firstWhere(
+                                (p) => p.id == cell.ownerId,
+                                orElse: () => players.first,
+                              );
+                              cellColor = owner.color;
+                            }
+
+                            return CellWidget(
+                              cell: cell,
+                              borderColor: borderColor,
+                              cellColor: cellColor,
+                              onTap: () => onCellTap(col, row),
+                            );
+                          }),
+                        ),
                       );
-                      cellColor = owner.color;
-                    }
+                    }),
+                  ),
 
-                    // We could wrap CellWidget in a ProviderScope or pass simple values
-                    // Passing values is fine here as CellWidget is simple
-                    return CellWidget(
-                      cell: cell,
-                      borderColor: borderColor,
-                      cellColor: cellColor,
-                      onTap: () => onCellTap(col, row),
-                    );
-                  }),
-                ),
+                  // Layer 2: Flying Atoms (Projectiles)
+                  ...flyingAtoms.map(
+                    (atom) => FlyingAtomWidget(
+                      key: ValueKey(atom.id),
+                      atom: atom,
+                      cellSize: cellSize,
+                    ),
+                  ),
+                ],
               );
-            }),
+            },
           ),
         ),
       ),

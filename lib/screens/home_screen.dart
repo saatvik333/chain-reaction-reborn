@@ -18,7 +18,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with SingleTickerProviderStateMixin {
   int _playerCount = 2;
   final List<String> _gridSizes = [
     AppStrings.gridSizeXSmall,
@@ -28,6 +29,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AppStrings.gridSizeXLarge,
   ];
   int _gridSizeIndex = 2;
+
+  late final AnimationController _orbController;
+  late final Animation<double> _orbScaleAnimation;
+  late final Animation<double> _orbOpacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _orbController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
+
+    _orbScaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _orbController, curve: Curves.easeInOut),
+    );
+
+    _orbOpacityAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+      CurvedAnimation(parent: _orbController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _orbController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,67 +75,79 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 flex: 4,
                 child: Center(
-                  child: Container(
-                    width: AppDimensions.orbSizeLarge,
-                    height: AppDimensions.orbSizeLarge,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: theme.fg.withValues(alpha: 0.1),
-                        width: AppDimensions.orbBorderWidth,
-                      ),
-                    ),
-                    child: Center(
-                      child: Container(
-                        width:
-                            80, // Keeping internal proportional sizes for now or move to dimen if generic
-                        height: 80,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.transparent,
+                  child: AnimatedBuilder(
+                    animation: _orbController,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _orbScaleAnimation.value,
+                        child: Opacity(
+                          opacity: _orbOpacityAnimation.value,
+                          child: child,
                         ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: theme.fg.withValues(alpha: 0.1),
-                                  width: 4,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: theme.fg.withValues(alpha: 0.9),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: theme.fg.withValues(alpha: 0.2),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              top: 20,
-                              left: 20,
-                              child: Container(
-                                width: 12,
-                                height: 12,
+                      );
+                    },
+                    child: Container(
+                      width: AppDimensions.orbSizeLarge,
+                      height: AppDimensions.orbSizeLarge,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: theme.fg.withValues(alpha: 0.1),
+                          width: AppDimensions.orbBorderWidth,
+                        ),
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.transparent,
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: theme.subtitle.withValues(alpha: 0.5),
+                                  border: Border.all(
+                                    color: theme.fg.withValues(alpha: 0.1),
+                                    width: 4,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: theme.fg.withValues(alpha: 0.9),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: theme.fg.withValues(alpha: 0.2),
+                                      blurRadius: 10,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                top: 20,
+                                left: 20,
+                                child: Container(
+                                  width: 12,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:
+                                        theme.subtitle.withValues(alpha: 0.5),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -146,7 +186,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
                 onNext: () {
                   setState(() {
-                    _gridSizeIndex = (_gridSizeIndex + 1) % _gridSizes.length;
+                    _gridSizeIndex =
+                        (_gridSizeIndex + 1) % _gridSizes.length;
                   });
                 },
               ),
