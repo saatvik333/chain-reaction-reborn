@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/game/presentation/providers/providers.dart';
-import '../widgets/pill_button.dart';
-import '../core/constants/app_strings.dart';
-import '../core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/widgets/pill_button.dart';
+import 'package:chain_reaction/core/constants/app_strings.dart';
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
 
 class WinnerScreen extends ConsumerWidget {
   final int winnerPlayerIndex;

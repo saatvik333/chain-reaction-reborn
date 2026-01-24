@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:chain_reaction/screens/home_screen.dart';
+import 'package:chain_reaction/features/home/presentation/screens/home_screen.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 

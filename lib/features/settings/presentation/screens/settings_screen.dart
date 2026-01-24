@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/game/presentation/providers/theme_provider.dart';
-import '../features/game/presentation/providers/player_names_provider.dart';
-import '../widgets/edit_player_dialog.dart';
-import '../widgets/pill_button.dart';
-import '../core/constants/app_strings.dart';
-import '../core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/presentation/providers/theme_provider.dart';
+import 'package:chain_reaction/features/game/presentation/providers/player_names_provider.dart';
+import 'package:chain_reaction/widgets/edit_player_dialog.dart';
+import 'package:chain_reaction/widgets/pill_button.dart';
+import 'package:chain_reaction/core/constants/app_strings.dart';
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -232,7 +233,7 @@ class SettingsScreen extends ConsumerWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        showDialog(
+        showFluidDialog(
           context: context,
           barrierColor: Colors.black.withValues(alpha: 0.8),
           builder: (context) => EditPlayerDialog(playerIndex: playerIndex),

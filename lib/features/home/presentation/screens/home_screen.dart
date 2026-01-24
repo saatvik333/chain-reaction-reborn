@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/game/presentation/providers/providers.dart';
-import '../core/constants/app_strings.dart';
-import '../core/constants/app_dimensions.dart';
-import 'game_screen.dart';
+import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/core/constants/app_strings.dart';
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/presentation/screens/game_screen.dart';
 import 'info_screen.dart';
-import 'palette_screen.dart';
-import 'purchase_screen.dart';
-import 'settings_screen.dart';
-import '../widgets/game_selector.dart';
-import '../widgets/pill_button.dart';
+import 'package:chain_reaction/features/shop/presentation/screens/palette_screen.dart';
+import 'package:chain_reaction/features/shop/presentation/screens/purchase_screen.dart';
+import 'package:chain_reaction/features/settings/presentation/screens/settings_screen.dart';
+import 'package:chain_reaction/widgets/game_selector.dart';
+import 'package:chain_reaction/widgets/pill_button.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -42,13 +42,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       duration: const Duration(seconds: 4),
     )..repeat(reverse: true);
 
-    _orbScaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(parent: _orbController, curve: Curves.easeInOut),
-    );
+    _orbScaleAnimation = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _orbController, curve: Curves.easeInOut));
 
-    _orbOpacityAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
-      CurvedAnimation(parent: _orbController, curve: Curves.easeInOut),
-    );
+    _orbOpacityAnimation = Tween<double>(
+      begin: 0.9,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _orbController, curve: Curves.easeInOut));
   }
 
   @override
@@ -141,8 +143,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                   height: 12,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color:
-                                        theme.subtitle.withValues(alpha: 0.5),
+                                    color: theme.subtitle.withValues(
+                                      alpha: 0.5,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -186,8 +189,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 },
                 onNext: () {
                   setState(() {
-                    _gridSizeIndex =
-                        (_gridSizeIndex + 1) % _gridSizes.length;
+                    _gridSizeIndex = (_gridSizeIndex + 1) % _gridSizes.length;
                   });
                 },
               ),

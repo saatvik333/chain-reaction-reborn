@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/game/presentation/providers/providers.dart';
-import '../features/game/presentation/providers/theme_provider.dart';
-import '../widgets/pill_button.dart';
-import '../core/constants/app_strings.dart';
-import '../core/constants/app_dimensions.dart';
-import '../core/theme/app_theme.dart';
-import '../features/shop/presentation/providers/shop_provider.dart';
+import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/features/game/presentation/providers/theme_provider.dart';
+import 'package:chain_reaction/widgets/pill_button.dart';
+import 'package:chain_reaction/core/constants/app_strings.dart';
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/theme/app_theme.dart';
+import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
 
 class PurchaseScreen extends ConsumerWidget {
   const PurchaseScreen({super.key});

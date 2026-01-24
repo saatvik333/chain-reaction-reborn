@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/game/presentation/providers/providers.dart';
-import '../core/theme/app_theme.dart';
-import '../widgets/pill_button.dart';
+import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/core/theme/app_theme.dart';
+import 'package:chain_reaction/widgets/pill_button.dart';
 import 'purchase_screen.dart';
-import '../core/constants/app_strings.dart';
+import 'package:chain_reaction/core/constants/app_strings.dart';
 import 'package:chain_reaction/widgets/fade_entry_widget.dart';
-import '../core/constants/app_dimensions.dart';
-import '../features/shop/presentation/providers/shop_provider.dart';
-import '../features/shop/presentation/widgets/theme_preview_dialog.dart';
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
+import 'package:chain_reaction/features/shop/presentation/widgets/theme_preview_dialog.dart';
+import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 
 class PaletteScreen extends ConsumerWidget {
   const PaletteScreen({super.key});
@@ -88,7 +89,7 @@ class PaletteScreen extends ConsumerWidget {
                             ref.read(themeProvider.notifier).setTheme(theme);
                           } else {
                             // Show Preview Dialog
-                            showDialog(
+                            showFluidDialog(
                               context: context,
                               builder: (_) =>
                                   ThemePreviewDialog(themeToPreview: theme),
@@ -202,10 +203,7 @@ class _ThemeRow extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: color,
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: backgroundColor,
-                        width: 2,
-                      ),
+                      border: Border.all(color: backgroundColor, width: 2),
                     ),
                   ),
                 );

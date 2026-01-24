@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/constants/app_dimensions.dart';
-import '../features/game/domain/entities/player.dart';
-import '../features/game/presentation/providers/providers.dart';
-import '../features/game/presentation/widgets/widgets.dart';
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/features/game/presentation/widgets/widgets.dart';
 import 'winner_screen.dart';
-import '../widgets/game_menu_dialog.dart';
+import 'package:chain_reaction/widgets/game_menu_dialog.dart';
+import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
   final int playerCount;
@@ -172,7 +173,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _showMenuDialog(BuildContext context) {
-    showDialog(
+    showFluidDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.8),
       builder: (context) => GameMenuDialog(
