@@ -8,6 +8,7 @@ import 'package:chain_reaction/features/game/presentation/widgets/widgets.dart';
 import 'winner_screen.dart';
 import 'package:chain_reaction/widgets/game_menu_dialog.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
+import 'package:chain_reaction/widgets/responsive_container.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
   final int playerCount;
@@ -91,56 +92,63 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         if (didPop) return;
         _showMenuDialog(context);
       },
-      child: Scaffold(
-        backgroundColor: themeState.bg,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.menu, color: themeState.fg),
-            onPressed: () => _showMenuDialog(context),
-          ),
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: currentPlayer.color,
-                  shape: BoxShape.circle,
+      child: Container(
+        color: themeState.bg,
+        child: ResponsiveContainer(
+          child: Scaffold(
+            backgroundColor: themeState.bg,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(Icons.menu, color: themeState.fg),
+                onPressed: () => _showMenuDialog(context),
+              ),
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: currentPlayer.color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    currentPlayer.name,
+                    style: TextStyle(
+                      color: currentPlayer.color,
+                      fontSize: AppDimensions.fontL,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              centerTitle: true,
+              actions: [
+                if (gameState.isProcessing)
+                  const Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                else
+                  const SizedBox(width: 8),
+              ],
+            ),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(AppDimensions.gridPadding),
+                child: RepaintBoundary(
+                  child: GameGrid(onCellTap: _handleCellTap),
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                currentPlayer.name,
-                style: TextStyle(
-                  color: currentPlayer.color,
-                  fontSize: AppDimensions.fontL,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          centerTitle: true,
-          actions: [
-            if (gameState.isProcessing)
-              const Padding(
-                padding: EdgeInsets.only(right: 16),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              )
-            else
-              const SizedBox(width: 8),
-          ],
-        ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.gridPadding),
-            child: RepaintBoundary(child: GameGrid(onCellTap: _handleCellTap)),
+            ),
           ),
         ),
       ),

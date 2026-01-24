@@ -7,6 +7,7 @@ import 'package:chain_reaction/widgets/pill_button.dart';
 import 'package:chain_reaction/core/constants/app_strings.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
+import 'package:chain_reaction/widgets/responsive_container.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -17,148 +18,154 @@ class SettingsScreen extends ConsumerWidget {
     final themeNotifier = ref.read(themeProvider.notifier);
     final playerNamesState = ref.watch(playerNamesProvider);
 
-    return Scaffold(
-      backgroundColor: themeState.bg,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: themeState.fg,
-            size: AppDimensions.iconM,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          AppStrings.settingsTitle,
-          style: TextStyle(
-            color: themeState.fg,
-            fontSize: AppDimensions.fontXL,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingL,
-              vertical: AppDimensions.paddingM,
+    return Container(
+      color: themeState.bg,
+      child: ResponsiveContainer(
+        child: Scaffold(
+          backgroundColor: themeState.bg,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: themeState.fg,
+                size: AppDimensions.iconM,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionHeader('GENERAL', themeState),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildToggleRow(
-                  AppStrings.darkMode,
-                  AppStrings.darkModeSubtitle,
-                  themeState.isDarkMode,
-                  (val) => themeNotifier.setDarkMode(val),
-                  themeState,
+            title: Text(
+              AppStrings.settingsTitle,
+              style: TextStyle(
+                color: themeState.fg,
+                fontSize: AppDimensions.fontXL,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                  vertical: AppDimensions.paddingM,
                 ),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildToggleRow(
-                  AppStrings.soundEffects,
-                  AppStrings.soundEffectsSubtitle,
-                  themeState.isSoundOn,
-                  (val) => themeNotifier.setSoundOn(val),
-                  themeState,
-                ),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildToggleRow(
-                  AppStrings.hapticFeedback,
-                  AppStrings.hapticFeedbackSubtitle,
-                  themeState.isHapticOn,
-                  (val) => themeNotifier.setHapticOn(val),
-                  themeState,
-                ),
-
-                const SizedBox(height: AppDimensions.paddingXL),
-                Divider(color: themeState.border, thickness: 1),
-                const SizedBox(height: AppDimensions.paddingXL),
-
-                _buildSectionHeader('VISUALS & ANIMATION', themeState),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildToggleRow(
-                  AppStrings.atomRotation,
-                  AppStrings.atomRotationSubtitle,
-                  themeState.isAtomRotationOn,
-                  (val) => themeNotifier.setAtomRotationOn(val),
-                  themeState,
-                ),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildToggleRow(
-                  AppStrings.atomVibration,
-                  AppStrings.atomVibrationSubtitle,
-                  themeState.isAtomVibrationOn,
-                  (val) => themeNotifier.setAtomVibrationOn(val),
-                  themeState,
-                ),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildToggleRow(
-                  AppStrings.atomBreathing,
-                  AppStrings.atomBreathingSubtitle,
-                  themeState.isAtomBreathingOn,
-                  (val) => themeNotifier.setAtomBreathingOn(val),
-                  themeState,
-                ),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildToggleRow(
-                  AppStrings.cellHighlight,
-                  AppStrings.cellHighlightSubtitle,
-                  themeState.isCellHighlightOn,
-                  (val) => themeNotifier.setCellHighlightOn(val),
-                  themeState,
-                ),
-
-                const SizedBox(height: AppDimensions.paddingXL),
-                Divider(color: themeState.border, thickness: 1),
-                const SizedBox(height: AppDimensions.paddingXL),
-
-                _buildSectionHeader(
-                  AppStrings.playerSettingsHeader,
-                  themeState,
-                ),
-                const SizedBox(height: AppDimensions.paddingL),
-
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: AppDimensions.paddingM,
-                    mainAxisSpacing: AppDimensions.paddingM,
-                    childAspectRatio: 2.5,
-                  ),
-                  itemCount: themeState.playerColors.length,
-                  itemBuilder: (context, index) {
-                    final playerIndex = index + 1;
-                    return _buildPlayerSettingItem(
-                      playerIndex,
-                      themeState.playerColors[index],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionHeader('GENERAL', themeState),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    _buildToggleRow(
+                      AppStrings.darkMode,
+                      AppStrings.darkModeSubtitle,
+                      themeState.isDarkMode,
+                      (val) => themeNotifier.setDarkMode(val),
                       themeState,
-                      playerNamesState.getName(playerIndex),
-                      context,
-                    );
-                  },
-                ),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    _buildToggleRow(
+                      AppStrings.soundEffects,
+                      AppStrings.soundEffectsSubtitle,
+                      themeState.isSoundOn,
+                      (val) => themeNotifier.setSoundOn(val),
+                      themeState,
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    _buildToggleRow(
+                      AppStrings.hapticFeedback,
+                      AppStrings.hapticFeedbackSubtitle,
+                      themeState.isHapticOn,
+                      (val) => themeNotifier.setHapticOn(val),
+                      themeState,
+                    ),
 
-                const SizedBox(height: AppDimensions.paddingXL),
-                PillButton(
-                  text: AppStrings.resetSettings,
-                  onTap: () async {
-                    // Reset player names
-                    ref.read(playerNamesProvider.notifier).resetNames();
-                    // Reset all app settings (theme, visuals, audio)
-                    await ref.read(themeProvider.notifier).resetSettings();
-                  },
-                  width: double.infinity,
+                    const SizedBox(height: AppDimensions.paddingXL),
+                    Divider(color: themeState.border, thickness: 1),
+                    const SizedBox(height: AppDimensions.paddingXL),
+
+                    _buildSectionHeader('VISUALS & ANIMATION', themeState),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    _buildToggleRow(
+                      AppStrings.atomRotation,
+                      AppStrings.atomRotationSubtitle,
+                      themeState.isAtomRotationOn,
+                      (val) => themeNotifier.setAtomRotationOn(val),
+                      themeState,
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    _buildToggleRow(
+                      AppStrings.atomVibration,
+                      AppStrings.atomVibrationSubtitle,
+                      themeState.isAtomVibrationOn,
+                      (val) => themeNotifier.setAtomVibrationOn(val),
+                      themeState,
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    _buildToggleRow(
+                      AppStrings.atomBreathing,
+                      AppStrings.atomBreathingSubtitle,
+                      themeState.isAtomBreathingOn,
+                      (val) => themeNotifier.setAtomBreathingOn(val),
+                      themeState,
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    _buildToggleRow(
+                      AppStrings.cellHighlight,
+                      AppStrings.cellHighlightSubtitle,
+                      themeState.isCellHighlightOn,
+                      (val) => themeNotifier.setCellHighlightOn(val),
+                      themeState,
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+                    Divider(color: themeState.border, thickness: 1),
+                    const SizedBox(height: AppDimensions.paddingXL),
+
+                    _buildSectionHeader(
+                      AppStrings.playerSettingsHeader,
+                      themeState,
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: AppDimensions.paddingM,
+                            mainAxisSpacing: AppDimensions.paddingM,
+                            childAspectRatio: 2.5,
+                          ),
+                      itemCount: themeState.playerColors.length,
+                      itemBuilder: (context, index) {
+                        final playerIndex = index + 1;
+                        return _buildPlayerSettingItem(
+                          playerIndex,
+                          themeState.playerColors[index],
+                          themeState,
+                          playerNamesState.getName(playerIndex),
+                          context,
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingXL),
+                    PillButton(
+                      text: AppStrings.resetSettings,
+                      onTap: () async {
+                        // Reset player names
+                        ref.read(playerNamesProvider.notifier).resetNames();
+                        // Reset all app settings (theme, visuals, audio)
+                        await ref.read(themeProvider.notifier).resetSettings();
+                      },
+                      width: double.infinity,
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                  ],
                 ),
-                const SizedBox(height: AppDimensions.paddingL),
-              ],
+              ),
             ),
           ),
         ),

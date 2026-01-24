@@ -18,7 +18,12 @@ Future<T?> showFluidDialog<T>({
     barrierColor: barrierColor,
     transitionDuration: transitionDuration,
     pageBuilder: (context, animation, secondaryAnimation) {
-      return builder(context);
+      return Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: builder(context),
+        ),
+      );
     },
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       // Use a custom curve for a "magnetic" feel

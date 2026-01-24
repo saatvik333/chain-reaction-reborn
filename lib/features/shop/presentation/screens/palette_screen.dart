@@ -10,6 +10,7 @@ import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
 import 'package:chain_reaction/features/shop/presentation/widgets/theme_preview_dialog.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
+import 'package:chain_reaction/widgets/responsive_container.dart';
 
 class PaletteScreen extends ConsumerWidget {
   const PaletteScreen({super.key});
@@ -19,104 +20,111 @@ class PaletteScreen extends ConsumerWidget {
     final themeState = ref.watch(themeProvider);
     final shopState = ref.watch(shopProvider);
 
-    return Scaffold(
-      backgroundColor: themeState.bg,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: themeState.fg,
-            size: AppDimensions.iconM,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          AppStrings.themesTitle,
-          style: TextStyle(
-            color: themeState.fg,
-            fontSize: AppDimensions.fontXL,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingL,
-            vertical: AppDimensions.paddingM,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppStrings.availableThemesHeader,
-                style: TextStyle(
-                  color: themeState.subtitle,
-                  fontSize: AppDimensions.fontXS,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: AppDimensions.letterSpacingHeader,
-                ),
+    return Container(
+      color: themeState.bg,
+      child: ResponsiveContainer(
+        child: Scaffold(
+          backgroundColor: themeState.bg,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: themeState.fg,
+                size: AppDimensions.iconM,
               ),
-              const SizedBox(height: AppDimensions.paddingL),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: AppThemes.all.length,
-                  separatorBuilder: (context, index) => Divider(
-                    color: themeState.border,
-                    height: AppDimensions.paddingXL,
-                  ),
-                  itemBuilder: (context, index) {
-                    final theme = AppThemes.all[index];
-                    final isSelected =
-                        theme.name == themeState.currentTheme.name;
-
-                    // Logic: Owned if NOT premium OR if in shop purchased list
-                    final isOwned =
-                        !theme.isPremium || shopState.isOwned(theme.name);
-
-                    return FadeEntryWidget(
-                      delay: Duration(milliseconds: index * 50),
-                      child: _ThemeRow(
-                        theme: theme,
-                        isSelected: isSelected,
-                        isLocked: !isOwned,
-                        isDarkMode: themeState.isDarkMode,
-                        onTap: () {
-                          if (isOwned) {
-                            ref.read(themeProvider.notifier).setTheme(theme);
-                          } else {
-                            // Show Preview Dialog
-                            showFluidDialog(
-                              context: context,
-                              builder: (_) =>
-                                  ThemePreviewDialog(themeToPreview: theme),
-                            );
-                          }
-                        },
-                        textColor: themeState.fg,
-                        backgroundColor: themeState.bg,
-                      ),
-                    );
-                  },
-                ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Text(
+              AppStrings.themesTitle,
+              style: TextStyle(
+                color: themeState.fg,
+                fontSize: AppDimensions.fontXL,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: AppDimensions.paddingL),
-              PillButton(
-                text: AppStrings.getMoreThemes,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const PurchaseScreen(),
+            ),
+          ),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimensions.paddingL,
+                vertical: AppDimensions.paddingM,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppStrings.availableThemesHeader,
+                    style: TextStyle(
+                      color: themeState.subtitle,
+                      fontSize: AppDimensions.fontXS,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: AppDimensions.letterSpacingHeader,
                     ),
-                  );
-                },
-                width: double.infinity,
+                  ),
+                  const SizedBox(height: AppDimensions.paddingL),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: AppThemes.all.length,
+                      separatorBuilder: (context, index) => Divider(
+                        color: themeState.border,
+                        height: AppDimensions.paddingXL,
+                      ),
+                      itemBuilder: (context, index) {
+                        final theme = AppThemes.all[index];
+                        final isSelected =
+                            theme.name == themeState.currentTheme.name;
+
+                        // Logic: Owned if NOT premium OR if in shop purchased list
+                        final isOwned =
+                            !theme.isPremium || shopState.isOwned(theme.name);
+
+                        return FadeEntryWidget(
+                          delay: Duration(milliseconds: index * 50),
+                          child: _ThemeRow(
+                            theme: theme,
+                            isSelected: isSelected,
+                            isLocked: !isOwned,
+                            isDarkMode: themeState.isDarkMode,
+                            onTap: () {
+                              if (isOwned) {
+                                ref
+                                    .read(themeProvider.notifier)
+                                    .setTheme(theme);
+                              } else {
+                                // Show Preview Dialog
+                                showFluidDialog(
+                                  context: context,
+                                  builder: (_) =>
+                                      ThemePreviewDialog(themeToPreview: theme),
+                                );
+                              }
+                            },
+                            textColor: themeState.fg,
+                            backgroundColor: themeState.bg,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: AppDimensions.paddingL),
+                  PillButton(
+                    text: AppStrings.getMoreThemes,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const PurchaseScreen(),
+                        ),
+                      );
+                    },
+                    width: double.infinity,
+                  ),
+                  const SizedBox(height: AppDimensions.paddingL),
+                ],
               ),
-              const SizedBox(height: AppDimensions.paddingL),
-            ],
+            ),
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/cell.dart';
 import 'atom_widget.dart';
@@ -37,37 +38,61 @@ class CellWidget extends StatelessWidget {
     final isCritical = cell.atomCount == cell.capacity;
 
     return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          decoration: BoxDecoration(
-            color: (isCellHighlightOn && cell.ownerId != null)
-                ? cellColor.withValues(alpha: 0.1)
-                : Colors.transparent,
-            border: Border.all(
-              color: borderColor.withValues(alpha: 0.5),
-              width: 0.5,
-            ),
-          ),
-          child: Center(
-            child: AtomWidget(
-              color: cellColor,
-              // Visually cap the atoms to capacity to prevent "overloaded" shapes
-              // (e.g. 4 atoms in a 3-capacity cell) from appearing briefly before explosion.
-              count: cell.atomCount > cell.capacity
-                  ? cell.capacity
-                  : cell.atomCount,
-              isUnstable: isUnstable,
-              isCritical: isCritical,
-              isAtomRotationOn: isAtomRotationOn,
-              isAtomVibrationOn: isAtomVibrationOn,
-              isAtomBreathingOn: isAtomBreathingOn,
-              animation: animation,
-              angleOffset: angleOffset,
-            ),
-          ),
+      child: Material(
+        color: Colors.transparent,
+        child: Builder(
+          builder: (context) {
+            final isMobile =
+                !kIsWeb &&
+                (defaultTargetPlatform == TargetPlatform.android ||
+                    defaultTargetPlatform == TargetPlatform.iOS);
+
+            final childContainer = AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              decoration: BoxDecoration(
+                color: (isCellHighlightOn && cell.ownerId != null)
+                    ? cellColor.withValues(alpha: 0.1)
+                    : Colors.transparent,
+                border: Border.all(
+                  color: borderColor.withValues(alpha: 0.5),
+                  width: 0.5,
+                ),
+              ),
+              child: Center(
+                child: AtomWidget(
+                  color: cellColor,
+                  // Visually cap the atoms to capacity to prevent "overloaded" shapes
+                  // (e.g. 4 atoms in a 3-capacity cell) from appearing briefly before explosion.
+                  count: cell.atomCount > cell.capacity
+                      ? cell.capacity
+                      : cell.atomCount,
+                  isUnstable: isUnstable,
+                  isCritical: isCritical,
+                  isAtomRotationOn: isAtomRotationOn,
+                  isAtomVibrationOn: isAtomVibrationOn,
+                  isAtomBreathingOn: isAtomBreathingOn,
+                  animation: animation,
+                  angleOffset: angleOffset,
+                ),
+              ),
+            );
+
+            if (isMobile) {
+              return GestureDetector(
+                onTap: onTap,
+                behavior: HitTestBehavior.opaque,
+                child: childContainer,
+              );
+            }
+
+            return InkWell(
+              onTap: onTap,
+              hoverColor: borderColor.withValues(alpha: 0.2),
+              splashColor: borderColor.withValues(alpha: 0.3),
+              child: childContainer,
+            );
+          },
         ),
       ),
     );

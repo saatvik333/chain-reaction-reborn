@@ -1,21 +1,30 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chain_reaction/features/home/presentation/screens/home_screen.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
+import 'package:chain_reaction/widgets/mouse_navigation_wrapper.dart';
 
 import 'package:chain_reaction/core/theme/custom_transitions.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+
+  // Only lock orientation on mobile devices (Android/iOS)
+  // On Web/Desktop, let the user resize the window freely.
+  if (!kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS)) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
@@ -41,7 +50,9 @@ class _MainAppState extends ConsumerState<MainApp> {
   }
 
   Future<void> _setHighRefreshRate() async {
-    if (Platform.isAndroid) {
+    // High refresh rate is mainly an Android specific API setup
+    // Check for Android via Foundation to be Web-safe
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       try {
         await FlutterDisplayMode.setHighRefreshRate();
       } catch (e) {
@@ -50,11 +61,22 @@ class _MainAppState extends ConsumerState<MainApp> {
     }
   }
 
+  final _navigatorKey =
+      GlobalKey<NavigatorState>(); // Key for navigation access
+
   @override
   Widget build(BuildContext context) {
     final themeState = ref.watch(themeProvider);
 
     return MaterialApp(
+      navigatorKey: _navigatorKey, // Bind key
+      builder: (context, child) {
+        // Wrap the entire app (Navigator) in mouse listener
+        return MouseNavigationWrapper(
+          navigatorKey: _navigatorKey,
+          child: child ?? const SizedBox(),
+        );
+      },
       title: 'Chain Reaction Reborn',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

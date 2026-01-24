@@ -4,6 +4,7 @@ import 'package:chain_reaction/features/game/presentation/providers/providers.da
 import 'package:chain_reaction/widgets/pill_button.dart';
 import 'package:chain_reaction/core/constants/app_strings.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/widgets/responsive_container.dart';
 
 class WinnerScreen extends ConsumerWidget {
   final int winnerPlayerIndex;
@@ -31,82 +32,84 @@ class WinnerScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: theme.bg,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingL,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(flex: 2),
-              Text(
-                AppStrings.winner,
-                style: TextStyle(
-                  color: theme.fg,
-                  fontSize: AppDimensions.fontGiant,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
+        child: ResponsiveContainer(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimensions.paddingL,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(flex: 2),
+                Text(
+                  AppStrings.winner,
+                  style: TextStyle(
+                    color: theme.fg,
+                    fontSize: AppDimensions.fontGiant,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 48,
-              ), // Intentionally keeping larger spacing as per design
+                const SizedBox(
+                  height: 48,
+                ), // Intentionally keeping larger spacing as per design
 
-              Container(
-                width: 120, // Specific for winner circle
-                height: 120,
-                decoration: BoxDecoration(
-                  color: winnerColor,
-                  shape: BoxShape.circle,
+                Container(
+                  width: 120, // Specific for winner circle
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: winnerColor,
+                    shape: BoxShape.circle,
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppDimensions.paddingL),
-              Text(
-                winnerName,
-                style: TextStyle(
-                  color: theme.fg,
-                  fontSize: AppDimensions.fontXXL,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: AppDimensions.paddingL),
+                Text(
+                  winnerName,
+                  style: TextStyle(
+                    color: theme.fg,
+                    fontSize: AppDimensions.fontXXL,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: AppDimensions.paddingXXXL),
+                const SizedBox(height: AppDimensions.paddingXXXL),
 
-              _buildStatRow(
-                AppStrings.totalMoves,
-                totalMoves.toString(),
-                theme,
-              ),
-              const SizedBox(height: AppDimensions.paddingL),
-              _buildStatRow(AppStrings.duration, gameDuration, theme),
-              const SizedBox(height: AppDimensions.paddingL),
-              _buildStatRow(
-                AppStrings.territory,
-                '$territoryPercentage%',
-                theme,
-              ),
+                _buildStatRow(
+                  AppStrings.totalMoves,
+                  totalMoves.toString(),
+                  theme,
+                ),
+                const SizedBox(height: AppDimensions.paddingL),
+                _buildStatRow(AppStrings.duration, gameDuration, theme),
+                const SizedBox(height: AppDimensions.paddingL),
+                _buildStatRow(
+                  AppStrings.territory,
+                  '$territoryPercentage%',
+                  theme,
+                ),
 
-              const Spacer(flex: 3),
+                const Spacer(flex: 3),
 
-              PillButton(
-                text: AppStrings.playAgain,
-                onTap: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-                width: double.infinity,
-              ),
-              const SizedBox(height: AppDimensions.paddingM),
-              PillButton(
-                text: AppStrings.mainMenu,
-                onTap: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-                width: double.infinity,
-                borderColor: theme.border,
-                textColor: theme.subtitle,
-              ),
-              const SizedBox(height: 48),
-            ],
+                PillButton(
+                  text: AppStrings.playAgain,
+                  onTap: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  width: double.infinity,
+                ),
+                const SizedBox(height: AppDimensions.paddingM),
+                PillButton(
+                  text: AppStrings.mainMenu,
+                  onTap: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  width: double.infinity,
+                  borderColor: theme.border,
+                  textColor: theme.subtitle,
+                ),
+                const SizedBox(height: 48),
+              ],
+            ),
           ),
         ),
       ),
