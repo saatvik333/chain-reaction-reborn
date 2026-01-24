@@ -5,13 +5,40 @@ import 'cell_widget.dart';
 import 'flying_atom_widget.dart';
 
 /// Renders the game grid with cells and flying atoms.
-class GameGrid extends ConsumerWidget {
+/// Renders the game grid with cells and flying atoms.
+class GameGrid extends ConsumerStatefulWidget {
   final Function(int x, int y) onCellTap;
 
   const GameGrid({super.key, required this.onCellTap});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GameGrid> createState() => _GameGridState();
+}
+
+class _GameGridState extends ConsumerState<GameGrid>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _masterController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Master loop: 4 seconds.
+    // 0.0 -> 1.0 continuously.
+    // AtomPainter scales this for speed (e.g. 4x for unstable).
+    _masterController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _masterController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Watch precise parts of the state to optimize rebuilds
     final grid = ref.watch(gridProvider);
     final themeState = ref.watch(themeProvider);
@@ -60,13 +87,23 @@ class GameGrid extends ConsumerWidget {
                               cellColor = owner.color;
                             }
 
+                            // Calculate a deterministic phase offset (0.0 to 1.0)
+                            // This ensures atoms don't rotate in perfect unison.
+                            // We use prime number multipliers to avoid noticeable patterns.
+                            final double angleOffset =
+                                ((col * 13 + row * 23) % 100) / 100.0;
+
                             return CellWidget(
                               cell: cell,
                               borderColor: borderColor,
                               cellColor: cellColor,
-                              onTap: () => onCellTap(col, row),
+                              onTap: () => widget.onCellTap(col, row),
                               isAtomRotationOn: themeState.isAtomRotationOn,
                               isAtomVibrationOn: themeState.isAtomVibrationOn,
+                              isAtomBreathingOn: themeState.isAtomBreathingOn,
+                              isCellHighlightOn: themeState.isCellHighlightOn,
+                              animation: _masterController,
+                              angleOffset: angleOffset,
                             );
                           }),
                         ),

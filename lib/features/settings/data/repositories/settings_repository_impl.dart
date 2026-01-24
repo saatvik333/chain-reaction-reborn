@@ -74,4 +74,42 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<void> setAtomVibrationOn(bool value) async {
     await _prefs.setBool(_keyAtomVibrationOn, value);
   }
+
+  static const String _keyCellHighlightOn = 'isCellHighlightOn';
+
+  @override
+  Future<bool?> getCellHighlightOn() async {
+    return _prefs.getBool(_keyCellHighlightOn);
+  }
+
+  @override
+  Future<void> setCellHighlightOn(bool value) async {
+    await _prefs.setBool(_keyCellHighlightOn, value);
+  }
+
+  static const String _keyAtomBreathingOn = 'isAtomBreathingOn';
+
+  @override
+  Future<bool?> getAtomBreathingOn() async {
+    return _prefs.getBool(_keyAtomBreathingOn);
+  }
+
+  @override
+  Future<void> setAtomBreathingOn(bool value) async {
+    await _prefs.setBool(_keyAtomBreathingOn, value);
+  }
+
+  @override
+  Future<void> clearSettings() async {
+    await Future.wait([
+      _prefs.remove(_keyDarkMode),
+      _prefs.remove(_keySoundOn),
+      _prefs.remove(_keyHapticOn),
+      _prefs.remove(_keyThemeName),
+      _prefs.remove(_keyAtomRotationOn),
+      _prefs.remove(_keyAtomVibrationOn),
+      _prefs.remove(_keyCellHighlightOn),
+      _prefs.remove(_keyAtomBreathingOn),
+    ]);
+  }
 }

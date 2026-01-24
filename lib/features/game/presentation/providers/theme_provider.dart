@@ -14,6 +14,8 @@ class ThemeState {
   final bool isHapticOn;
   final bool isAtomRotationOn;
   final bool isAtomVibrationOn;
+  final bool isAtomBreathingOn;
+  final bool isCellHighlightOn;
 
   const ThemeState({
     required this.currentTheme,
@@ -22,6 +24,8 @@ class ThemeState {
     this.isHapticOn = true,
     this.isAtomRotationOn = true,
     this.isAtomVibrationOn = true,
+    this.isAtomBreathingOn = true,
+    this.isCellHighlightOn = true,
   });
 
   // Resolved colors for convenience
@@ -45,6 +49,8 @@ class ThemeState {
     bool? isHapticOn,
     bool? isAtomRotationOn,
     bool? isAtomVibrationOn,
+    bool? isAtomBreathingOn,
+    bool? isCellHighlightOn,
   }) {
     return ThemeState(
       currentTheme: currentTheme ?? this.currentTheme,
@@ -53,6 +59,8 @@ class ThemeState {
       isHapticOn: isHapticOn ?? this.isHapticOn,
       isAtomRotationOn: isAtomRotationOn ?? this.isAtomRotationOn,
       isAtomVibrationOn: isAtomVibrationOn ?? this.isAtomVibrationOn,
+      isAtomBreathingOn: isAtomBreathingOn ?? this.isAtomBreathingOn,
+      isCellHighlightOn: isCellHighlightOn ?? this.isCellHighlightOn,
     );
   }
 }
@@ -78,6 +86,10 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
         await _settingsRepository.getAtomRotationOn() ?? true;
     final isAtomVibrationOn =
         await _settingsRepository.getAtomVibrationOn() ?? true;
+    final isAtomBreathingOn =
+        await _settingsRepository.getAtomBreathingOn() ?? true;
+    final isCellHighlightOn =
+        await _settingsRepository.getCellHighlightOn() ?? true;
     final themeName = await _settingsRepository.getThemeName();
 
     final theme = AppThemes.all.firstWhere(
@@ -92,6 +104,8 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
       isHapticOn: isHapticOn,
       isAtomRotationOn: isAtomRotationOn,
       isAtomVibrationOn: isAtomVibrationOn,
+      isAtomBreathingOn: isAtomBreathingOn,
+      isCellHighlightOn: isCellHighlightOn,
     );
   }
 
@@ -161,6 +175,28 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
       state = state.copyWith(isAtomVibrationOn: value);
       _settingsRepository.setAtomVibrationOn(value);
     }
+  }
+
+  /// Sets atom breathing on/off.
+  void setAtomBreathingOn(bool value) {
+    if (state.isAtomBreathingOn != value) {
+      state = state.copyWith(isAtomBreathingOn: value);
+      _settingsRepository.setAtomBreathingOn(value);
+    }
+  }
+
+  /// Sets cell highlight on/off.
+  void setCellHighlightOn(bool value) {
+    if (state.isCellHighlightOn != value) {
+      state = state.copyWith(isCellHighlightOn: value);
+      _settingsRepository.setCellHighlightOn(value);
+    }
+  }
+
+  /// Resets all settings to defaults.
+  Future<void> resetSettings() async {
+    await _settingsRepository.clearSettings();
+    await _loadSettings();
   }
 }
 

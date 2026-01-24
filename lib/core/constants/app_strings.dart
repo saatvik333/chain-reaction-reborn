@@ -50,6 +50,10 @@ class AppStrings {
   static const String atomRotationSubtitle = 'Spinning animation';
   static const String atomVibration = 'Atom Vibration';
   static const String atomVibrationSubtitle = 'Critical mass shake';
+  static const String atomBreathing = 'Atom Breathing';
+  static const String atomBreathingSubtitle = 'Pulse animation';
+  static const String cellHighlight = 'Cell Highlight';
+  static const String cellHighlightSubtitle = 'Tint occupied cells';
 
   // Edit Player
   static const String editPlayerTitle = 'Edit Player';

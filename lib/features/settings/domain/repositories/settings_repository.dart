@@ -35,4 +35,19 @@ abstract interface class SettingsRepository {
 
   /// Saves the atom vibration preference.
   Future<void> setAtomVibrationOn(bool value);
+
+  /// Loads the saved cell highlight preference.
+  Future<bool?> getCellHighlightOn();
+
+  /// Saves the cell highlight preference.
+  Future<void> setCellHighlightOn(bool value);
+
+  /// Loads the saved atom breathing preference.
+  Future<bool?> getAtomBreathingOn();
+
+  /// Saves the atom breathing preference.
+  Future<void> setAtomBreathingOn(bool value);
+
+  /// Clears all saved settings, restoring defaults.
+  Future<void> clearSettings();
 }

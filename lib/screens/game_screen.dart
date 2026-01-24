@@ -139,7 +139,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(AppDimensions.gridPadding),
-            child: GameGrid(onCellTap: _handleCellTap),
+            child: RepaintBoundary(child: GameGrid(onCellTap: _handleCellTap)),
           ),
         ),
       ),

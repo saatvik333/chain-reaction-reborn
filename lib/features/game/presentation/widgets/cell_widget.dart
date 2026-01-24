@@ -10,6 +10,10 @@ class CellWidget extends StatelessWidget {
   final VoidCallback onTap;
   final bool isAtomRotationOn;
   final bool isAtomVibrationOn;
+  final bool isAtomBreathingOn;
+  final bool isCellHighlightOn;
+  final Animation<double> animation;
+  final double angleOffset;
 
   const CellWidget({
     super.key,
@@ -17,8 +21,12 @@ class CellWidget extends StatelessWidget {
     required this.borderColor,
     required this.cellColor,
     required this.onTap,
+    required this.animation,
+    this.angleOffset = 0.0,
     this.isAtomRotationOn = true,
     this.isAtomVibrationOn = true,
+    this.isAtomBreathingOn = true,
+    this.isCellHighlightOn = true,
   });
 
   @override
@@ -35,7 +43,7 @@ class CellWidget extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
           decoration: BoxDecoration(
-            color: cell.ownerId != null
+            color: (isCellHighlightOn && cell.ownerId != null)
                 ? cellColor.withValues(alpha: 0.1)
                 : Colors.transparent,
             border: Border.all(
@@ -46,11 +54,18 @@ class CellWidget extends StatelessWidget {
           child: Center(
             child: AtomWidget(
               color: cellColor,
-              count: cell.atomCount,
+              // Visually cap the atoms to capacity to prevent "overloaded" shapes
+              // (e.g. 4 atoms in a 3-capacity cell) from appearing briefly before explosion.
+              count: cell.atomCount > cell.capacity
+                  ? cell.capacity
+                  : cell.atomCount,
               isUnstable: isUnstable,
               isCritical: isCritical,
               isAtomRotationOn: isAtomRotationOn,
               isAtomVibrationOn: isAtomVibrationOn,
+              isAtomBreathingOn: isAtomBreathingOn,
+              animation: animation,
+              angleOffset: angleOffset,
             ),
           ),
         ),

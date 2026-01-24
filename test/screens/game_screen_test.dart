@@ -33,6 +33,21 @@ class MockSettingsRepository implements SettingsRepository {
   Future<bool?> getAtomVibrationOn() async => true;
   @override
   Future<void> setAtomVibrationOn(bool value) async {}
+
+  @override
+  Future<bool?> getCellHighlightOn() async => true;
+
+  @override
+  Future<void> setCellHighlightOn(bool value) async {}
+
+  @override
+  Future<bool?> getAtomBreathingOn() async => true;
+
+  @override
+  Future<void> setAtomBreathingOn(bool value) async {}
+
+  @override
+  Future<void> clearSettings() async {}
 }
 
 void main() {
