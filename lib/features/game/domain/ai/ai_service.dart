@@ -3,11 +3,11 @@ import 'package:flutter/foundation.dart';
 import '../entities/game_state.dart';
 import '../entities/player.dart';
 import '../logic/game_rules.dart';
-import 'ai/ai_strategy.dart';
-import 'ai/strategies/random_strategy.dart';
-import 'ai/strategies/greedy_strategy.dart';
-import 'ai/strategies/strategic_strategy.dart';
-import 'ai/strategies/extreme_strategy.dart';
+import 'ai_strategy.dart';
+import 'strategies/random_strategy.dart';
+import 'strategies/greedy_strategy.dart';
+import 'strategies/strategic_strategy.dart';
+import 'strategies/extreme_strategy.dart';
 
 class AIComputeParams {
   final GameState state;
@@ -53,9 +53,6 @@ class AIService {
     if (state.isGameOver) return const Point(0, 0);
 
     // Offload calculation to a background isolate
-    return await compute(
-      _computeMove,
-      AIComputeParams(state, player, _rules),
-    );
+    return await compute(_computeMove, AIComputeParams(state, player, _rules));
   }
 }

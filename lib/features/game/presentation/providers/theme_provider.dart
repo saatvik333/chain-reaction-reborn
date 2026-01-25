@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../features/settings/domain/repositories/settings_repository.dart';
-import '../../../../features/settings/domain/providers/settings_providers.dart';
+import '../../../../features/settings/presentation/providers/settings_providers.dart';
 
 /// Immutable state for theme settings.
 @immutable

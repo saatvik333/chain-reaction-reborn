@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:chain_reaction/features/home/presentation/screens/home_screen.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
-import 'package:chain_reaction/features/settings/domain/providers/settings_providers.dart';
+import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 import 'package:chain_reaction/widgets/desktop_integration_wrapper.dart';
 
 import 'package:chain_reaction/core/theme/custom_transitions.dart';

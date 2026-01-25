@@ -1,9 +1,9 @@
 import 'package:flutter/painting.dart'; // For Color
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/presentation/providers/game_providers.dart';
 import 'package:chain_reaction/features/game/presentation/providers/game_state_provider.dart';
 import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
-import 'package:chain_reaction/features/game/domain/providers/persistence_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -39,9 +39,7 @@ void main() {
     setUp(() {
       fakeRepository = FakeGameRepository();
       container = ProviderContainer(
-        overrides: [
-          gameRepositoryProvider.overrideWithValue(fakeRepository),
-        ],
+        overrides: [gameRepositoryProvider.overrideWithValue(fakeRepository)],
       );
     });
 
@@ -69,7 +67,7 @@ void main() {
       expect(state.grid.length, 8); // Rows
       expect(state.grid[0].length, 5); // Cols
       expect(state.currentPlayer.id, '1');
-      
+
       // Verify persistence
       expect(fakeRepository.savedState, isNotNull);
     });
@@ -82,7 +80,7 @@ void main() {
       ];
 
       notifier.initGame(players);
-      
+
       // Initial move
       notifier.placeAtom(0, 0);
 

@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/domain.dart';
-import '../../domain/services/ai_service.dart';
-import '../../domain/providers/game_domain_providers.dart';
-import '../../domain/providers/service_providers.dart';
-import '../../domain/providers/persistence_provider.dart';
+import '../../domain/ai/ai_service.dart';
+import 'game_providers.dart';
 import '../../domain/repositories/game_repository.dart';
 
-import '../../domain/services/haptic_service.dart';
+import '../../../../core/services/haptic/haptic_service.dart';
 import 'theme_provider.dart'; // For sound/haptic settings
 
 /// Notifier for managing game state.
@@ -68,9 +66,9 @@ class GameNotifier extends Notifier<GameState?> {
     _explosionSubscription = _placeAtom(currentState, x, y).listen(
       (newState) {
         // Detect explosion start (atoms flying)
-        if (newState.flyingAtoms.isNotEmpty && 
+        if (newState.flyingAtoms.isNotEmpty &&
             (lastState?.flyingAtoms.isEmpty ?? true)) {
-           if (ref.read(isHapticOnProvider)) _hapticService.explosionPattern();
+          if (ref.read(isHapticOnProvider)) _hapticService.explosionPattern();
         }
 
         lastState = newState;
@@ -87,8 +85,8 @@ class GameNotifier extends Notifier<GameState?> {
             state = currentState.copyWith(isProcessing: false);
           }
         } else if (lastState != null && lastState!.isGameOver) {
-           _gameRepository.clearGame();
-           if (ref.read(isHapticOnProvider)) _hapticService.heavyImpact();
+          _gameRepository.clearGame();
+          if (ref.read(isHapticOnProvider)) _hapticService.heavyImpact();
         }
       },
       onError: (error) {
@@ -154,7 +152,7 @@ class GameNotifier extends Notifier<GameState?> {
 
   Future<void> _saveGame() async {
     if (state != null && !state!.isGameOver) {
-       await _gameRepository.saveGame(state!);
+      await _gameRepository.saveGame(state!);
     }
   }
 

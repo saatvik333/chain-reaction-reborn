@@ -1,7 +1,7 @@
 import 'dart:math';
 import '../ai_strategy.dart';
-import '../../../entities/game_state.dart';
-import '../../../entities/player.dart';
+import '../../entities/game_state.dart';
+import '../../entities/player.dart';
 
 class RandomStrategy extends AIStrategy {
   final Random _random = Random();

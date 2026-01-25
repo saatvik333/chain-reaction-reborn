@@ -6,3 +6,4 @@ library;
 export 'game_state_provider.dart';
 export 'player_names_provider.dart';
 export 'theme_provider.dart';
+export 'game_providers.dart';

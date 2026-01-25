@@ -1,9 +1,9 @@
 import 'dart:math';
 import '../ai_strategy.dart';
-import '../../../logic/game_rules.dart';
-import '../../../entities/game_state.dart';
-import '../../../entities/player.dart';
-import '../../../entities/cell.dart';
+import '../../logic/game_rules.dart';
+import '../../entities/game_state.dart';
+import '../../entities/player.dart';
+import '../../entities/cell.dart';
 
 /// An "Extreme" AI that uses Minimax (Depth 2) to look ahead.
 /// It simulates its own move, and then anticipates the opponent's best counter-move.

@@ -1,8 +1,8 @@
 import 'dart:math';
 import '../ai_strategy.dart';
-import '../../../entities/game_state.dart';
-import '../../../entities/player.dart';
-import '../../../entities/cell.dart';
+import '../../entities/game_state.dart';
+import '../../entities/player.dart';
+import '../../entities/cell.dart';
 
 /// A strategic AI that evaluates board position.
 /// Uses a simplified heuristic approach rather than full Minimax

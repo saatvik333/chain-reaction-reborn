@@ -1,6 +1,6 @@
 import 'dart:math';
-import '../../entities/game_state.dart';
-import '../../entities/player.dart';
+import '../entities/game_state.dart';
+import '../entities/player.dart';
 
 abstract class AIStrategy {
   Future<Point<int>> getMove(GameState state, Player player);
