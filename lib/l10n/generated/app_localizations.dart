@@ -256,18 +256,6 @@ abstract class AppLocalizations {
   /// **'PLAYER SETTINGS'**
   String get playerSettingsHeader;
 
-  /// No description provided for @soundEffects.
-  ///
-  /// In en, this message translates to:
-  /// **'Sound Effects'**
-  String get soundEffects;
-
-  /// No description provided for @soundEffectsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'In-game audio'**
-  String get soundEffectsSubtitle;
-
   /// No description provided for @hapticFeedback.
   ///
   /// In en, this message translates to:

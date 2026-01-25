@@ -66,15 +66,7 @@ class SettingsScreen extends ConsumerWidget {
                       themeState,
                       l10n,
                     ),
-                    const SizedBox(height: AppDimensions.paddingL),
-                    _buildToggleRow(
-                      l10n.soundEffects,
-                      l10n.soundEffectsSubtitle,
-                      themeState.isSoundOn,
-                      (val) => themeNotifier.setSoundOn(val),
-                      themeState,
-                      l10n,
-                    ),
+
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
                       l10n.hapticFeedback,
@@ -163,7 +155,7 @@ class SettingsScreen extends ConsumerWidget {
                       onTap: () async {
                         // Reset player names
                         ref.read(playerNamesProvider.notifier).resetNames();
-                        // Reset all app settings (theme, visuals, audio)
+                        // Reset all app settings (theme, visuals)
                         await ref.read(themeProvider.notifier).resetSettings();
                       },
                       width: double.infinity,

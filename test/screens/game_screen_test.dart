@@ -10,13 +10,13 @@ import 'package:chain_reaction/core/services/haptic/haptic_service.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
 import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
+
 import 'dart:math';
 
 class MockSettingsRepository implements SettingsRepository {
   @override
   Future<bool?> getDarkMode() async => true;
-  @override
-  Future<bool?> getSoundOn() async => true;
+
   @override
   Future<bool?> getHapticOn() async => true;
   @override
@@ -24,8 +24,7 @@ class MockSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> setDarkMode(bool value) async {}
-  @override
-  Future<void> setSoundOn(bool value) async {}
+
   @override
   Future<void> setHapticOn(bool value) async {}
   @override

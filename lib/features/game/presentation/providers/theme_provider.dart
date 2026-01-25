@@ -10,7 +10,7 @@ import '../../../../features/settings/presentation/providers/settings_providers.
 class ThemeState {
   final AppTheme currentTheme;
   final bool isDarkMode;
-  final bool isSoundOn;
+
   final bool isHapticOn;
   final bool isAtomRotationOn;
   final bool isAtomVibrationOn;
@@ -20,7 +20,7 @@ class ThemeState {
   const ThemeState({
     required this.currentTheme,
     this.isDarkMode = true,
-    this.isSoundOn = true,
+
     this.isHapticOn = true,
     this.isAtomRotationOn = true,
     this.isAtomVibrationOn = true,
@@ -45,7 +45,7 @@ class ThemeState {
   ThemeState copyWith({
     AppTheme? currentTheme,
     bool? isDarkMode,
-    bool? isSoundOn,
+
     bool? isHapticOn,
     bool? isAtomRotationOn,
     bool? isAtomVibrationOn,
@@ -55,7 +55,7 @@ class ThemeState {
     return ThemeState(
       currentTheme: currentTheme ?? this.currentTheme,
       isDarkMode: isDarkMode ?? this.isDarkMode,
-      isSoundOn: isSoundOn ?? this.isSoundOn,
+
       isHapticOn: isHapticOn ?? this.isHapticOn,
       isAtomRotationOn: isAtomRotationOn ?? this.isAtomRotationOn,
       isAtomVibrationOn: isAtomVibrationOn ?? this.isAtomVibrationOn,
@@ -82,7 +82,7 @@ class ThemeNotifier extends Notifier<ThemeState> {
 
     final isDarkMode =
         await _settingsRepository.getDarkMode() ?? defaultDarkMode;
-    final isSoundOn = await _settingsRepository.getSoundOn() ?? true;
+
     final isHapticOn = await _settingsRepository.getHapticOn() ?? true;
     final isAtomRotationOn =
         await _settingsRepository.getAtomRotationOn() ?? true;
@@ -102,7 +102,7 @@ class ThemeNotifier extends Notifier<ThemeState> {
     state = ThemeState(
       currentTheme: theme,
       isDarkMode: isDarkMode,
-      isSoundOn: isSoundOn,
+
       isHapticOn: isHapticOn,
       isAtomRotationOn: isAtomRotationOn,
       isAtomVibrationOn: isAtomVibrationOn,
@@ -144,14 +144,6 @@ class ThemeNotifier extends Notifier<ThemeState> {
     if (state.isDarkMode != value) {
       state = state.copyWith(isDarkMode: value);
       _settingsRepository.setDarkMode(value);
-    }
-  }
-
-  /// Sets sound on/off.
-  void setSoundOn(bool value) {
-    if (state.isSoundOn != value) {
-      state = state.copyWith(isSoundOn: value);
-      _settingsRepository.setSoundOn(value);
     }
   }
 
@@ -217,11 +209,6 @@ final currentThemeProvider = Provider<AppTheme>((ref) {
 /// Dark mode state.
 final isDarkModeProvider = Provider<bool>((ref) {
   return ref.watch(themeProvider.select((s) => s.isDarkMode));
-});
-
-/// Sound on state.
-final isSoundOnProvider = Provider<bool>((ref) {
-  return ref.watch(themeProvider.select((s) => s.isSoundOn));
 });
 
 /// Haptic feedback state.

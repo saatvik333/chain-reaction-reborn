@@ -6,7 +6,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   final SharedPreferences _prefs;
 
   static const String _keyDarkMode = 'isDarkMode';
-  static const String _keySoundOn = 'isSoundOn';
+
   static const String _keyHapticOn = 'isHapticOn';
   static const String _keyThemeName = 'themeName';
 
@@ -20,16 +20,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
   @override
   Future<void> setDarkMode(bool value) async {
     await _prefs.setBool(_keyDarkMode, value);
-  }
-
-  @override
-  Future<bool?> getSoundOn() async {
-    return _prefs.getBool(_keySoundOn);
-  }
-
-  @override
-  Future<void> setSoundOn(bool value) async {
-    await _prefs.setBool(_keySoundOn, value);
   }
 
   @override
@@ -103,7 +93,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<void> clearSettings() async {
     await Future.wait([
       _prefs.remove(_keyDarkMode),
-      _prefs.remove(_keySoundOn),
+
       _prefs.remove(_keyHapticOn),
       _prefs.remove(_keyThemeName),
       _prefs.remove(_keyAtomRotationOn),

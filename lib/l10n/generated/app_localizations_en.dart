@@ -90,12 +90,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerSettingsHeader => 'PLAYER SETTINGS';
 
   @override
-  String get soundEffects => 'Sound Effects';
-
-  @override
-  String get soundEffectsSubtitle => 'In-game audio';
-
-  @override
   String get hapticFeedback => 'Haptic Feedback';
 
   @override

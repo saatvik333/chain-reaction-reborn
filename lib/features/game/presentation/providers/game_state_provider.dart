@@ -6,7 +6,8 @@ import 'game_providers.dart';
 import '../../domain/repositories/game_repository.dart';
 
 import '../../../../core/services/haptic/haptic_service.dart';
-import 'theme_provider.dart'; // For sound/haptic settings
+import 'theme_provider.dart'; // For haptic settings
+// Audio imports removed
 
 /// Notifier for managing game state.
 class GameNotifier extends Notifier<GameState?> {
@@ -59,6 +60,7 @@ class GameNotifier extends Notifier<GameState?> {
 
     // Play tap feedback
     if (ref.read(isHapticOnProvider)) _hapticService.lightImpact();
+    // Audio removed
 
     GameState? lastState;
     bool hasEmitted = false;

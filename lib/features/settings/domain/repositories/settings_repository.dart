@@ -6,12 +6,6 @@ abstract interface class SettingsRepository {
   /// Saves the dark mode preference.
   Future<void> setDarkMode(bool value);
 
-  /// Loads the saved sound preference.
-  Future<bool?> getSoundOn();
-
-  /// Saves the sound preference.
-  Future<void> setSoundOn(bool value);
-
   /// Loads the saved haptic feedback preference.
   Future<bool?> getHapticOn();
 
