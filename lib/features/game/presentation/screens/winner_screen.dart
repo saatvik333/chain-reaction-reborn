@@ -59,7 +59,7 @@ class WinnerScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 48,
+                  height: AppDimensions.spacingXXL,
                 ), // Intentionally keeping larger spacing as per design
 
                 Container(

@@ -65,8 +65,14 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    // Initial pump to run init state
+    await tester.pump();
+    
+    // Wait for the post frame callback (initialize game)
+    await tester.pump(const Duration(milliseconds: 100));
 
+    // GameGrid has a repeating animation, so pumpAndSettle will timeout.
+    // Instead, we just check if it's there.
     expect(find.byType(GameGrid), findsOneWidget);
   });
 }

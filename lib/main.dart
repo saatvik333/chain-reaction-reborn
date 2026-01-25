@@ -8,7 +8,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:chain_reaction/features/home/presentation/screens/home_screen.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
-import 'package:chain_reaction/widgets/mouse_navigation_wrapper.dart';
+import 'package:chain_reaction/widgets/desktop_integration_wrapper.dart';
 
 import 'package:chain_reaction/core/theme/custom_transitions.dart';
 
@@ -94,8 +94,8 @@ class _MainAppState extends ConsumerState<MainApp> {
     return MaterialApp(
       navigatorKey: _navigatorKey, // Bind key
       builder: (context, child) {
-        // Wrap the entire app (Navigator) in mouse listener
-        return MouseNavigationWrapper(
+        // Wrap the entire app (Navigator) in desktop integration wrapper
+        return DesktopIntegrationWrapper(
           navigatorKey: _navigatorKey,
           child: child ?? const SizedBox(),
         );

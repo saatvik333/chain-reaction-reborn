@@ -84,7 +84,7 @@ class PurchaseScreen extends ConsumerWidget {
                       );
                     }),
 
-                    const SizedBox(height: AppDimensions.paddingXL),
+                    const SizedBox(height: AppDimensions.paddingS),
                     Divider(color: theme.border, thickness: 1),
                     const SizedBox(height: AppDimensions.paddingXL),
 

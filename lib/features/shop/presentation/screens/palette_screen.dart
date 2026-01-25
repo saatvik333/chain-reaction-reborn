@@ -206,8 +206,8 @@ class _ThemeRow extends StatelessWidget {
                 return Positioned(
                   right: index * 14.0,
                   child: Container(
-                    width: 24,
-                    height: 24,
+                    width: AppDimensions.colorCircleSize,
+                    height: AppDimensions.colorCircleSize,
                     decoration: BoxDecoration(
                       color: color,
                       shape: BoxShape.circle,

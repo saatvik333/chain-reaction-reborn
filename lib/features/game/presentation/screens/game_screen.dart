@@ -130,7 +130,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppDimensions.paddingS),
                   Text(
                     currentPlayer.isAI
                         ? 'Computer Thinking...'
@@ -147,15 +147,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               actions: [
                 if (gameState.isProcessing)
                   const Padding(
-                    padding: EdgeInsets.only(right: 16),
+                    padding: EdgeInsets.only(right: AppDimensions.paddingM),
                     child: SizedBox(
-                      width: 20,
-                      height: 20,
+                      width: AppDimensions.iconM,
+                      height: AppDimensions.iconM,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   )
                 else
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppDimensions.paddingS),
               ],
             ),
             body: SafeArea(

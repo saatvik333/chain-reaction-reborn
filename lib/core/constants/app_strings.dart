@@ -106,4 +106,10 @@ class AppStrings {
   // Values
   static const String developerName = 'saatvik333';
   static const String supportEmail = 'saatvik333sharma@gmail.com';
+  // Desktop / Menu
+  static const String menuLabel = 'Chain Reaction';
+  static const String aboutLabel = 'About';
+  static const String viewLabel = 'View';
+  static const String toggleFullscreen = 'Toggle Fullscreen';
+  static const String appLegalese = '2026 Saatvik';
 }

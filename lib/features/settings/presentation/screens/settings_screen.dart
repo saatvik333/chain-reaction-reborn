@@ -206,7 +206,7 @@ class SettingsScreen extends ConsumerWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppDimensions.paddingXS),
             Text(
               subtitle,
               style: TextStyle(
@@ -256,8 +256,8 @@ class SettingsScreen extends ConsumerWidget {
         child: Row(
           children: [
             Container(
-              width: 24,
-              height: 24,
+              width: AppDimensions.colorCircleSize,
+              height: AppDimensions.colorCircleSize,
               decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             const SizedBox(width: 12),

@@ -72,10 +72,14 @@ class HomeScreen extends ConsumerWidget {
                 // Back Button Overlay
                 if (currentStep == HomeStep.configuration)
                   Positioned(
-                    top: 0,
-                    left: 4,
+                    top: 4, // Aligns with centered AppBar leading (56 - 48) / 2
+                    left: 4, // Aligns with centered AppBar leading
                     child: IconButton(
-                      icon: Icon(Icons.arrow_back, color: theme.fg),
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: theme.fg,
+                        size: AppDimensions.iconM,
+                      ),
                       onPressed: () => notifier.setStep(HomeStep.modeSelection),
                       tooltip: 'Back to Mode Selection',
                     ),

@@ -1,10 +1,12 @@
 class AppDimensions {
   // Padding & Margins
+  static const double paddingXS = 4.0;
   static const double paddingS = 8.0;
   static const double paddingM = 16.0;
   static const double paddingL = 24.0;
   static const double paddingXL = 32.0; // formerly used as SizedBox height 32
   static const double paddingXXL = 40.0;
+  static const double spacingXXL = 48.0; // Specific large spacing
   static const double paddingXXXL = 64.0; // found in winner screen
 
   // Border Radius
@@ -30,6 +32,7 @@ class AppDimensions {
   static const double pillButtonBorderWidth = 1.5;
   static const double letterSpacingHeader = 1.5;
   static const double letterSpacingTitle = 2.0; // game selector
+  static const double colorCircleSize = 24.0; // Standard color circle size
 
   // Orb/Grid
   static const double orbSizeLarge = 160.0; // Home screen central orb

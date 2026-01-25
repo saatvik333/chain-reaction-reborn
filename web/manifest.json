@@ -1,11 +1,11 @@
 {
-    "name": "chain_reaction",
-    "short_name": "chain_reaction",
+    "name": "Chain Reaction Reborn",
+    "short_name": "Chain Reaction",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#121212",
+    "theme_color": "#121212",
+    "description": "A polished strategy game.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
