@@ -1,5 +1,6 @@
 import 'dart:math';
 import '../ai_strategy.dart';
+import '../../../logic/game_rules.dart';
 import '../../../entities/game_state.dart';
 import '../../../entities/player.dart';
 import '../../../entities/cell.dart';
@@ -8,6 +9,9 @@ import '../../../entities/cell.dart';
 /// It simulates its own move, and then anticipates the opponent's best counter-move.
 class ExtremeStrategy extends AIStrategy {
   final Random _random = Random();
+  final GameRules _rules;
+
+  ExtremeStrategy(this._rules);
 
   @override
   Future<Point<int>> getMove(GameState state, Player player) async {
@@ -24,12 +28,6 @@ class ExtremeStrategy extends AIStrategy {
     Point<int>? bestMove;
     double maxScore = double.negativeInfinity;
 
-    // Pruning/Optimization:
-    // If there are too many moves, full Minimax might be slow.
-    // However, for Chain Reaction grid sizes (usually small) and endgame (fewer moves), it's okay.
-    // In early game, moves are many, but simulation is fast (no chains).
-    // In late game, moves are few, but chains are long.
-
     for (final move in validMoves) {
       // 1. Simulate AI Move
       final stateAfterAi = _simulateMove(state, move, player);
@@ -40,26 +38,15 @@ class ExtremeStrategy extends AIStrategy {
       }
 
       // 2. Minimax Step: Anticipate Opponent's Best Response
-      // The opponent wants to MINIMIZE my score.
       double minOpponentScore = double.infinity;
-
-      // Determine next player (opponent)
-      // Note: _simulateMove returns a state but doesn't fully advance turn logic
-      // (like cycling indices). We need to infer the opponent.
-      // For 2-player, it's just the other player. For N-player, it's the next valid player.
-      // Simplifying expectation: Assume next active player is the threat.
       final opponent = _getNextPlayer(stateAfterAi, player);
 
       if (opponent != null) {
         final opponentMoves = getValidMoves(stateAfterAi, opponent);
 
         if (opponentMoves.isEmpty) {
-          // Opponent has no moves? I probably won or they are eliminated.
-          // If I didn't detect win above, check elimination.
           minOpponentScore = 1000.0; // Good for me
         } else {
-          // Heuristic: If too many opponent moves, sample or filter?
-          // For Extreme, we try to be thorough.
           for (final oppMove in opponentMoves) {
             final stateAfterOpp = _simulateMove(
               stateAfterAi,
@@ -67,14 +54,11 @@ class ExtremeStrategy extends AIStrategy {
               opponent,
             );
 
-            // If opponent wins here, this is a distinct possibility.
-            // We want to avoid paths where opponent CAN win.
             if (_isWin(stateAfterOpp, opponent)) {
-              minOpponentScore = double.negativeInfinity; // Terrible for me
-              break; // Theory: Opponent will find this win, so this AI move is bad.
+              minOpponentScore = double.negativeInfinity;
+              break;
             }
 
-            // Evaluate board state from MY perspective
             final score = _evaluateState(stateAfterOpp, player);
             if (score < minOpponentScore) {
               minOpponentScore = score;
@@ -82,12 +66,9 @@ class ExtremeStrategy extends AIStrategy {
           }
         }
       } else {
-        // No opponent? I won.
         minOpponentScore = 10000.0;
       }
 
-      // 3. Select Max of Min
-      // Add small jitter to break ties
       final jitter = _random.nextDouble();
       final totalScore = minOpponentScore + jitter;
 
@@ -108,15 +89,13 @@ class ExtremeStrategy extends AIStrategy {
   }
 
   Player? _getNextPlayer(GameState state, Player current) {
-    // Find the next active player in the cyclic turn order
     final startIdx = state.players.indexWhere((p) => p.id == current.id);
-    if (startIdx == -1) return null; // Should not happen
+    if (startIdx == -1) return null;
 
     final count = state.players.length;
     for (int i = 1; i < count; i++) {
       final nextIdx = (startIdx + i) % count;
       final p = state.players[nextIdx];
-      // A player is active if they have cells or if it's the very start (everyone has 0)
       if (state.cellCountForPlayer(p.id) > 0) {
         return p;
       }
@@ -127,7 +106,6 @@ class ExtremeStrategy extends AIStrategy {
   double _evaluateState(GameState state, Player player) {
     if (_isWin(state, player)) return 10000.0;
 
-    // Check if I lost (am eliminated)
     final myCount = state.cellCountForPlayer(player.id);
     if (myCount == 0) return double.negativeInfinity;
 
@@ -136,7 +114,7 @@ class ExtremeStrategy extends AIStrategy {
     int enemyAtoms = 0;
     int myCells = 0;
     int enemyCells = 0;
-    int myThreats = 0; // My cells ready to explode
+    int myThreats = 0;
 
     for (var row in state.grid) {
       for (var cell in row) {
@@ -152,19 +130,19 @@ class ExtremeStrategy extends AIStrategy {
     }
 
     score += (myAtoms - enemyAtoms) * 2.0;
-    score += (myCells - enemyCells) * 5.0; // Cells are safer than atoms
+    score += (myCells - enemyCells) * 5.0;
     score += myThreats * 1.0;
 
     return score;
   }
 
+  /// Simulates a move using GameRules.
+  /// This logic is now consistent with the UI game engine.
   GameState _simulateMove(GameState state, Point<int> move, Player player) {
-    // Uses the same simulation logic as StrategicStrategy
-    // Code duplicated for independence (or we could extract a shared Simulator)
-
     var grid = state.grid.map((row) => List<Cell>.from(row)).toList();
-    final queue = <Point<int>>[];
+    final queue = <Cell>[];
 
+    // Apply initial move
     var cell = grid[move.y][move.x];
     grid[move.y][move.x] = cell.copyWith(
       atomCount: cell.atomCount + 1,
@@ -172,60 +150,34 @@ class ExtremeStrategy extends AIStrategy {
     );
 
     if (grid[move.y][move.x].isAtCriticalMass) {
-      queue.add(move);
+      queue.add(grid[move.y][move.x]);
     }
 
     int safetyCounter = 0;
+    // Process entire chain reaction synchronously
     while (queue.isNotEmpty && safetyCounter < 2000) {
       safetyCounter++;
-      final p = queue.removeAt(0);
-      final cx = p.x;
-      final cy = p.y;
+      final explodingCell = queue.removeAt(0);
 
-      if (!grid[cy][cx].isAtCriticalMass) continue;
+      // Re-fetch because it might have changed in a previous step (though in queue logic usually we process specific snapshot)
+      // Actually, we must fetch from grid to get current state
+      final currentCell = grid[explodingCell.y][explodingCell.x];
+      if (!currentCell.isAtCriticalMass) continue;
 
-      final neighbors = _getNeighbors(
-        grid,
-        state.rows,
-        state.cols,
-        Point(cx, cy),
+      final result = _rules.processExplosion(
+        grid: grid,
+        explodingCell: currentCell,
+        playerId: player.id,
       );
 
-      final currentCell = grid[cy][cx];
-      grid[cy][cx] = currentCell.copyWith(
-        atomCount: currentCell.atomCount - neighbors.length,
-        clearOwner: (currentCell.atomCount - neighbors.length) <= 0,
-      );
-
-      for (final n in neighbors) {
-        final neighbor = grid[n.y][n.x];
-        final nextAtomCount = neighbor.atomCount + 1;
-        grid[n.y][n.x] = neighbor.copyWith(
-          atomCount: nextAtomCount,
-          ownerId: player.id,
-        );
-
-        if (grid[n.y][n.x].isAtCriticalMass) {
-          queue.add(n);
-        }
+      // queue.addAll(result.newlyCriticalCells);
+      // We need to be careful not to add duplicates if using a simple List
+      // But standard BFS/queue is fine.
+      for (final newCrit in result.newlyCriticalCells) {
+        queue.add(newCrit);
       }
     }
 
-    // Return partial state with updated grid
     return state.copyWith(grid: grid);
-  }
-
-  List<Point<int>> _getNeighbors(
-    List<List<Cell>> grid,
-    int rows,
-    int cols,
-    Point<int> p,
-  ) {
-    final neighbors = <Point<int>>[];
-    if (p.x > 0) neighbors.add(Point(p.x - 1, p.y));
-    if (p.x < cols - 1) neighbors.add(Point(p.x + 1, p.y));
-    if (p.y > 0) neighbors.add(Point(p.x, p.y - 1));
-    if (p.y < rows - 1) neighbors.add(Point(p.x, p.y + 1));
-    return neighbors;
   }
 }

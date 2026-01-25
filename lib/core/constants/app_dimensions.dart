@@ -46,11 +46,11 @@ class AppDimensions {
 
   // Grid Sizes: (rows, cols)
   static const Map<String, (int, int)> gridSizes = {
-    'X Small': (6, 4),
-    'Small': (8, 5),
-    'Medium': (10, 6),
-    'Large': (12, 7),
-    'X Large': (14, 8),
+    'x_small': (6, 4),
+    'small': (8, 5),
+    'medium': (10, 6),
+    'large': (12, 7),
+    'x_large': (14, 8),
   };
 
   // Animation durations (ms)

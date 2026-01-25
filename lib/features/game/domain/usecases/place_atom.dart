@@ -1,19 +1,22 @@
 import 'dart:collection';
 import 'package:uuid/uuid.dart';
 import '../entities/entities.dart';
+import '../logic/game_rules.dart';
 
 /// Use case for placing an atom on the grid.
 ///
 /// Returns a Stream of GameState updates to animate chain reactions.
 class PlaceAtomUseCase {
-  const PlaceAtomUseCase();
+  final GameRules _rules;
+
+  const PlaceAtomUseCase(this._rules);
 
   /// Places an atom at the given coordinates.
   ///
   /// Returns a stream of intermediate states for animating chain reactions.
   /// The stream will be empty if the move is invalid.
   Stream<GameState> call(GameState state, int x, int y) async* {
-    if (!_isValidMove(state, x, y)) return;
+    if (!_rules.isValidMove(state, x, y)) return;
 
     final currentPlayer = state.currentPlayer;
     var grid = _copyGrid(state.grid);
@@ -37,16 +40,6 @@ class PlaceAtomUseCase {
     if (needsExplosion) {
       yield* _propagateExplosions(workingState, Queue<Cell>.from([grid[y][x]]));
     }
-  }
-
-  /// Checks if a move is valid for the current player.
-  bool _isValidMove(GameState state, int x, int y) {
-    if (state.isGameOver) return false;
-    // We don't check isProcessing here because usage from AI might invoke this
-    // while isProcessing is true (but logic has ensured safety).
-    if (y < 0 || y >= state.rows || x < 0 || x >= state.cols) return false;
-    final cell = state.grid[y][x];
-    return cell.ownerId == null || cell.ownerId == state.currentPlayer.id;
   }
 
   /// Handles chain explosions using a queue-based approach with flight animation phases.
@@ -87,7 +80,7 @@ class PlaceAtomUseCase {
       if (!grid[cy][cx].isAtCriticalMass) continue;
 
       // 3. Prepare Explosion Data
-      final neighbors = _getNeighbors(cx, cy, rows, cols);
+      final neighbors = _rules.getNeighbors(cx, cy, rows, cols);
       final atomsToRemove = neighbors.length; // 2, 3, or 4
 
       final newAtomCount = grid[cy][cx].atomCount - atomsToRemove;
@@ -139,16 +132,6 @@ class PlaceAtomUseCase {
         flyingAtoms: [], // Clear flying atoms
       );
     }
-  }
-
-  /// Gets orthogonal neighbors of a cell.
-  List<({int x, int y})> _getNeighbors(int x, int y, int rows, int cols) {
-    final neighbors = <({int x, int y})>[];
-    if (y > 0) neighbors.add((x: x, y: y - 1)); // Top
-    if (x < cols - 1) neighbors.add((x: x + 1, y: y)); // Right
-    if (y < rows - 1) neighbors.add((x: x, y: y + 1)); // Bottom
-    if (x > 0) neighbors.add((x: x - 1, y: y)); // Left
-    return neighbors;
   }
 
   /// Creates a deep copy of the grid.

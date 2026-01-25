@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
+import 'package:chain_reaction/features/settings/domain/providers/settings_providers.dart';
 import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
 import 'package:chain_reaction/features/game/presentation/screens/game_screen.dart';
 import 'package:chain_reaction/features/game/presentation/widgets/game_grid.dart';

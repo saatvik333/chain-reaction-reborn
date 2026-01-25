@@ -4,8 +4,8 @@ import '../features/game/presentation/providers/theme_provider.dart';
 import '../features/game/presentation/providers/player_names_provider.dart';
 import 'custom_popup.dart';
 import 'pill_button.dart';
-import '../core/constants/app_strings.dart';
 import '../core/constants/app_dimensions.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class EditPlayerDialog extends ConsumerStatefulWidget {
   final int playerIndex;
@@ -42,6 +42,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
   Widget build(BuildContext context) {
     final themeState = ref.watch(themeProvider);
     final playerColor = themeState.getPlayerColor(widget.playerIndex);
+    final l10n = AppLocalizations.of(context)!;
 
     return CustomPopup(
       child: Column(
@@ -60,7 +61,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
               ),
               const SizedBox(width: 12),
               Text(
-                '${AppStrings.editPlayerTitle} ${widget.playerIndex}',
+                '${l10n.editPlayerTitle} ${widget.playerIndex}',
                 style: TextStyle(
                   color: themeState.fg,
                   fontSize: AppDimensions.fontXL,
@@ -75,7 +76,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
             controller: _controller,
             style: TextStyle(color: themeState.fg),
             decoration: InputDecoration(
-              labelText: AppStrings.nameLabel,
+              labelText: l10n.nameLabel,
               labelStyle: TextStyle(color: themeState.subtitle),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: themeState.border),
@@ -92,7 +93,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
             children: [
               Expanded(
                 child: PillButton(
-                  text: AppStrings.cancel,
+                  text: l10n.cancel,
                   onTap: () => Navigator.of(context).pop(),
                   height: 48,
                   borderColor: themeState.border,
@@ -102,7 +103,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
               const SizedBox(width: AppDimensions.paddingM),
               Expanded(
                 child: PillButton(
-                  text: AppStrings.save,
+                  text: l10n.save,
                   onTap: () {
                     ref
                         .read(playerNamesProvider.notifier)

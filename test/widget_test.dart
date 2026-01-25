@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
+import 'package:chain_reaction/features/settings/domain/providers/settings_providers.dart';
 import 'package:chain_reaction/features/home/presentation/screens/home_screen.dart';
 
 import 'package:chain_reaction/main.dart';

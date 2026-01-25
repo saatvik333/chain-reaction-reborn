@@ -106,6 +106,44 @@ class GameState {
     return '$minutes:$seconds';
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'grid': grid.map((row) => row.map((c) => c.toMap()).toList()).toList(),
+      'players': players.map((p) => p.toMap()).toList(),
+      'flyingAtoms': flyingAtoms.map((f) => f.toMap()).toList(),
+      'currentPlayerIndex': currentPlayerIndex,
+      'isGameOver': isGameOver,
+      'winner': winner?.toMap(),
+      'isProcessing': isProcessing,
+      'turnCount': turnCount,
+      'totalMoves': totalMoves,
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime?.toIso8601String(),
+    };
+  }
+
+  factory GameState.fromMap(Map<String, dynamic> map) {
+    return GameState(
+      grid: (map['grid'] as List)
+          .map((row) => (row as List).map((c) => Cell.fromMap(c)).toList())
+          .toList(),
+      players: (map['players'] as List)
+          .map((p) => Player.fromMap(p))
+          .toList(),
+      flyingAtoms: (map['flyingAtoms'] as List)
+          .map((f) => FlyingAtom.fromMap(f))
+          .toList(),
+      currentPlayerIndex: map['currentPlayerIndex'] as int,
+      isGameOver: map['isGameOver'] as bool,
+      winner: map['winner'] != null ? Player.fromMap(map['winner']) : null,
+      isProcessing: map['isProcessing'] as bool,
+      turnCount: map['turnCount'] as int,
+      totalMoves: map['totalMoves'] as int,
+      startTime: DateTime.parse(map['startTime'] as String),
+      endTime: map['endTime'] != null ? DateTime.parse(map['endTime']) : null,
+    );
+  }
+
   /// Creates a copy of this state with optional modifications.
   GameState copyWith({
     List<List<Cell>>? grid,

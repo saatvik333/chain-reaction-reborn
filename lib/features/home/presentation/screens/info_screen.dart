@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/game/presentation/providers/theme_provider.dart';
 import 'package:chain_reaction/widgets/pill_button.dart';
@@ -13,6 +14,7 @@ class InfoScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       color: theme.bg,
@@ -32,7 +34,7 @@ class InfoScreen extends ConsumerWidget {
               onPressed: () => Navigator.of(context).pop(),
             ),
             title: Text(
-              AppStrings.infoTitle,
+              l10n.infoTitle,
               style: TextStyle(
                 color: theme.fg,
                 fontSize: AppDimensions.fontXL,
@@ -49,29 +51,29 @@ class InfoScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionHeader(AppStrings.howToPlayHeader, theme),
+                  _buildSectionHeader(l10n.howToPlayHeader, theme),
                   const SizedBox(height: AppDimensions.paddingM),
-                  _buildBulletPoint(AppStrings.htpBullet1, theme),
+                  _buildBulletPoint(l10n.htpBullet1, theme),
                   const SizedBox(height: AppDimensions.paddingM),
-                  _buildBulletPoint(AppStrings.htpBullet2, theme),
+                  _buildBulletPoint(l10n.htpBullet2, theme),
                   const SizedBox(height: AppDimensions.paddingM),
-                  _buildBulletPoint(AppStrings.htpBullet3, theme),
+                  _buildBulletPoint(l10n.htpBullet3, theme),
 
                   const SizedBox(height: AppDimensions.paddingXL),
                   Divider(color: theme.border, thickness: 1),
                   const SizedBox(height: AppDimensions.paddingXL),
 
-                  _buildSectionHeader(AppStrings.aboutHeader, theme),
+                  _buildSectionHeader(l10n.aboutHeader, theme),
                   const SizedBox(height: AppDimensions.paddingM),
                   _buildInfoRow(
-                    AppStrings.versionLabel,
+                    l10n.versionLabel,
                     AppConstants.appVersion,
                     theme,
                   ),
                   const SizedBox(height: AppDimensions.paddingM),
                   _buildInfoRow(
-                    AppStrings.developerLabel,
-                    AppStrings.developerName,
+                    l10n.developerLabel,
+                    l10n.developerName,
                     theme,
                     onTap: () async {
                       final Uri url = Uri.parse('https://saatvik.xyz');
@@ -84,7 +86,7 @@ class InfoScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppDimensions.paddingM),
                   _buildActionRow(
-                    AppStrings.privacyPolicy,
+                    l10n.privacyPolicy,
                     Icons.arrow_outward,
                     () async {
                       // Placeholder privacy policy Gist - Replace with your own hosted URL before release
@@ -104,10 +106,10 @@ class InfoScreen extends ConsumerWidget {
                   Divider(color: theme.border, thickness: 1),
                   const SizedBox(height: AppDimensions.paddingXL),
 
-                  _buildSectionHeader(AppStrings.supportHeader, theme),
+                  _buildSectionHeader(l10n.supportHeader, theme),
                   const SizedBox(height: AppDimensions.paddingM),
                   Text(
-                    AppStrings.supportMessage,
+                    l10n.supportMessage,
                     style: TextStyle(
                       color: theme.subtitle,
                       fontSize: AppDimensions.fontS,
@@ -116,11 +118,11 @@ class InfoScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppDimensions.paddingXL),
                   PillButton(
-                    text: AppStrings.contactMe,
+                    text: l10n.contactMe,
                     onTap: () async {
                       final Uri emailLaunchUri = Uri(
                         scheme: 'mailto',
-                        path: AppStrings.supportEmail,
+                        path: l10n.supportEmail,
                       );
                       try {
                         await launchUrl(emailLaunchUri);

@@ -5,15 +5,18 @@ import 'package:chain_reaction/features/game/domain/entities/cell.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/usecases/initialize_game.dart';
 import 'package:chain_reaction/features/game/domain/usecases/place_atom.dart';
+import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
 
 void main() {
   late InitializeGameUseCase initializeGame;
   late PlaceAtomUseCase placeAtom;
   late List<Player> players;
+  late GameRules rules;
 
   setUp(() {
-    initializeGame = InitializeGameUseCase();
-    placeAtom = PlaceAtomUseCase();
+    rules = const GameRules();
+    initializeGame = InitializeGameUseCase(rules);
+    placeAtom = PlaceAtomUseCase(rules);
     players = const [
       Player(id: 'p1', name: 'Player 1', color: Colors.blue),
       Player(id: 'p2', name: 'Player 2', color: Colors.red),

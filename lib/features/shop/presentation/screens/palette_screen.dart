@@ -3,14 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/core/theme/app_theme.dart';
 import 'package:chain_reaction/widgets/pill_button.dart';
-import 'purchase_screen.dart';
-import 'package:chain_reaction/core/constants/app_strings.dart';
+
+import 'package:chain_reaction/features/shop/presentation/screens/purchase_screen.dart';
 import 'package:chain_reaction/widgets/fade_entry_widget.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
 import 'package:chain_reaction/features/shop/presentation/widgets/theme_preview_dialog.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class PaletteScreen extends ConsumerWidget {
   const PaletteScreen({super.key});
@@ -19,6 +20,7 @@ class PaletteScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(themeProvider);
     final shopState = ref.watch(shopProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       color: themeState.bg,
@@ -38,7 +40,7 @@ class PaletteScreen extends ConsumerWidget {
               onPressed: () => Navigator.of(context).pop(),
             ),
             title: Text(
-              AppStrings.themesTitle,
+              l10n.themesTitle,
               style: TextStyle(
                 color: themeState.fg,
                 fontSize: AppDimensions.fontXL,
@@ -56,7 +58,7 @@ class PaletteScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppStrings.availableThemesHeader,
+                    l10n.availableThemesHeader,
                     style: TextStyle(
                       color: themeState.subtitle,
                       fontSize: AppDimensions.fontXS,
@@ -111,7 +113,7 @@ class PaletteScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppDimensions.paddingL),
                   PillButton(
-                    text: AppStrings.getMoreThemes,
+                    text: l10n.getMoreThemes,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(

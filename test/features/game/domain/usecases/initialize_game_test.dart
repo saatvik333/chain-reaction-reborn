@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/domain/usecases/initialize_game.dart';
+import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
 
 void main() {
   late InitializeGameUseCase initializeGame;
+  late GameRules rules;
 
   setUp(() {
-    initializeGame = InitializeGameUseCase();
+    rules = const GameRules();
+    initializeGame = InitializeGameUseCase(rules);
   });
 
   const players = [

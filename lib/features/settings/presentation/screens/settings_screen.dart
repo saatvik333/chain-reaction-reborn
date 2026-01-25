@@ -4,10 +4,11 @@ import 'package:chain_reaction/features/game/presentation/providers/theme_provid
 import 'package:chain_reaction/features/game/presentation/providers/player_names_provider.dart';
 import 'package:chain_reaction/widgets/edit_player_dialog.dart';
 import 'package:chain_reaction/widgets/pill_button.dart';
-import 'package:chain_reaction/core/constants/app_strings.dart';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -17,6 +18,7 @@ class SettingsScreen extends ConsumerWidget {
     final themeState = ref.watch(themeProvider);
     final themeNotifier = ref.read(themeProvider.notifier);
     final playerNamesState = ref.watch(playerNamesProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       color: themeState.bg,
@@ -36,7 +38,7 @@ class SettingsScreen extends ConsumerWidget {
               onPressed: () => Navigator.of(context).pop(),
             ),
             title: Text(
-              AppStrings.settingsTitle,
+              l10n.settingsTitle,
               style: TextStyle(
                 color: themeState.fg,
                 fontSize: AppDimensions.fontXL,
@@ -57,27 +59,30 @@ class SettingsScreen extends ConsumerWidget {
                     _buildSectionHeader('GENERAL', themeState),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
-                      AppStrings.darkMode,
-                      AppStrings.darkModeSubtitle,
+                      l10n.darkMode,
+                      l10n.darkModeSubtitle,
                       themeState.isDarkMode,
                       (val) => themeNotifier.setDarkMode(val),
                       themeState,
+                      l10n,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
-                      AppStrings.soundEffects,
-                      AppStrings.soundEffectsSubtitle,
+                      l10n.soundEffects,
+                      l10n.soundEffectsSubtitle,
                       themeState.isSoundOn,
                       (val) => themeNotifier.setSoundOn(val),
                       themeState,
+                      l10n,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
-                      AppStrings.hapticFeedback,
-                      AppStrings.hapticFeedbackSubtitle,
+                      l10n.hapticFeedback,
+                      l10n.hapticFeedbackSubtitle,
                       themeState.isHapticOn,
                       (val) => themeNotifier.setHapticOn(val),
                       themeState,
+                      l10n,
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -87,45 +92,46 @@ class SettingsScreen extends ConsumerWidget {
                     _buildSectionHeader('VISUALS & ANIMATION', themeState),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
-                      AppStrings.atomRotation,
-                      AppStrings.atomRotationSubtitle,
+                      l10n.atomRotation,
+                      l10n.atomRotationSubtitle,
                       themeState.isAtomRotationOn,
                       (val) => themeNotifier.setAtomRotationOn(val),
                       themeState,
+                      l10n,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
-                      AppStrings.atomVibration,
-                      AppStrings.atomVibrationSubtitle,
+                      l10n.atomVibration,
+                      l10n.atomVibrationSubtitle,
                       themeState.isAtomVibrationOn,
                       (val) => themeNotifier.setAtomVibrationOn(val),
                       themeState,
+                      l10n,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
-                      AppStrings.atomBreathing,
-                      AppStrings.atomBreathingSubtitle,
+                      l10n.atomBreathing,
+                      l10n.atomBreathingSubtitle,
                       themeState.isAtomBreathingOn,
                       (val) => themeNotifier.setAtomBreathingOn(val),
                       themeState,
+                      l10n,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
-                      AppStrings.cellHighlight,
-                      AppStrings.cellHighlightSubtitle,
+                      l10n.cellHighlight,
+                      l10n.cellHighlightSubtitle,
                       themeState.isCellHighlightOn,
                       (val) => themeNotifier.setCellHighlightOn(val),
                       themeState,
+                      l10n,
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
                     Divider(color: themeState.border, thickness: 1),
                     const SizedBox(height: AppDimensions.paddingXL),
 
-                    _buildSectionHeader(
-                      AppStrings.playerSettingsHeader,
-                      themeState,
-                    ),
+                    _buildSectionHeader(l10n.playerSettingsHeader, themeState),
                     const SizedBox(height: AppDimensions.paddingL),
 
                     GridView.builder(
@@ -153,7 +159,7 @@ class SettingsScreen extends ConsumerWidget {
 
                     const SizedBox(height: AppDimensions.paddingXL),
                     PillButton(
-                      text: AppStrings.resetSettings,
+                      text: l10n.resetSettings,
                       onTap: () async {
                         // Reset player names
                         ref.read(playerNamesProvider.notifier).resetNames();
@@ -191,6 +197,7 @@ class SettingsScreen extends ConsumerWidget {
     bool value,
     Function(bool) onChanged,
     ThemeState theme,
+    AppLocalizations l10n,
   ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -220,7 +227,7 @@ class SettingsScreen extends ConsumerWidget {
           onPressed: () => onChanged(!value),
           style: TextButton.styleFrom(foregroundColor: theme.fg),
           child: Text(
-            value ? AppStrings.on : AppStrings.off,
+            value ? l10n.on : l10n.off,
             style: const TextStyle(
               fontSize: AppDimensions.fontM,
               fontWeight: FontWeight.bold,

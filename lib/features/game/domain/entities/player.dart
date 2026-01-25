@@ -28,6 +28,28 @@ class Player {
 
   bool get isAI => type == PlayerType.ai;
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'color': color.toARGB32(),
+      'type': type.index,
+      'difficulty': difficulty?.index,
+    };
+  }
+
+  factory Player.fromMap(Map<String, dynamic> map) {
+    return Player(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      color: Color(map['color'] as int),
+      type: PlayerType.values[map['type'] as int],
+      difficulty: map['difficulty'] != null
+          ? AIDifficulty.values[map['difficulty'] as int]
+          : null,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

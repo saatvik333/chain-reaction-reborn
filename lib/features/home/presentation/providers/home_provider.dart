@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/app_strings.dart';
+
 import '../../../game/domain/entities/player.dart';
 
 // Re-using the enums from HomeScreen or moving them here is better.
@@ -38,13 +38,7 @@ class HomeState {
       playerCount: 2,
       aiDifficulty: AIDifficulty.medium,
       gridSizeIndex: 2,
-      gridSizes: [
-        AppStrings.gridSizeXSmall,
-        AppStrings.gridSizeSmall,
-        AppStrings.gridSizeMedium,
-        AppStrings.gridSizeLarge,
-        AppStrings.gridSizeXLarge,
-      ],
+      gridSizes: ['x_small', 'small', 'medium', 'large', 'x_large'],
     );
   }
 

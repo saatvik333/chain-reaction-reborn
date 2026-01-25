@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/widgets/pill_button.dart';
-import 'package:chain_reaction/core/constants/app_strings.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/widgets/responsive_container.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'game_screen.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class WinnerScreen extends ConsumerWidget {
   final int winnerPlayerIndex;
@@ -36,6 +36,7 @@ class WinnerScreen extends ConsumerWidget {
       theme.isDarkMode,
     );
     final winnerName = ref.read(playerNamesProvider).getName(winnerPlayerIndex);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.bg,
@@ -50,7 +51,7 @@ class WinnerScreen extends ConsumerWidget {
               children: [
                 const Spacer(flex: 2),
                 Text(
-                  AppStrings.winner,
+                  l10n.winner,
                   style: TextStyle(
                     color: theme.fg,
                     fontSize: AppDimensions.fontGiant,
@@ -82,24 +83,16 @@ class WinnerScreen extends ConsumerWidget {
 
                 const SizedBox(height: AppDimensions.paddingXXXL),
 
-                _buildStatRow(
-                  AppStrings.totalMoves,
-                  totalMoves.toString(),
-                  theme,
-                ),
+                _buildStatRow(l10n.totalMoves, totalMoves.toString(), theme),
                 const SizedBox(height: AppDimensions.paddingL),
-                _buildStatRow(AppStrings.duration, gameDuration, theme),
+                _buildStatRow(l10n.duration, gameDuration, theme),
                 const SizedBox(height: AppDimensions.paddingL),
-                _buildStatRow(
-                  AppStrings.territory,
-                  '$territoryPercentage%',
-                  theme,
-                ),
+                _buildStatRow(l10n.territory, '$territoryPercentage%', theme),
 
                 const Spacer(flex: 3),
 
                 PillButton(
-                  text: AppStrings.playAgain,
+                  text: l10n.playAgain,
                   onTap: () {
                     // Restart the game with the same configuration
                     Navigator.of(context).pushReplacement(
@@ -116,7 +109,7 @@ class WinnerScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppDimensions.paddingM),
                 PillButton(
-                  text: AppStrings.mainMenu,
+                  text: l10n.mainMenu,
                   onTap: () {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   },

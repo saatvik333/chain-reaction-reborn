@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/constants/app_strings.dart';
+
 import '../../../../widgets/game_selector.dart';
 import '../../../../widgets/pill_button.dart';
 import '../../../game/presentation/screens/game_screen.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import '../providers/home_provider.dart';
 
 class HomeConfiguration extends ConsumerWidget {
@@ -14,6 +15,7 @@ class HomeConfiguration extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(homeProvider);
     final notifier = ref.read(homeProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
     final isVsComputer = state.selectedMode == GameMode.vsComputer;
 
     return Column(
@@ -29,22 +31,22 @@ class HomeConfiguration extends ConsumerWidget {
           )
         else
           GameSelector(
-            label: AppStrings.playersLabel,
+            label: l10n.playersLabel,
             value: state.playerCount.toString(),
             onPrevious: () => notifier.decrementPlayers(),
             onNext: () => notifier.incrementPlayers(),
           ),
         const SizedBox(height: AppDimensions.paddingXL),
         GameSelector(
-          label: AppStrings.gridSizeLabel,
-          value: state.currentGridSize,
+          label: l10n.gridSizeLabel,
+          value: _getLocalizedGridSize(context, state.currentGridSize),
           onPrevious: () => notifier.cycleGridSize(false),
           onNext: () => notifier.cycleGridSize(true),
         ),
         const SizedBox(height: AppDimensions.paddingL),
         const Spacer(),
         PillButton(
-          text: AppStrings.startGame,
+          text: l10n.startGame,
           onTap: () {
             final int players = isVsComputer ? 2 : state.playerCount;
             Navigator.of(context).push(
@@ -61,5 +63,23 @@ class HomeConfiguration extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  String _getLocalizedGridSize(BuildContext context, String key) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (key) {
+      case 'x_small':
+        return l10n.gridSizeXSmall;
+      case 'small':
+        return l10n.gridSizeSmall;
+      case 'medium':
+        return l10n.gridSizeMedium;
+      case 'large':
+        return l10n.gridSizeLarge;
+      case 'x_large':
+        return l10n.gridSizeXLarge;
+      default:
+        return key;
+    }
   }
 }

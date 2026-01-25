@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:chain_reaction/core/constants/app_strings.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 /// Intent for closing the application
 class QuitIntent extends Intent {
@@ -35,17 +35,31 @@ class DesktopIntegrationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // If context doesn't have localizations yet (top of tree), we might need a workaround.
+    // However, this wrapper is usually inside MaterialApp/WidgetsApp?
+    // Let's assume it has access or check usage.
+    // If it's ABOVE MaterialApp, it won't work.
+    // DesktopIntegrationWrapper seems to be used at root?
+    // Let's check main.dart.
+
+    // Assuming it's inside, or we use a fallback if not available?
+    // But it has navigatorKey, so it implies setup.
+    // Let's safe access via context.
+    final l10n = AppLocalizations.of(context);
+    // If l10n is null, we can't localize menu bar nicely without context.
+    // But PlatformMenuBar IS a widget.
+
     return PlatformMenuBar(
       menus: [
         PlatformMenu(
-          label: AppStrings.menuLabel,
+          label: l10n?.menuLabel ?? 'Menu',
           menus: [
             PlatformMenuItem(
-              label: AppStrings.aboutLabel,
+              label: l10n?.aboutLabel ?? 'About',
               onSelected: () {
                 showAboutDialog(
                   context: navigatorKey.currentContext!,
-                  applicationName: AppStrings.appName,
+                  applicationName: l10n?.appName ?? 'Chain Reaction',
                   applicationVersion: '1.0.0',
                   children: [
                     const SizedBox(height: 12),
@@ -55,7 +69,7 @@ class DesktopIntegrationWrapper extends StatelessWidget {
                       children: [
                         const Icon(Icons.copyright, size: 14),
                         const SizedBox(width: 4),
-                        const Text(AppStrings.appLegalese),
+                        Text(l10n?.appLegalese ?? '2026 Saatvik'),
                       ],
                     ),
                   ],
@@ -71,10 +85,10 @@ class DesktopIntegrationWrapper extends StatelessWidget {
           ],
         ),
         PlatformMenu(
-          label: AppStrings.viewLabel,
+          label: l10n?.viewLabel ?? 'View',
           menus: [
             PlatformMenuItem(
-              label: AppStrings.toggleFullscreen,
+              label: l10n?.toggleFullscreen ?? 'Toggle Fullscreen',
               shortcut: const SingleActivator(LogicalKeyboardKey.f11),
               onSelected: _toggleFullscreen,
             ),

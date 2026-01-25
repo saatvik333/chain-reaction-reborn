@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../widgets/game_selector.dart';
 import '../../../../widgets/pill_button.dart';
 import '../providers/home_provider.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class HomeModeSelection extends ConsumerWidget {
   const HomeModeSelection({super.key});
@@ -11,21 +12,22 @@ class HomeModeSelection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(homeProvider);
     final notifier = ref.read(homeProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       key: const ValueKey('ModeSelection'),
       children: [
         GameSelector(
-          label: 'GAME MODE',
+          label: l10n.gameModeLabel,
           value: state.selectedMode == GameMode.localMultiplayer
-              ? 'Local Multiplayer'
-              : 'Vs Computer',
+              ? l10n.localMultiplayer
+              : l10n.vsComputer,
           onPrevious: () => notifier.toggleMode(),
           onNext: () => notifier.toggleMode(),
         ),
         const Spacer(),
         PillButton(
-          text: 'Next',
+          text: l10n.next,
           onTap: () => notifier.setStep(HomeStep.configuration),
           width: double.infinity,
         ),

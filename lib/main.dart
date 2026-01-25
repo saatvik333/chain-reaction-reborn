@@ -7,10 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:chain_reaction/features/home/presentation/screens/home_screen.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
-import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
+import 'package:chain_reaction/features/settings/domain/providers/settings_providers.dart';
 import 'package:chain_reaction/widgets/desktop_integration_wrapper.dart';
 
 import 'package:chain_reaction/core/theme/custom_transitions.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,6 +104,15 @@ class _MainAppState extends ConsumerState<MainApp> {
       },
       title: 'Chain Reaction Reborn',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+      ],
       theme: ThemeData(
         brightness: themeState.isDarkMode ? Brightness.dark : Brightness.light,
         scaffoldBackgroundColor: themeState.bg,

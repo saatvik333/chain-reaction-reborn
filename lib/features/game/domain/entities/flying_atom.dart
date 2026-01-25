@@ -20,6 +20,28 @@ class FlyingAtom {
     required this.color,
   });
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'fromX': fromX,
+      'fromY': fromY,
+      'toX': toX,
+      'toY': toY,
+      'color': color.toARGB32(),
+    };
+  }
+
+  factory FlyingAtom.fromMap(Map<String, dynamic> map) {
+    return FlyingAtom(
+      id: map['id'] as String,
+      fromX: map['fromX'] as int,
+      fromY: map['fromY'] as int,
+      toX: map['toX'] as int,
+      toY: map['toY'] as int,
+      color: Color(map['color'] as int),
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

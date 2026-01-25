@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/game/presentation/widgets/widgets.dart';
 import 'winner_screen.dart';
 import 'package:chain_reaction/widgets/game_menu_dialog.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
-  final int playerCount;
-  final String gridSize;
+  final int? playerCount;
+  final String? gridSize;
   final AIDifficulty? aiDifficulty;
+  final bool isResuming;
 
   const GameScreen({
     super.key,
-    required this.playerCount,
-    required this.gridSize,
+    this.playerCount,
+    this.gridSize,
     this.aiDifficulty,
+    this.isResuming = false,
   });
 
   @override
@@ -32,16 +35,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     super.initState();
     // Initialize game after first frame to ensure providers are ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeGame();
+      if (!widget.isResuming) {
+        _initializeGame();
+      }
     });
   }
 
   void _initializeGame() {
+    if (widget.playerCount == null) return;
+
     final playerNames = ref.read(playerNamesProvider);
     final themeState = ref.read(themeProvider);
     final playerColors = themeState.playerColors;
 
-    final players = List.generate(widget.playerCount, (index) {
+    final players = List.generate(widget.playerCount!, (index) {
       final playerIndex = index + 1;
       // If AI mode is active (difficulty != null), Player 2 is AI
       final isAI = widget.aiDifficulty != null && index == 1;
@@ -71,16 +78,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     if (!ref.read(gameStateProvider.notifier).isValidMove(x, y)) return;
 
-    final themeState = ref.read(themeProvider);
-
-    // Trigger feedback
-    if (themeState.isHapticOn) {
-      HapticFeedback.lightImpact();
-    }
-    if (themeState.isSoundOn) {
-      SystemSound.play(SystemSoundType.click);
-    }
-
+    // Sound/Haptics now handled by Notifier
     ref.read(gameStateProvider.notifier).placeAtom(x, y);
   }
 
@@ -105,7 +103,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) {
         if (didPop) return;
-        _showMenuDialog(context);
+        _showMenuDialog(context, gameState);
       },
       child: Container(
         color: themeState.bg,
@@ -117,7 +115,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               elevation: 0,
               leading: IconButton(
                 icon: Icon(Icons.menu, color: themeState.fg),
-                onPressed: () => _showMenuDialog(context),
+                onPressed: () => _showMenuDialog(context, gameState),
               ),
               title: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -133,7 +131,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   const SizedBox(width: AppDimensions.paddingS),
                   Text(
                     currentPlayer.isAI
-                        ? 'Computer Thinking...'
+                        ? AppLocalizations.of(context)!.computerThinking
                         : currentPlayer.name,
                     style: TextStyle(
                       color: currentPlayer.color,
@@ -177,10 +175,14 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       if (next != null && next.isGameOver && next.winner != null) {
         final winnerIndex = next.players.indexOf(next.winner!) + 1;
 
-        // Navigate to winner screen
         // Use addPostFrameCallback to avoid navigation during build
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
+            // Determine difficulty from state if resuming
+            final aiPlayer = next.players.any((p) => p.isAI)
+                ? next.players.firstWhere((p) => p.isAI)
+                : null;
+
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => WinnerScreen(
@@ -188,9 +190,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   totalMoves: next.totalMoves,
                   gameDuration: next.formattedDuration,
                   territoryPercentage: next.territoryPercentage,
-                  playerCount: widget.playerCount,
-                  gridSize: widget.gridSize,
-                  aiDifficulty: widget.aiDifficulty,
+                  playerCount: next.players.length,
+                  gridSize:
+                      widget.gridSize ??
+                      AppLocalizations.of(context)!.unknownGrid,
+                  aiDifficulty: widget.aiDifficulty ?? aiPlayer?.difficulty,
                 ),
               ),
             );
@@ -200,14 +204,19 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     });
   }
 
-  void _showMenuDialog(BuildContext context) {
+  void _showMenuDialog(BuildContext context, GameState gameState) {
+    // Determine difficulty from state if resuming
+    final aiPlayer = gameState.players.any((p) => p.isAI)
+        ? gameState.players.firstWhere((p) => p.isAI)
+        : null;
+
     showFluidDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.8),
       builder: (context) => GameMenuDialog(
-        playerCount: widget.playerCount,
-        gridSize: widget.gridSize,
-        aiDifficulty: widget.aiDifficulty,
+        playerCount: gameState.players.length,
+        gridSize: widget.gridSize ?? 'medium',
+        aiDifficulty: widget.aiDifficulty ?? aiPlayer?.difficulty,
       ),
     );
   }

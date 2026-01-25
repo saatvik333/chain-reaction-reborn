@@ -2,75 +2,96 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/domain.dart';
 import '../../domain/services/ai_service.dart';
+import '../../domain/providers/game_domain_providers.dart';
+import '../../domain/providers/service_providers.dart';
+import '../../domain/providers/persistence_provider.dart';
+import '../../domain/repositories/game_repository.dart';
+
+import '../../domain/services/haptic_service.dart';
+import 'theme_provider.dart'; // For sound/haptic settings
 
 /// Notifier for managing game state.
-///
-/// Handles game initialization, atom placement, and turn progression.
 class GameNotifier extends Notifier<GameState?> {
   late final InitializeGameUseCase _initializeGame;
   late final PlaceAtomUseCase _placeAtom;
   late final NextTurnUseCase _nextTurn;
   late final CheckWinnerUseCase _checkWinner;
   late final AIService _aiService;
+  late final GameRepository _gameRepository;
+  late final HapticService _hapticService;
 
   StreamSubscription<GameState>? _explosionSubscription;
 
   @override
   GameState? build() {
-    _initializeGame = const InitializeGameUseCase();
-    _placeAtom = const PlaceAtomUseCase();
-    _nextTurn = const NextTurnUseCase();
-    _checkWinner = const CheckWinnerUseCase();
-    _aiService = AIService();
+    _initializeGame = ref.watch(initializeGameUseCaseProvider);
+    _placeAtom = ref.watch(placeAtomUseCaseProvider);
+    _nextTurn = ref.watch(nextTurnUseCaseProvider);
+    _checkWinner = ref.watch(checkWinnerUseCaseProvider);
+    _aiService = ref.watch(aiServiceProvider);
+    _gameRepository = ref.watch(gameRepositoryProvider);
+    _hapticService = ref.watch(hapticServiceProvider);
 
-    // Cleanup on dispose
     ref.onDispose(_cancelExplosions);
 
     return null;
+  }
+
+  /// Loads a saved game from persistence.
+  Future<void> loadSavedGame() async {
+    final savedState = await _gameRepository.loadGame();
+    if (savedState != null) {
+      state = savedState;
+    }
   }
 
   /// Initializes a new game with the given players and grid size.
   void initGame(List<Player> players, {String? gridSize}) {
     _cancelExplosions();
     state = _initializeGame(players, gridSize: gridSize);
+    _saveGame();
   }
 
   /// Places an atom at the given coordinates.
-  ///
-  /// Handles the stream of explosion states automatically.
   void placeAtom(int x, int y) {
     final currentState = state;
     if (currentState == null) return;
 
-    // Cancel any existing explosion subscription
     _cancelExplosions();
 
+    // Play tap feedback
+    if (ref.read(isHapticOnProvider)) _hapticService.lightImpact();
+
     GameState? lastState;
-    bool hasEmitted = false; // Track if we received any state
+    bool hasEmitted = false;
 
     _explosionSubscription = _placeAtom(currentState, x, y).listen(
       (newState) {
+        // Detect explosion start (atoms flying)
+        if (newState.flyingAtoms.isNotEmpty && 
+            (lastState?.flyingAtoms.isEmpty ?? true)) {
+           if (ref.read(isHapticOnProvider)) _hapticService.explosionPattern();
+        }
+
         lastState = newState;
         state = newState;
         hasEmitted = true;
       },
       onDone: () {
-        // After explosions complete, advance turn if game is not over
         if (lastState != null && !lastState!.isGameOver) {
           _advanceTurn();
         } else if (!hasEmitted) {
-          // Stream completed without emitting anything (e.g. invalid move)
-          // For AI, this causes a stuck state, so we force skip the turn.
           if (currentState.currentPlayer.isAI) {
             _advanceTurn();
           } else {
-            // For humans, just unblock UI so they can try again
             state = currentState.copyWith(isProcessing: false);
           }
+        } else if (lastState != null && lastState!.isGameOver) {
+           _gameRepository.clearGame();
+           if (ref.read(isHapticOnProvider)) _hapticService.heavyImpact();
         }
       },
       onError: (error) {
-        // On error, revert to original state with processing disabled
         state = currentState.copyWith(isProcessing: false);
       },
     );
@@ -121,11 +142,19 @@ class GameNotifier extends Notifier<GameState?> {
         isProcessing: false,
         endTime: DateTime.now(),
       );
+      _gameRepository.clearGame();
     } else {
+      _saveGame(); // Save state at start of new turn
       // If no winner, check if next player is AI
       if (state!.currentPlayer.isAI) {
         _processAIMove();
       }
+    }
+  }
+
+  Future<void> _saveGame() async {
+    if (state != null && !state!.isGameOver) {
+       await _gameRepository.saveGame(state!);
     }
   }
 
@@ -143,6 +172,7 @@ class GameNotifier extends Notifier<GameState?> {
   void resetGame() {
     _cancelExplosions();
     state = null;
+    _gameRepository.clearGame();
   }
 
   void _cancelExplosions() {

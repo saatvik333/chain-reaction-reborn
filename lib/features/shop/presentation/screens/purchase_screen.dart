@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/game/presentation/providers/theme_provider.dart';
 import 'package:chain_reaction/widgets/pill_button.dart';
-import 'package:chain_reaction/core/constants/app_strings.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/theme/app_theme.dart';
 import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
 import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class PurchaseScreen extends ConsumerWidget {
   const PurchaseScreen({super.key});
@@ -16,6 +16,7 @@ class PurchaseScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
     final shopState = ref.watch(shopProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     final paidThemes = AppThemes.all.where((t) => t.isPremium).toList();
 
@@ -37,7 +38,7 @@ class PurchaseScreen extends ConsumerWidget {
               onPressed: () => Navigator.of(context).pop(),
             ),
             title: Text(
-              AppStrings.shopTitle,
+              l10n.shopTitle,
               style: TextStyle(
                 color: theme.fg,
                 fontSize: AppDimensions.fontXL,
@@ -55,7 +56,7 @@ class PurchaseScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionHeader(AppStrings.themePacksHeader, theme),
+                    _buildSectionHeader(l10n.themePacksHeader, theme),
                     const SizedBox(height: AppDimensions.paddingL),
 
                     ...paidThemes.map((targetTheme) {
@@ -88,10 +89,10 @@ class PurchaseScreen extends ConsumerWidget {
                     Divider(color: theme.border, thickness: 1),
                     const SizedBox(height: AppDimensions.paddingXL),
 
-                    _buildSectionHeader(AppStrings.purchasesHeader, theme),
+                    _buildSectionHeader(l10n.purchasesHeader, theme),
                     const SizedBox(height: AppDimensions.paddingM),
                     Text(
-                      AppStrings.restorePurchasesText,
+                      l10n.restorePurchasesText,
                       style: TextStyle(
                         color: theme.subtitle,
                         fontSize: AppDimensions.fontS,
@@ -100,7 +101,7 @@ class PurchaseScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: AppDimensions.paddingXL),
                     PillButton(
-                      text: AppStrings.restorePurchasesButton,
+                      text: l10n.restorePurchasesButton,
                       onTap: () async {
                         await ref
                             .read(shopProvider.notifier)

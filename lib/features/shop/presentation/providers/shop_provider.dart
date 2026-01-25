@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/repositories/shop_repository.dart';
 import '../../data/repositories/shop_repository_impl.dart';
 
-import '../../../settings/presentation/providers/settings_providers.dart';
+import '../../../settings/domain/providers/settings_providers.dart';
 
 /// Provider for [ShopRepository].
 final shopRepositoryProvider = Provider<ShopRepository>((ref) {

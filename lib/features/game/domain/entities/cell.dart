@@ -42,6 +42,26 @@ class Cell {
   /// Whether the cell is about to explode.
   bool get isAtCriticalMass => atomCount > capacity;
 
+  Map<String, dynamic> toMap() {
+    return {
+      'x': x,
+      'y': y,
+      'capacity': capacity,
+      'atomCount': atomCount,
+      'ownerId': ownerId,
+    };
+  }
+
+  factory Cell.fromMap(Map<String, dynamic> map) {
+    return Cell(
+      x: map['x'] as int,
+      y: map['y'] as int,
+      capacity: map['capacity'] as int,
+      atomCount: map['atomCount'] as int,
+      ownerId: map['ownerId'] as String?,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
