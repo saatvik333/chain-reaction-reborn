@@ -38,8 +38,11 @@ class PlayerNamesState {
 }
 
 /// Notifier for managing player names.
-class PlayerNamesNotifier extends StateNotifier<PlayerNamesState> {
-  PlayerNamesNotifier() : super(const PlayerNamesState());
+class PlayerNamesNotifier extends Notifier<PlayerNamesState> {
+  @override
+  PlayerNamesState build() {
+    return const PlayerNamesState();
+  }
 
   /// Update the name for a specific player (1-indexed).
   void updateName(int index, String newName) {
@@ -59,9 +62,9 @@ class PlayerNamesNotifier extends StateNotifier<PlayerNamesState> {
 
 /// Main player names provider.
 final playerNamesProvider =
-    StateNotifierProvider<PlayerNamesNotifier, PlayerNamesState>((ref) {
-      return PlayerNamesNotifier();
-    });
+    NotifierProvider<PlayerNamesNotifier, PlayerNamesState>(
+      PlayerNamesNotifier.new,
+    );
 
 /// Helper provider to get a specific player's name.
 /// Usage: ref.watch(playerNameProvider(1)) for player 1's name.

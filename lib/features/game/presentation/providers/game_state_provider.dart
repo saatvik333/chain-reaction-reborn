@@ -1,28 +1,33 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/domain.dart';
+import '../../domain/services/ai_service.dart';
 
 /// Notifier for managing game state.
 ///
 /// Handles game initialization, atom placement, and turn progression.
-class GameNotifier extends StateNotifier<GameState?> {
-  final InitializeGameUseCase _initializeGame;
-  final PlaceAtomUseCase _placeAtom;
-  final NextTurnUseCase _nextTurn;
-  final CheckWinnerUseCase _checkWinner;
+class GameNotifier extends Notifier<GameState?> {
+  late final InitializeGameUseCase _initializeGame;
+  late final PlaceAtomUseCase _placeAtom;
+  late final NextTurnUseCase _nextTurn;
+  late final CheckWinnerUseCase _checkWinner;
+  late final AIService _aiService;
 
   StreamSubscription<GameState>? _explosionSubscription;
 
-  GameNotifier({
-    InitializeGameUseCase? initializeGame,
-    PlaceAtomUseCase? placeAtom,
-    NextTurnUseCase? nextTurn,
-    CheckWinnerUseCase? checkWinner,
-  }) : _initializeGame = initializeGame ?? const InitializeGameUseCase(),
-       _placeAtom = placeAtom ?? const PlaceAtomUseCase(),
-       _nextTurn = nextTurn ?? const NextTurnUseCase(),
-       _checkWinner = checkWinner ?? const CheckWinnerUseCase(),
-       super(null);
+  @override
+  GameState? build() {
+    _initializeGame = const InitializeGameUseCase();
+    _placeAtom = const PlaceAtomUseCase();
+    _nextTurn = const NextTurnUseCase();
+    _checkWinner = const CheckWinnerUseCase();
+    _aiService = AIService();
+
+    // Cleanup on dispose
+    ref.onDispose(_cancelExplosions);
+
+    return null;
+  }
 
   /// Initializes a new game with the given players and grid size.
   void initGame(List<Player> players, {String? gridSize}) {
@@ -41,16 +46,27 @@ class GameNotifier extends StateNotifier<GameState?> {
     _cancelExplosions();
 
     GameState? lastState;
+    bool hasEmitted = false; // Track if we received any state
 
     _explosionSubscription = _placeAtom(currentState, x, y).listen(
       (newState) {
         lastState = newState;
         state = newState;
+        hasEmitted = true;
       },
       onDone: () {
         // After explosions complete, advance turn if game is not over
         if (lastState != null && !lastState!.isGameOver) {
           _advanceTurn();
+        } else if (!hasEmitted) {
+          // Stream completed without emitting anything (e.g. invalid move)
+          // For AI, this causes a stuck state, so we force skip the turn.
+          if (currentState.currentPlayer.isAI) {
+            _advanceTurn();
+          } else {
+            // For humans, just unblock UI so they can try again
+            state = currentState.copyWith(isProcessing: false);
+          }
         }
       },
       onError: (error) {
@@ -58,6 +74,35 @@ class GameNotifier extends StateNotifier<GameState?> {
         state = currentState.copyWith(isProcessing: false);
       },
     );
+  }
+
+  /// Trigger AI move if it's AI turn
+  Future<void> _processAIMove() async {
+    final currentState = state;
+    if (currentState == null || currentState.isGameOver) return;
+
+    final currentPlayer = currentState.currentPlayer;
+    if (!currentPlayer.isAI) return;
+
+    // Set processing to true to block UI
+    state = currentState.copyWith(isProcessing: true);
+
+    try {
+      final move = await _aiService.getMove(currentState, currentPlayer);
+
+      // Validation check to prevent stuck state
+      // We pass checkProcessing: false because isProcessing is currently true (we set it above)
+      if (isValidMove(move.x, move.y, checkProcessing: false)) {
+        placeAtom(move.x, move.y);
+      } else {
+        // Fallback: This implies AI returned invalid move.
+        // Force turn change to prevent stuck state
+        _advanceTurn();
+      }
+    } catch (e) {
+      // On error, skip AI turn to prevent stuck state
+      _advanceTurn();
+    }
   }
 
   /// Advances to the next player's turn.
@@ -76,12 +121,22 @@ class GameNotifier extends StateNotifier<GameState?> {
         isProcessing: false,
         endTime: DateTime.now(),
       );
+    } else {
+      // If no winner, check if next player is AI
+      if (state!.currentPlayer.isAI) {
+        _processAIMove();
+      }
     }
   }
 
   /// Checks if a move is valid.
-  bool isValidMove(int x, int y) {
-    return MoveValidator.isValidMove(state!, x, y);
+  bool isValidMove(int x, int y, {bool checkProcessing = true}) {
+    return MoveValidator.isValidMove(
+      state!,
+      x,
+      y,
+      checkProcessing: checkProcessing,
+    );
   }
 
   /// Resets the game to null state.
@@ -94,20 +149,12 @@ class GameNotifier extends StateNotifier<GameState?> {
     _explosionSubscription?.cancel();
     _explosionSubscription = null;
   }
-
-  @override
-  void dispose() {
-    _cancelExplosions();
-    super.dispose();
-  }
 }
 
 /// Main game state provider.
-final gameStateProvider = StateNotifierProvider<GameNotifier, GameState?>((
-  ref,
-) {
-  return GameNotifier();
-});
+final gameStateProvider = NotifierProvider<GameNotifier, GameState?>(
+  GameNotifier.new,
+);
 
 // Derived providers for selective rebuilds
 

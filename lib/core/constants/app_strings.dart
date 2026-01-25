@@ -1,6 +1,6 @@
 class AppStrings {
   // Common
-  static const String appName = 'Chain Reaction';
+  static const String appName = 'Chain Reaction Reborn';
   static const String ok = 'OK';
   static const String cancel = 'Cancel';
   static const String save = 'Save';
@@ -104,7 +104,6 @@ class AppStrings {
       'Critical Mass: Corner = 2, Edge = 3, Center = 4. The winner is the last player with orbs on the board.';
 
   // Values
-  static const String defaultVersion = '2.1.0';
   static const String developerName = 'saatvik333';
   static const String supportEmail = 'saatvik333sharma@gmail.com';
 }

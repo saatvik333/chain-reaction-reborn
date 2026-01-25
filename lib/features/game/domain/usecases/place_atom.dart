@@ -41,7 +41,9 @@ class PlaceAtomUseCase {
 
   /// Checks if a move is valid for the current player.
   bool _isValidMove(GameState state, int x, int y) {
-    if (state.isGameOver || state.isProcessing) return false;
+    if (state.isGameOver) return false;
+    // We don't check isProcessing here because usage from AI might invoke this
+    // while isProcessing is true (but logic has ensured safety).
     if (y < 0 || y >= state.rows || x < 0 || x >= state.cols) return false;
     final cell = state.grid[y][x];
     return cell.ownerId == null || cell.ownerId == state.currentPlayer.id;
@@ -78,37 +80,13 @@ class PlaceAtomUseCase {
       }
 
       // 2. Identify Cells Exploding in this Wave
-      // We process ALL currently critical cells in one wave for better visual sync
-      // But adhering to the queue logic: let's process one cell at a time or
-      // maybe batch them? Standard Chain Reaction often cascades.
-      // Let's stick to the queue but process the "flight" for the popped cell.
-
       final explodingCell = explosionQueue.removeFirst();
       final cx = explodingCell.x;
       final cy = explodingCell.y;
 
-      // Re-check capacity in case it changed (already exploded in this wave?)
-      // Actually, if it was added to queue, it was critical.
-      // But if multiple explosions target this cell, it might have changed.
-      // We should check current grid state.
       if (!grid[cy][cx].isAtCriticalMass) continue;
 
       // 3. Prepare Explosion Data
-      // final criticalMass = grid[cy][cx].capacity + 1; // e.g. cap 3 (explodes at 4) -> remove 4
-      // Standard rules: Corner (cap 1) explodes at 2. removes 2? No.
-      // Corner splits into 2 neighbors. Edge into 3. Center into 4.
-      // So we remove exactly 'neighbors.length' atoms?
-      // Yes, in standard chain reaction, the exploding cell loses 'neighbors.length' atoms.
-      // Which equals 'capacity'.
-      // Wait. Corner (cap 1). Neighbors 2.
-      // Explodes when atomCount > capacity (i.e. 2).
-      // Removes 2. Remaining 0.
-      // Edge (cap 2). Neighbors 3. Explodes at 3? No, explodes when > capacity.
-      // Edge (cap 2) means "Holds 2 max". Explodes at 3.
-      // Removes 3 atoms.
-      // Center (cap 3) means "Holds 3 max". Explodes at 4. Removes 4.
-
-      // So we remove 'neighbors.length' atoms.
       final neighbors = _getNeighbors(cx, cy, rows, cols);
       final atomsToRemove = neighbors.length; // 2, 3, or 4
 
@@ -135,13 +113,12 @@ class PlaceAtomUseCase {
       }
 
       // Yield State: Source empty, atoms flying
-      yield state.copyWith(
-        grid: _copyGrid(grid),
-        flyingAtoms: flyingAtoms,
-      );
+      yield state.copyWith(grid: _copyGrid(grid), flyingAtoms: flyingAtoms);
 
       // Wait for flight
-      await Future.delayed(const Duration(milliseconds: 250)); // Flight duration
+      await Future.delayed(
+        const Duration(milliseconds: 250),
+      ); // Flight duration
 
       // 5. Phase 2: Land Atoms
       for (final n in neighbors) {
@@ -161,9 +138,6 @@ class PlaceAtomUseCase {
         grid: _copyGrid(grid),
         flyingAtoms: [], // Clear flying atoms
       );
-      
-      // Small delay between cascades? Or just proceed?
-      // Original game is quite fast. The flight delay handles the pacing.
     }
   }
 
@@ -196,8 +170,6 @@ class PlaceAtomUseCase {
         }
       }
     }
-    // Need > 1 atoms total to prevent "win" on empty board start or mid-calc
-    // Actually, simple check: if only 1 owner remains AND they have atoms.
     return owners.length == 1 && totalAtoms > 1;
   }
 
@@ -220,8 +192,14 @@ class MoveValidator {
   const MoveValidator._();
 
   /// Checks if a move is valid for the current player.
-  static bool isValidMove(GameState state, int x, int y) {
-    if (state.isGameOver || state.isProcessing) return false;
+  static bool isValidMove(
+    GameState state,
+    int x,
+    int y, {
+    bool checkProcessing = true,
+  }) {
+    if (state.isGameOver) return false;
+    if (checkProcessing && state.isProcessing) return false;
     if (y < 0 || y >= state.rows || x < 0 || x >= state.cols) return false;
     final cell = state.grid[y][x];
     return cell.ownerId == null || cell.ownerId == state.currentPlayer.id;

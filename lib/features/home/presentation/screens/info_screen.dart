@@ -4,8 +4,7 @@ import 'package:chain_reaction/features/game/presentation/providers/providers.da
 import 'package:chain_reaction/features/game/presentation/providers/theme_provider.dart';
 import 'package:chain_reaction/widgets/pill_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:chain_reaction/core/constants/app_strings.dart';
-import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/constants/constants.dart';
 import 'package:chain_reaction/widgets/responsive_container.dart';
 
 class InfoScreen extends ConsumerWidget {
@@ -66,7 +65,7 @@ class InfoScreen extends ConsumerWidget {
                   const SizedBox(height: AppDimensions.paddingM),
                   _buildInfoRow(
                     AppStrings.versionLabel,
-                    AppStrings.defaultVersion,
+                    AppConstants.appVersion,
                     theme,
                   ),
                   const SizedBox(height: AppDimensions.paddingM),
@@ -74,12 +73,30 @@ class InfoScreen extends ConsumerWidget {
                     AppStrings.developerLabel,
                     AppStrings.developerName,
                     theme,
+                    onTap: () async {
+                      final Uri url = Uri.parse('https://saatvik.xyz');
+                      try {
+                        await launchUrl(url);
+                      } catch (e) {
+                        // Fail silently
+                      }
+                    },
                   ),
                   const SizedBox(height: AppDimensions.paddingM),
                   _buildActionRow(
                     AppStrings.privacyPolicy,
                     Icons.arrow_outward,
-                    () {},
+                    () async {
+                      // Placeholder privacy policy Gist - Replace with your own hosted URL before release
+                      final Uri url = Uri.parse(
+                        'https://gist.github.com/saatvik333/placeholder-privacy-policy',
+                      );
+                      try {
+                        await launchUrl(url);
+                      } catch (e) {
+                        // Fail silently or show toast
+                      }
+                    },
                     theme,
                   ),
 
@@ -162,26 +179,48 @@ class InfoScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, ThemeState theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: theme.subtitle,
-            fontSize: AppDimensions.fontM,
+  Widget _buildInfoRow(
+    String label,
+    String value,
+    ThemeState theme, {
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: theme.subtitle,
+              fontSize: AppDimensions.fontM,
+            ),
           ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            color: theme.fg,
-            fontSize: AppDimensions.fontM,
-            fontWeight: FontWeight.w600,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  color: theme.fg,
+                  fontSize: AppDimensions.fontM,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (onTap != null) ...[
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_outward,
+                  color: theme.subtitle,
+                  size: AppDimensions.iconS,
+                ),
+              ],
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -6,15 +6,18 @@ import 'pill_button.dart';
 import 'package:chain_reaction/features/game/presentation/screens/game_screen.dart';
 import '../core/constants/app_strings.dart';
 import '../core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 
 class GameMenuDialog extends ConsumerWidget {
   final int playerCount;
   final String gridSize;
+  final AIDifficulty? aiDifficulty;
 
   const GameMenuDialog({
     super.key,
     required this.playerCount,
     required this.gridSize,
+    this.aiDifficulty,
   });
 
   @override
@@ -49,8 +52,11 @@ class GameMenuDialog extends ConsumerWidget {
               navigator.pop();
               navigator.pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) =>
-                      GameScreen(playerCount: playerCount, gridSize: gridSize),
+                  builder: (context) => GameScreen(
+                    playerCount: playerCount,
+                    gridSize: gridSize,
+                    aiDifficulty: aiDifficulty,
+                  ),
                 ),
               );
             },

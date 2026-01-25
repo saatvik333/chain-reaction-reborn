@@ -5,12 +5,17 @@ import 'package:chain_reaction/widgets/pill_button.dart';
 import 'package:chain_reaction/core/constants/app_strings.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'game_screen.dart';
 
 class WinnerScreen extends ConsumerWidget {
   final int winnerPlayerIndex;
   final int totalMoves;
   final String gameDuration;
   final int territoryPercentage;
+  final int playerCount;
+  final String gridSize;
+  final AIDifficulty? aiDifficulty;
 
   const WinnerScreen({
     super.key,
@@ -18,6 +23,9 @@ class WinnerScreen extends ConsumerWidget {
     this.totalMoves = 0,
     this.gameDuration = '00:00',
     this.territoryPercentage = 100,
+    required this.playerCount,
+    required this.gridSize,
+    this.aiDifficulty,
   });
 
   @override
@@ -93,7 +101,16 @@ class WinnerScreen extends ConsumerWidget {
                 PillButton(
                   text: AppStrings.playAgain,
                   onTap: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    // Restart the game with the same configuration
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => GameScreen(
+                          playerCount: playerCount,
+                          gridSize: gridSize,
+                          aiDifficulty: aiDifficulty,
+                        ),
+                      ),
+                    );
                   },
                   width: double.infinity,
                 ),

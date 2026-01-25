@@ -36,7 +36,7 @@ Future<T?> showFluidDialog<T>({
       return FadeTransition(
         opacity: curvedAnimation,
         child: ScaleTransition(
-          scale: Tween<double>(begin: 0.92, end: 1.0).animate(curvedAnimation),
+          scale: Tween<double>(begin: 0.95, end: 1.0).animate(curvedAnimation),
           child: child,
         ),
       );

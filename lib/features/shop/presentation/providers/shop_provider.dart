@@ -21,11 +21,14 @@ class ShopState {
 }
 
 /// Notifier for managing shop state.
-class ShopNotifier extends StateNotifier<ShopState> {
-  final ShopRepository _repository;
+class ShopNotifier extends Notifier<ShopState> {
+  late final ShopRepository _repository;
 
-  ShopNotifier(this._repository) : super(ShopState()) {
+  @override
+  ShopState build() {
+    _repository = ref.watch(shopRepositoryProvider);
     _loadPurchases();
+    return ShopState();
   }
 
   Future<void> _loadPurchases() async {
@@ -46,7 +49,6 @@ class ShopNotifier extends StateNotifier<ShopState> {
 }
 
 /// Main shop provider.
-final shopProvider = StateNotifierProvider<ShopNotifier, ShopState>((ref) {
-  final repo = ref.watch(shopRepositoryProvider);
-  return ShopNotifier(repo);
-});
+final shopProvider = NotifierProvider<ShopNotifier, ShopState>(
+  ShopNotifier.new,
+);

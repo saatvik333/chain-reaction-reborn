@@ -12,34 +12,40 @@ class FluidFadePageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    return _FluidFadeTransition(routeAnimation: animation, child: child);
-  }
-}
-
-class _FluidFadeTransition extends StatelessWidget {
-  final Animation<double> routeAnimation;
-  final Widget child;
-
-  const _FluidFadeTransition({
-    required this.routeAnimation,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Use a curve that feels responsive but smooth
+    // Use a curve that matches the FluidDialog for consistency (magnetic feel)
     final curve = CurvedAnimation(
-      parent: routeAnimation,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
+      parent: animation,
+      curve: Curves.fastOutSlowIn, 
+      reverseCurve: Curves.easeIn,
     );
 
-    return FadeTransition(
-      opacity: curve,
-      child: ScaleTransition(
-        scale: Tween<double>(begin: 0.95, end: 1.0).animate(curve),
-        child: child,
-      ),
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        // Show opaque background ONLY when pushing (forward).
+        // When popping (reverse), we want transparency to see the underlying page.
+        final showBackground = animation.status == AnimationStatus.forward ||
+            animation.status == AnimationStatus.completed;
+
+        return Stack(
+          fit: StackFit.passthrough,
+          children: [
+            if (showBackground)
+              Container(color: Theme.of(context).scaffoldBackgroundColor),
+            FadeTransition(
+              opacity: curve,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.95, end: 1.0).animate(curve),
+                child: child!,
+              ),
+            ),
+          ],
+        );
+      },
+      child: child,
     );
   }
 }
+
+// Removed the private _FluidFadeTransition class as it's no longer needed 
+// with the simplified logic above.

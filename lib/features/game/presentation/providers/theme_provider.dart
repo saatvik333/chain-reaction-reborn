@@ -66,12 +66,14 @@ class ThemeState {
 }
 
 /// Notifier for managing theme state.
-class ThemeNotifier extends StateNotifier<ThemeState> {
-  final SettingsRepository _settingsRepository;
+class ThemeNotifier extends Notifier<ThemeState> {
+  late final SettingsRepository _settingsRepository;
 
-  ThemeNotifier(this._settingsRepository)
-    : super(const ThemeState(currentTheme: AppThemes.defaultTheme)) {
+  @override
+  ThemeState build() {
+    _settingsRepository = ref.watch(settingsRepositoryProvider);
     _loadSettings();
+    return const ThemeState(currentTheme: AppThemes.defaultTheme);
   }
 
   Future<void> _loadSettings() async {
@@ -201,10 +203,9 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
 }
 
 /// Main theme provider.
-final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeState>((ref) {
-  final settingsRepo = ref.watch(settingsRepositoryProvider);
-  return ThemeNotifier(settingsRepo);
-});
+final themeProvider = NotifierProvider<ThemeNotifier, ThemeState>(
+  ThemeNotifier.new,
+);
 
 // Derived providers for selective rebuilds
 

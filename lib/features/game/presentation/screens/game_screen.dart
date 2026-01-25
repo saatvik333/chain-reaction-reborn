@@ -13,11 +13,13 @@ import 'package:chain_reaction/widgets/responsive_container.dart';
 class GameScreen extends ConsumerStatefulWidget {
   final int playerCount;
   final String gridSize;
+  final AIDifficulty? aiDifficulty;
 
   const GameScreen({
     super.key,
     required this.playerCount,
     required this.gridSize,
+    this.aiDifficulty,
   });
 
   @override
@@ -41,10 +43,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     final players = List.generate(widget.playerCount, (index) {
       final playerIndex = index + 1;
+      // If AI mode is active (difficulty != null), Player 2 is AI
+      final isAI = widget.aiDifficulty != null && index == 1;
+
       return Player(
         id: 'player_$playerIndex',
-        name: playerNames.getName(playerIndex),
+        name: isAI ? 'Computer' : playerNames.getName(playerIndex),
         color: playerColors[index % playerColors.length],
+        type: isAI ? PlayerType.ai : PlayerType.human,
+        difficulty: isAI ? widget.aiDifficulty : null,
       );
     });
 
@@ -54,6 +61,14 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _handleCellTap(int x, int y) {
+    final gameState = ref.read(gameStateProvider);
+    // Block input if game is processing (AI is thinking or chain reaction happening)
+    if (gameState == null ||
+        gameState.isProcessing ||
+        gameState.currentPlayer.isAI) {
+      return;
+    }
+
     if (!ref.read(gameStateProvider.notifier).isValidMove(x, y)) return;
 
     final themeState = ref.read(themeProvider);
@@ -117,7 +132,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    currentPlayer.name,
+                    currentPlayer.isAI
+                        ? 'Computer Thinking...'
+                        : currentPlayer.name,
                     style: TextStyle(
                       color: currentPlayer.color,
                       fontSize: AppDimensions.fontL,
@@ -171,6 +188,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   totalMoves: next.totalMoves,
                   gameDuration: next.formattedDuration,
                   territoryPercentage: next.territoryPercentage,
+                  playerCount: widget.playerCount,
+                  gridSize: widget.gridSize,
+                  aiDifficulty: widget.aiDifficulty,
                 ),
               ),
             );
@@ -187,6 +207,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       builder: (context) => GameMenuDialog(
         playerCount: widget.playerCount,
         gridSize: widget.gridSize,
+        aiDifficulty: widget.aiDifficulty,
       ),
     );
   }
