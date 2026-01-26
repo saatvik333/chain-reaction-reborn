@@ -609,6 +609,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next'**
   String get next;
+
+  /// No description provided for @supportDevelopmentHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'SUPPORT DEVELOPMENT'**
+  String get supportDevelopmentHeader;
 }
 
 class _AppLocalizationsDelegate

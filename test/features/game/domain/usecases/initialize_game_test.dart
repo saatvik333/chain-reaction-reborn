@@ -22,7 +22,7 @@ void main() {
     test(
       'should initialize game with correct grid dimensions for Small size',
       () {
-        final state = initializeGame(players, gridSize: 'Small');
+        final state = initializeGame(players, gridSize: 'small');
 
         expect(state.rows, 8);
         expect(state.cols, 5);
@@ -51,7 +51,7 @@ void main() {
     );
 
     test('should return all cells empty initially', () {
-      final state = initializeGame(players, gridSize: 'Small');
+      final state = initializeGame(players, gridSize: 'small');
 
       for (var row in state.grid) {
         for (var cell in row) {

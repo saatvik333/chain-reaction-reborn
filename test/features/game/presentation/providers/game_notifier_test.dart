@@ -4,6 +4,8 @@ import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/presentation/providers/game_providers.dart';
 import 'package:chain_reaction/features/game/presentation/providers/game_state_provider.dart';
 import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
+import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
+import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -31,15 +33,83 @@ class FakeGameRepository implements GameRepository {
   }
 }
 
+class FakeSettingsRepository implements SettingsRepository {
+  bool? darkMode;
+  bool? hapticOn;
+  String? themeName;
+  bool? atomRotationOn;
+  bool? atomVibrationOn;
+  bool? cellHighlightOn;
+  bool? atomBreathingOn;
+
+  @override
+  Future<void> clearSettings() async {
+    darkMode = null;
+    hapticOn = null;
+    themeName = null;
+    atomRotationOn = null;
+    atomVibrationOn = null;
+    cellHighlightOn = null;
+    atomBreathingOn = null;
+  }
+
+  @override
+  Future<bool?> getAtomBreathingOn() async => atomBreathingOn;
+
+  @override
+  Future<bool?> getAtomRotationOn() async => atomRotationOn;
+
+  @override
+  Future<bool?> getAtomVibrationOn() async => atomVibrationOn;
+
+  @override
+  Future<bool?> getCellHighlightOn() async => cellHighlightOn;
+
+  @override
+  Future<bool?> getDarkMode() async => darkMode;
+
+  @override
+  Future<bool?> getHapticOn() async => hapticOn;
+
+  @override
+  Future<String?> getThemeName() async => themeName;
+
+  @override
+  Future<void> setAtomBreathingOn(bool value) async => atomBreathingOn = value;
+
+  @override
+  Future<void> setAtomRotationOn(bool value) async => atomRotationOn = value;
+
+  @override
+  Future<void> setAtomVibrationOn(bool value) async => atomVibrationOn = value;
+
+  @override
+  Future<void> setCellHighlightOn(bool value) async => cellHighlightOn = value;
+
+  @override
+  Future<void> setDarkMode(bool value) async => darkMode = value;
+
+  @override
+  Future<void> setHapticOn(bool value) async => hapticOn = value;
+
+  @override
+  Future<void> setThemeName(String value) async => themeName = value;
+}
+
 void main() {
   group('GameNotifier Integration Test', () {
     late ProviderContainer container;
     late FakeGameRepository fakeRepository;
+    late FakeSettingsRepository fakeSettingsRepository;
 
     setUp(() {
       fakeRepository = FakeGameRepository();
+      fakeSettingsRepository = FakeSettingsRepository();
       container = ProviderContainer(
-        overrides: [gameRepositoryProvider.overrideWithValue(fakeRepository)],
+        overrides: [
+          gameRepositoryProvider.overrideWithValue(fakeRepository),
+          settingsRepositoryProvider.overrideWithValue(fakeSettingsRepository),
+        ],
       );
     });
 
@@ -59,7 +129,7 @@ void main() {
         const Player(id: '2', name: 'P2', color: Color(0xFFFFFFFF)),
       ];
 
-      notifier.initGame(players, gridSize: 'Small');
+      notifier.initGame(players, gridSize: 'small');
 
       final state = container.read(gameStateProvider);
       expect(state, isNotNull);

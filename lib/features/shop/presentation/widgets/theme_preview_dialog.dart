@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../game/presentation/providers/theme_provider.dart';
 import '../providers/shop_provider.dart';
 import '../../../../widgets/pill_button.dart';
 
@@ -13,19 +12,21 @@ class ThemePreviewDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Use the preview theme for the dialog content, but current theme for the container
-    // Or we can style the dialog strictly with the preview theme?
-    // Let's style the preview container with the preview theme.
+    final theme = themeToPreview;
+    final shopState = ref.watch(shopProvider);
+    final product = shopState.getProduct(theme.name);
 
-    final isDark =
-        true; // Preview in dark mode usually looks better or use current setting?
-    // Let's default to dark for consistency in preview.
+    // Determine price to show: Product price, or theme placeholder, or error
+    final price = product?.price ?? theme.price ?? 'N/A';
+    final canBuy = product != null;
+
+    final isDark = true; // Preview in default dark mode
 
     return Dialog(
-      backgroundColor: themeToPreview.bg(isDark),
+      backgroundColor: theme.bg(isDark),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        side: BorderSide(color: themeToPreview.border(isDark), width: 2),
+        side: BorderSide(color: theme.border(isDark), width: 2),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -33,9 +34,9 @@ class ThemePreviewDialog extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '${themeToPreview.name} Theme',
+              '${theme.name} Theme',
               style: TextStyle(
-                color: themeToPreview.fg(isDark),
+                color: theme.fg(isDark),
                 fontSize: AppDimensions.fontL,
                 fontWeight: FontWeight.bold,
               ),
@@ -46,14 +47,14 @@ class ThemePreviewDialog extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingS),
               decoration: BoxDecoration(
-                color: themeToPreview.surface(isDark),
+                color: theme.surface(isDark),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusM),
               ),
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 alignment: WrapAlignment.center,
-                children: themeToPreview
+                children: theme
                     .playerColors(isDark)
                     .map(
                       (c) => Container(
@@ -79,9 +80,9 @@ class ThemePreviewDialog extends ConsumerWidget {
             const SizedBox(height: AppDimensions.paddingL),
 
             Text(
-              'Unlock this theme for ${themeToPreview.price}',
+              'Unlock this theme for $price',
               style: TextStyle(
-                color: themeToPreview.subtitle(isDark),
+                color: theme.subtitle(isDark),
                 fontSize: AppDimensions.fontS,
               ),
               textAlign: TextAlign.center,
@@ -89,34 +90,33 @@ class ThemePreviewDialog extends ConsumerWidget {
 
             const SizedBox(height: AppDimensions.paddingL),
 
+            if (shopState.isLoading)
+              const Padding(
+                padding: EdgeInsets.only(bottom: AppDimensions.paddingM),
+                child: CircularProgressIndicator(),
+              ),
+
             Row(
               children: [
                 Expanded(
                   child: PillButton(
                     text: 'Cancel',
                     onTap: () => Navigator.of(context).pop(),
-                    // Style manually to look "secondary" in this theme
                   ),
                 ),
                 const SizedBox(width: AppDimensions.paddingM),
                 Expanded(
                   child: PillButton(
                     text: 'Buy',
-                    onTap: () async {
-                      // 1. Purchase
-                      await ref
-                          .read(shopProvider.notifier)
-                          .purchaseTheme(themeToPreview.name);
-                      // 2. Equip
-                      ref.read(themeProvider.notifier).setTheme(themeToPreview);
-                      // 3. Close
-                      if (context.mounted) Navigator.of(context).pop();
-                    },
-                    // We can add a "primary" style to PillButton later,
-                    // for now it uses the global theme provider which might be weird
-                    // if we are inside a dialog styled with PREVIEW theme.
-                    // But PillButton uses ref.watch(themeProvider), which is the CURRENT theme.
-                    // This is acceptable.
+                    // Disable if loading or product not found
+                    onTap: (shopState.isLoading || !canBuy)
+                        ? null
+                        : () {
+                            ref
+                                .read(shopProvider.notifier)
+                                .purchaseTheme(product);
+                            if (context.mounted) Navigator.of(context).pop();
+                          },
                   ),
                 ),
               ],

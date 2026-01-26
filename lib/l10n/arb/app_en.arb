@@ -85,5 +85,6 @@
   "gameModeLabel": "GAME MODE",
   "localMultiplayer": "Local Multiplayer",
   "vsComputer": "Vs Computer",
-  "next": "Next"
+  "next": "Next",
+  "supportDevelopmentHeader": "SUPPORT DEVELOPMENT"
 }

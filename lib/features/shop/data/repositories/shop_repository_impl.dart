@@ -1,20 +1,41 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/repositories/shop_repository.dart';
+import '../services/purchase_state_manager.dart';
 
-/// Implementation of [ShopRepository] using [SharedPreferences].
+/// Implementation of [ShopRepository] using [SharedPreferences] and purchase state management.
 class ShopRepositoryImpl implements ShopRepository {
   final SharedPreferences _prefs;
+  late final PurchaseStateManager _stateManager;
   static const String _keyPurchasedThemes = 'purchased_themes';
 
-  ShopRepositoryImpl(this._prefs);
+  ShopRepositoryImpl(this._prefs) {
+    _stateManager = PurchaseStateManager();
+  }
 
   @override
   Future<List<String>> getPurchasedThemeIds() async {
-    return _prefs.getStringList(_keyPurchasedThemes) ?? [];
+    // Get valid purchased themes from the purchase state manager
+    final allPurchases = await _stateManager.getAllPurchases();
+    final validThemeIds = <String>{};
+
+    for (final purchase in allPurchases.values) {
+      // Check if this is a theme purchase and it's valid
+      if (purchase.isValid && _isThemeProduct(purchase.productId)) {
+        validThemeIds.add(purchase.productId);
+      }
+    }
+
+    // Also check legacy purchases for backward compatibility
+    final legacyPurchases = _prefs.getStringList(_keyPurchasedThemes) ?? [];
+    validThemeIds.addAll(legacyPurchases);
+
+    return validThemeIds.toList();
   }
 
   @override
   Future<void> purchaseTheme(String themeId) async {
+    // This method is now deprecated in favor of purchase state management
+    // Keep for backward compatibility but also update state manager
     final purchased = await getPurchasedThemeIds();
     if (!purchased.contains(themeId)) {
       final updated = [...purchased, themeId];
@@ -24,6 +45,15 @@ class ShopRepositoryImpl implements ShopRepository {
 
   @override
   Future<bool> isThemeOwned(String themeId) async {
+    // Check if theme is owned through valid purchase
+    final validPurchases = await _stateManager.getValidPurchasesByProduct(
+      themeId,
+    );
+    if (validPurchases.isNotEmpty) {
+      return true;
+    }
+
+    // Check legacy purchases for backward compatibility
     final purchased = await getPurchasedThemeIds();
     return purchased.contains(themeId);
   }
@@ -31,5 +61,45 @@ class ShopRepositoryImpl implements ShopRepository {
   @override
   Future<void> clearPurchases() async {
     await _prefs.remove(_keyPurchasedThemes);
+    await _stateManager.clearAllPurchases();
+  }
+
+  /// Check if a product ID is a theme product
+  bool _isThemeProduct(String productId) {
+    const themeIds = {'theme_neon', 'theme_dark', 'theme_retro'};
+    return themeIds.contains(productId);
+  }
+
+  /// Sync legacy purchases with new purchase state system
+  Future<void> syncLegacyPurchases() async {
+    final legacyPurchases = _prefs.getStringList(_keyPurchasedThemes) ?? [];
+
+    for (final themeId in legacyPurchases) {
+      // Check if theme is already in the new system
+      final validPurchases = await _stateManager.getValidPurchasesByProduct(
+        themeId,
+      );
+      if (validPurchases.isEmpty) {
+        // Create a purchase record for legacy theme
+        final purchaseInfo = PurchaseInfo(
+          productId: themeId,
+          transactionId:
+              'legacy_${themeId}_${DateTime.now().millisecondsSinceEpoch}',
+          state: PurchaseState.validated,
+          purchaseDate: DateTime.now(),
+          validationDate: DateTime.now(),
+          metadata: {'source': 'legacy_migration'},
+        );
+        await _stateManager.savePurchase(purchaseInfo);
+      }
+    }
+
+    // Clean up legacy data after successful migration
+    await _prefs.remove(_keyPurchasedThemes);
+  }
+
+  /// Clean up invalid purchases
+  Future<void> cleanupInvalidPurchases() async {
+    await _stateManager.cleanupInvalidPurchases();
   }
 }

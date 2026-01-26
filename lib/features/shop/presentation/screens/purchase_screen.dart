@@ -8,6 +8,7 @@ import 'package:chain_reaction/core/theme/app_theme.dart';
 import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
 import 'package:chain_reaction/widgets/responsive_container.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PurchaseScreen extends ConsumerWidget {
   const PurchaseScreen({super.key});
@@ -47,83 +48,155 @@ class PurchaseScreen extends ConsumerWidget {
             ),
           ),
           body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                  vertical: AppDimensions.paddingM,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSectionHeader(l10n.themePacksHeader, theme),
-                    const SizedBox(height: AppDimensions.paddingL),
+            child: shopState.isLoading
+                ? Center(child: CircularProgressIndicator(color: theme.fg))
+                : SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (shopState.errorMessage != null)
+                          Padding(
+                            padding: const EdgeInsets.all(
+                              AppDimensions.paddingL,
+                            ),
+                            child: Text(
+                              shopState.errorMessage!,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ),
 
-                    ...paidThemes.map((targetTheme) {
-                      final isOwned = shopState.isOwned(targetTheme.name);
-                      return Column(
-                        children: [
-                          _buildShopItem(
+                        const SizedBox(height: AppDimensions.paddingM),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
+                          ),
+                          child: _buildSectionHeader(
+                            l10n.themePacksHeader,
+                            theme,
+                          ),
+                        ),
+                        const SizedBox(height: AppDimensions.paddingM),
+
+                        ...paidThemes.map((targetTheme) {
+                          final isOwned = shopState.isOwned(targetTheme.name);
+                          final product = shopState.getProduct(
+                            targetTheme.name,
+                          );
+                          final price = isOwned
+                              ? 'OWNED'
+                              : (product?.price ??
+                                    (targetTheme.price ?? 'N/A'));
+
+                          final canBuy = !isOwned && product != null;
+
+                          return _buildShopItem(
                             title: '${targetTheme.name} Theme',
                             subtitle: isOwned
                                 ? 'Currently owned'
                                 : 'Unlock this theme',
-                            price: isOwned
-                                ? 'OWNED'
-                                : (targetTheme.price ?? '\$0.99'),
-                            onTap: isOwned
-                                ? null
-                                : () async {
-                                    await ref
+                            price: price,
+                            onTap: canBuy
+                                ? () {
+                                    ref
                                         .read(shopProvider.notifier)
-                                        .purchaseTheme(targetTheme.name);
-                                  },
+                                        .purchaseTheme(product);
+                                  }
+                                : null,
                             theme: theme,
-                          ),
-                          const SizedBox(height: AppDimensions.paddingL),
-                        ],
-                      );
-                    }),
+                          );
+                        }),
 
-                    const SizedBox(height: AppDimensions.paddingS),
-                    Divider(color: theme.border, thickness: 1),
-                    const SizedBox(height: AppDimensions.paddingXL),
-
-                    _buildSectionHeader(l10n.purchasesHeader, theme),
-                    const SizedBox(height: AppDimensions.paddingM),
-                    Text(
-                      l10n.restorePurchasesText,
-                      style: TextStyle(
-                        color: theme.subtitle,
-                        fontSize: AppDimensions.fontS,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: AppDimensions.paddingXL),
-                    PillButton(
-                      text: l10n.restorePurchasesButton,
-                      onTap: () async {
-                        await ref
-                            .read(shopProvider.notifier)
-                            .restorePurchases();
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Purchases restored',
-                              style: TextStyle(color: theme.bg),
-                            ),
-                            backgroundColor: theme.fg,
+                        const SizedBox(height: AppDimensions.paddingS),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
                           ),
-                        );
-                      },
-                      width: double.infinity,
+                          child: Divider(color: theme.border, thickness: 1),
+                        ),
+                        const SizedBox(height: AppDimensions.paddingXL),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
+                          ),
+                          child: _buildSectionHeader(
+                            l10n.supportDevelopmentHeader,
+                            theme,
+                          ),
+                        ),
+                        const SizedBox(height: AppDimensions.paddingM),
+
+                        _buildShopItem(
+                          title: "Buy me a coffee",
+                          subtitle: "Support the developer",
+                          price: "OPEN",
+                          theme: theme,
+                          onTap: () async {
+                            final url = Uri.parse(
+                              'https://buymeacoffee.com/saatvik333',
+                            );
+                            try {
+                              await launchUrl(url);
+                            } catch (e) {
+                              // Fail silently
+                            }
+                          },
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingS),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
+                          ),
+                          child: Divider(color: theme.border, thickness: 1),
+                        ),
+                        const SizedBox(height: AppDimensions.paddingXL),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingL,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildSectionHeader(l10n.purchasesHeader, theme),
+                              const SizedBox(height: AppDimensions.paddingM),
+                              Text(
+                                l10n.restorePurchasesText,
+                                style: TextStyle(
+                                  color: theme.subtitle,
+                                  fontSize: AppDimensions.fontS,
+                                  height: 1.5,
+                                ),
+                              ),
+                              const SizedBox(height: AppDimensions.paddingXL),
+                              PillButton(
+                                text: l10n.restorePurchasesButton,
+                                onTap: () async {
+                                  await ref
+                                      .read(shopProvider.notifier)
+                                      .restorePurchases();
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Restoring purchases...',
+                                        style: TextStyle(color: theme.bg),
+                                      ),
+                                      backgroundColor: theme.fg,
+                                      duration: const Duration(seconds: 1),
+                                    ),
+                                  );
+                                },
+                                width: double.infinity,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppDimensions.paddingL),
+                      ],
                     ),
-                    const SizedBox(height: AppDimensions.paddingL),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
         ),
       ),
@@ -149,52 +222,67 @@ class PurchaseScreen extends ConsumerWidget {
     VoidCallback? onTap,
     required ThemeState theme,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: theme.fg,
-                    fontSize: AppDimensions.fontM,
-                    fontWeight: FontWeight.w600,
+    final isUnavailable = price == 'N/A';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingS,
+      ), // Allow highlight to breathe
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal:
+                AppDimensions.paddingL -
+                AppDimensions.paddingS, // Maintain core alignment
+            vertical: AppDimensions.paddingM,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: isUnavailable ? theme.subtitle : theme.fg,
+                      fontSize: AppDimensions.fontM,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: theme.subtitle,
+                      fontSize: AppDimensions.fontS,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
+                decoration: BoxDecoration(
+                  color: onTap == null ? theme.surface : theme.fg,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                ),
+                child: Text(
+                  price,
                   style: TextStyle(
-                    color: theme.subtitle,
+                    color: onTap == null ? theme.subtitle : theme.bg,
                     fontSize: AppDimensions.fontS,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: onTap == null ? theme.surface : theme.fg,
-                borderRadius: BorderRadius.circular(16),
               ),
-              child: Text(
-                price,
-                style: TextStyle(
-                  color: onTap == null ? theme.subtitle : theme.bg,
-                  fontSize: AppDimensions.fontS,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

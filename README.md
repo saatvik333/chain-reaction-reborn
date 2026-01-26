@@ -2,7 +2,9 @@
 
 A polished, modern reimplementation of the classic Chain Reaction strategy game, built with Flutter.
 
-![Logo](lib/assets/logo.png)
+<p align="center">
+  <img src="assets/logo.png" alt="Logo" width="200" />
+</p>
 
 ## 🎮 Features
 
@@ -60,4 +62,4 @@ The game features an AI opponent using a **Minimax Algorithm** with Alpha-Beta p
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.

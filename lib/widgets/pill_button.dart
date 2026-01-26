@@ -5,7 +5,7 @@ import '../core/constants/app_dimensions.dart';
 
 class PillButton extends ConsumerStatefulWidget {
   final String text;
-  final VoidCallback onTap;
+  final VoidCallback? onTap; // Nullable for disabled state
   final double? width;
   final double height;
   final Color? borderColor;
@@ -14,7 +14,7 @@ class PillButton extends ConsumerStatefulWidget {
   const PillButton({
     super.key,
     required this.text,
-    required this.onTap,
+    this.onTap, // Optional now
     this.width,
     this.height = AppDimensions.pillButtonHeight,
     this.borderColor,
@@ -29,22 +29,30 @@ class _PillButtonState extends ConsumerState<PillButton> {
   bool _isPressed = false;
 
   void _handleTapDown(TapDownDetails details) {
+    if (widget.onTap == null) return;
     setState(() => _isPressed = true);
   }
 
   void _handleTapUp(TapUpDetails details) {
+    if (widget.onTap == null) return;
     setState(() => _isPressed = false);
   }
 
   void _handleTapCancel() {
+    if (widget.onTap == null) return;
     setState(() => _isPressed = false);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
-    final effectiveBorderColor = widget.borderColor ?? theme.border;
-    final effectiveTextColor = widget.textColor ?? theme.fg;
+    // If disabled, maybe dim the colors?
+    final isDisabled = widget.onTap == null;
+    final effectiveBorderColor = (widget.borderColor ?? theme.border)
+        .withValues(alpha: isDisabled ? 0.3 : 1.0);
+    final effectiveTextColor = (widget.textColor ?? theme.fg).withValues(
+      alpha: isDisabled ? 0.3 : 1.0,
+    );
 
     return AnimatedScale(
       scale: _isPressed ? 0.96 : 1.0,
@@ -70,7 +78,7 @@ class _PillButtonState extends ConsumerState<PillButton> {
                   color: effectiveBorderColor,
                   width: AppDimensions.pillButtonBorderWidth,
                 ),
-                color: theme.surface.withValues(alpha: 0.3),
+                color: theme.surface.withValues(alpha: isDisabled ? 0.1 : 0.3),
               ),
               alignment: Alignment.center,
               child: Text(
