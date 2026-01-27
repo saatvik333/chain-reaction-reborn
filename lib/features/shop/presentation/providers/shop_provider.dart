@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../domain/repositories/shop_repository.dart';
 import '../../data/repositories/shop_repository_impl.dart';
@@ -12,8 +13,10 @@ part 'shop_provider.freezed.dart';
 part 'shop_provider.g.dart';
 
 // Define your product IDs here.
+// Note: These must match AppTheme.name exactly because the app uses name as ID.
+// In a real app, you might map 'Earthy' -> 'chain_reaction_earthy'.
 const String kCoffeeId = 'support_coffee';
-const Set<String> kThemeIds = {'theme_neon', 'theme_dark', 'theme_retro'};
+const Set<String> kThemeIds = {'Earthy', 'Pastel', 'Amoled'};
 
 /// Provider for [ShopRepository].
 @riverpod
@@ -60,7 +63,12 @@ class ShopNotifier extends _$ShopNotifier {
     _iapService.initialize();
 
     // Load initial data
-    final ownedIds = await _repository.getPurchasedThemeIds();
+    var ownedIds = await _repository.getPurchasedThemeIds();
+
+    // In debug mode, unlock all themes for testing
+    if (kDebugMode) {
+      ownedIds = kThemeIds.toList();
+    }
 
     List<ProductDetails> products = [];
     try {
@@ -98,8 +106,7 @@ class ShopNotifier extends _$ShopNotifier {
     state = const AsyncValue.loading();
     try {
       await _iapService.restorePurchases();
-      // Completion handled in callbacks or we reload here?
-      // Typically restore triggers purchase updates stream.
+      // Completion is handled via the purchase updates stream.
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -107,8 +114,7 @@ class ShopNotifier extends _$ShopNotifier {
 
   void _onPurchaseCompleted(String productId) async {
     // Reload state to reflect changes
-    // We need to preserve current state or reload everything?
-    // Easiest is to just reload the owned IDs.
+    // Reload owned IDs to reflect the new purchase.
     try {
       final currentProducts = state.value?.products ?? [];
       final ids = await _repository.getPurchasedThemeIds();

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// A widget that animates its child with a fade and slide effect upon entry.
 class FadeEntryWidget extends StatefulWidget {
   final Widget child;
   final Duration delay;

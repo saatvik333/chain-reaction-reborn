@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Shows a dialog with a fluid, premium entrance animation.
-///
-/// Uses [showGeneralDialog] with a customized transition builder.
 Future<T?> showFluidDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -26,7 +23,6 @@ Future<T?> showFluidDialog<T>({
       );
     },
     transitionBuilder: (context, animation, secondaryAnimation, child) {
-      // Use a custom curve for a "magnetic" feel
       final curvedAnimation = CurvedAnimation(
         parent: animation,
         curve: Curves.fastOutSlowIn, // Smooth acceleration/deceleration

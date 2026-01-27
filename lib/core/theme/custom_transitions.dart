@@ -12,7 +12,7 @@ class FluidFadePageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    // Use a curve that matches the FluidDialog for consistency (magnetic feel)
+
     final curve = CurvedAnimation(
       parent: animation,
       curve: Curves.fastOutSlowIn, 
@@ -46,6 +46,3 @@ class FluidFadePageTransitionsBuilder extends PageTransitionsBuilder {
     );
   }
 }
-
-// Removed the private _FluidFadeTransition class as it's no longer needed 
-// with the simplified logic above.

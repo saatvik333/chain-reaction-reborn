@@ -91,8 +91,8 @@ class AtomPainter extends CustomPainter {
     // Draw based on count (Applying breathingFactor to spacing)
     switch (count) {
       case 1:
-        // Single atom stays center but breathes in size slightly? No, looks weird.
-        // Just keeping it centered.
+        // Single atom stays centered.
+        // Breathing size effect was tested but deemed visually distracting.
         _drawAtom(canvas, Offset.zero, paint, shadowPaint);
         break;
       case 2:

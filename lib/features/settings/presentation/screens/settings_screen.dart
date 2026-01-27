@@ -218,12 +218,22 @@ class SettingsScreen extends ConsumerWidget {
         ),
         TextButton(
           onPressed: () => onChanged(!value),
-          style: TextButton.styleFrom(foregroundColor: theme.fg),
-          child: Text(
-            value ? l10n.on : l10n.off,
-            style: const TextStyle(
-              fontSize: AppDimensions.fontM,
-              fontWeight: FontWeight.bold,
+          style: TextButton.styleFrom(
+            foregroundColor: theme.fg,
+            // Ensure no splash if "mechanical" feel is desired, or keep default
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 120),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            child: Text(
+              value ? l10n.on : l10n.off,
+              key: ValueKey<bool>(value),
+              style: const TextStyle(
+                fontSize: AppDimensions.fontM,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),

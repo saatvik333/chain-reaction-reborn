@@ -15,7 +15,7 @@ class GameRepositoryImpl implements GameRepository {
       final jsonString = jsonEncode(state.toJson());
       await _prefs.setString(_keyGameState, jsonString);
     } catch (e) {
-      // Handle serialization errors silently or log them
+      // Silently fail on serialization error to prevent game flow interruption.
     }
   }
 
@@ -28,7 +28,7 @@ class GameRepositoryImpl implements GameRepository {
       final map = jsonDecode(jsonString) as Map<String, dynamic>;
       return GameState.fromJson(map);
     } catch (e) {
-      // Handle deserialization errors (e.g., schema changes)
+      // Return null on deserialization corruption or schema mismatch.
       return null;
     }
   }

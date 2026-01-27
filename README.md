@@ -1,26 +1,55 @@
-# Chain Reaction Reborn
+<div align="center">
 
-A polished, modern reimplementation of the classic Chain Reaction strategy game, built with Flutter.
+<img alt="Chain Reaction Reborn Logo" src="assets/logo-dark.png" width="128" height="128">
 
-<p align="center">
-  <img src="assets/logo.png" alt="Logo" width="200" />
-</p>
+<br>
 
-## 🎮 Features
+**A polished, modern reimplementation of the classic atomic strategy game.**
 
-- **Strategic Gameplay**: Classic atomic chain reaction mechanics.
-- **Smart AI**: Challenge yourself against 4 levels of Computer difficulty (Easy to Extreme).
-- **Local Multiplayer**: Play with up to 8 friends on a single device.
-- **Visuals**: Beautiful animations, particle effects, and "breathing" atoms.
-- **Customization**: Uncleckable themes and color palettes.
-- **Cross-Platform**: Optimized for Mobile and Desktop (Windows, Linux, macOS) with responsive design.
+[![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-02569B?logo=flutter&style=for-the-badge)](https://flutter.dev) [![Release](https://img.shields.io/github/v/release/saatvik333/chain-reaction-reborn?style=for-the-badge)](https://github.com/saatvik333/chain-reaction-reborn/releases) [![License](https://img.shields.io/badge/License-GPLv3-green?style=for-the-badge)](LICENSE)
 
-## 🛠️ Architecture
+</div>
 
-This project uses a **Feature-First Clean Architecture** with **Riverpod** for state management.
+---
+
+## Overview
+**Chain Reaction Reborn** brings the addictive gameplay of the classic strategy board game to modern devices with a complete visual overhaul. Strategic placement, explosive reactions, and tactical dominance await.
+
+Compete against friends or challenge the smart AI in a battle for board control.
+
+## Features
+
+- **Strategic Depth**: Classic atomic chain reaction mechanics that are easy to learn but hard to master.
+- **Smart AI Opponents**:
+  - **Easy**: Perfect for beginners.
+  - **Medium**: A balanced challenge.
+  - **Hard**: Uses heuristic evaluation.
+  - **Extreme**: Minimax algorithm with Alpha-Beta pruning for tactical supremacy.
+- **Local Multiplayer**: Support for up to **8 players** on a single device.
+- **Visual Fidelity**:
+  - Supports native refresh-rate for smooth animations.
+  - Breathing atoms and dynamic particle explosions.
+  - Haptic feedback integration.
+- **Customization**:
+  - **Theming System**: Unlockable themes (Earthy, Pastel, Amoled, etc.).
+  - **Player Colors**: Customizable player identifiers.
+- **Cross-Platform**:
+  - **Mobile**: Optimized for Android and iOS.
+  - **Desktop**: Full support for Windows, Linux, and macOS with native keybindings (F11 - Fullscreen, Esc - Back).
+
+## Technology Stack
+
+Built with a commitment to clean architecture and modern Flutter practices:
+
+- **Framework**: Flutter & Dart
+- **State Management**: [Riverpod](https://riverpod.dev) (v3+ with Code Generation)
+- **Routing**: [GoRouter](https://pub.dev/packages/go_router)
+- **Architecture**: Feature-First Clean Architecture (Domain-Driven Design principles)
+- **Code Generation**: [Freezed](https://pub.dev/packages/freezed) & [JSON Serializable](https://pub.dev/packages/json_serializable) for immutable data models.
+
 For a deep dive into the code structure, check out the [Architecture Documentation](architecture.md).
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Flutter SDK (3.10.x or higher)
@@ -30,8 +59,8 @@ For a deep dive into the code structure, check out the [Architecture Documentati
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/saatvik333/chain_reaction.git
-    cd chain_reaction
+    git clone https://github.com/saatvik333/chain-reaction-reborn.git
+    cd chain-reaction-reborn
     ```
 
 2.  **Install Dependencies**
@@ -41,25 +70,39 @@ For a deep dive into the code structure, check out the [Architecture Documentati
 
 3.  **Run the App**
     ```bash
-    # For Mobile
+    # For Mobile 
     flutter run
 
     # For Desktop (Linux/Windows/Mac)
     flutter run -d linux # or windows/macos
     ```
 
-## 📂 Project Structure
+### Building for Release
 
-- `lib/features/game`: Core logic, AI engine, and Game Board rendering.
-- `lib/features/home`: Main Menu and Game Configuration wizard.
-- `lib/features/settings`: User preferences (Dark Mode, Audio, etc.).
-- `lib/features/shop`: Theme store and entitlement management.
-- `lib/core`: Shared utilities and Design System definitions.
+```bash
+# Android APK
+flutter build apk --release
 
-## 🤖 AI Implementation
+# Linux AppImage/Bundle
+flutter build linux --release
+```
 
-The game features an AI opponent using a **Minimax Algorithm** with Alpha-Beta pruning (Extreme difficulty) and heuristic evaluation strategies (Hard difficulty) to provide a genuine challenge.
+## Project Structure
 
-## 📄 License
+The project follows a modular, feature-based structure:
 
-This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
+```
+lib/
+├── core/            # Shared utilities, constants, themes, and UI widgets
+├── features/        # Feature modules
+│   ├── game/        # Game engine, AI logic, and board rendering
+│   ├── home/        # Main menu and setup wizard
+│   ├── settings/    # User preferences (Theme, Audio)
+│   └── shop/        # In-game store and content management
+├── routing/         # Application navigation configuration
+└── l10n/            # Localization files
+```
+
+## License
+
+This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for details.

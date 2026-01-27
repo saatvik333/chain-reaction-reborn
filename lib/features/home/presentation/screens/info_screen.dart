@@ -146,7 +146,7 @@ class InfoScreen extends ConsumerWidget {
       title,
       style: TextStyle(
         color: theme.subtitle,
-        fontSize: 12, // Usually smallest font
+        fontSize: 12,
         fontWeight: FontWeight.bold,
         letterSpacing: AppDimensions.letterSpacingHeader,
       ),

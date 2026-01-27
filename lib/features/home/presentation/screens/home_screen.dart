@@ -9,7 +9,6 @@ import '../widgets/home_configuration.dart';
 import '../widgets/home_mode_selection.dart';
 import '../widgets/home_orb.dart';
 
-// Re-export enums if needed by other files, though ideally they should import from provider or domain.
 export '../providers/home_provider.dart' show GameMode, HomeStep;
 
 class HomeScreen extends ConsumerWidget {

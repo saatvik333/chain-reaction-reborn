@@ -215,7 +215,7 @@ class PurchaseScreen extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingS,
-      ), // Allow highlight to breathe
+      ), // Add horizontal padding for touch target spacing
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
@@ -223,7 +223,8 @@ class PurchaseScreen extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(
             horizontal:
                 AppDimensions.paddingL -
-                AppDimensions.paddingS, // Maintain core alignment
+                AppDimensions
+                    .paddingS, // Adjust padding to align with core layout
             vertical: AppDimensions.paddingM,
           ),
           child: Row(

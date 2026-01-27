@@ -78,9 +78,11 @@ class _PillButtonState extends ConsumerState<PillButton> {
       case PillButtonType.destructive:
         // Outline: Transparent BG, Red text, subtle red outline
         backgroundColor = Colors.transparent;
-        textColor = Colors.redAccent.withValues(alpha: isDisabled ? 0.5 : 1.0);
+        textColor = theme.currentTheme.red.withValues(
+          alpha: isDisabled ? 0.5 : 1.0,
+        );
         border = Border.all(
-          color: Colors.redAccent.withValues(
+          color: theme.currentTheme.red.withValues(
             alpha: isDisabled ? 0.1 : 0.3,
           ), // Subtle red outline
           width: AppDimensions.pillButtonBorderWidth,

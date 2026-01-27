@@ -187,9 +187,18 @@ class ThemeNotifier extends Notifier<ThemeState> {
     }
   }
 
-  /// Resets all settings to defaults.
+  /// Resets all settings to defaults, preserving the current theme.
   Future<void> resetSettings() async {
+    // 1. Capture current theme
+    final currentThemeName = state.currentTheme.name;
+
+    // 2. Clear all settings (including theme)
     await _settingsRepository.clearSettings();
+
+    // 3. Restore the theme preference
+    await _settingsRepository.setThemeName(currentThemeName);
+
+    // 4. Reload to apply defaults for everything else
     await _loadSettings();
   }
 }

@@ -23,108 +23,119 @@ class ThemePreviewDialog extends ConsumerWidget {
 
     final isDark = true; // Preview in default dark mode
 
-    return Dialog(
-      backgroundColor: theme.bg(isDark),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        side: BorderSide(color: theme.border(isDark), width: 2),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.paddingL),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '${theme.name} Theme',
-              style: TextStyle(
-                color: theme.fg(isDark),
-                fontSize: AppDimensions.fontL,
-                fontWeight: FontWeight.bold,
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.95 + (0.05 * value),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Dialog(
+        backgroundColor: theme.bg(isDark),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+          side: BorderSide(color: theme.border(isDark), width: 2),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimensions.paddingL),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${theme.name} Theme',
+                style: TextStyle(
+                  color: theme.fg(isDark),
+                  fontSize: AppDimensions.fontL,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: AppDimensions.paddingM),
+              const SizedBox(height: AppDimensions.paddingM),
 
-            // Preview Color Grid
-            Container(
-              padding: const EdgeInsets.all(AppDimensions.paddingS),
-              decoration: BoxDecoration(
-                color: theme.surface(isDark),
-                borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-              ),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
-                children: theme
-                    .playerColors(isDark)
-                    .map(
-                      (c) => Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: c,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: c.withValues(alpha: 0.4),
-                              blurRadius: 4,
-                              spreadRadius: 1,
-                            ),
-                          ],
+              // Preview Color Grid
+              Container(
+                padding: const EdgeInsets.all(AppDimensions.paddingS),
+                decoration: BoxDecoration(
+                  color: theme.surface(isDark),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                ),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.center,
+                  children: theme
+                      .playerColors(isDark)
+                      .map(
+                        (c) => Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: c,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: c.withValues(alpha: 0.4),
+                                blurRadius: 4,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-
-            const SizedBox(height: AppDimensions.paddingL),
-
-            Text(
-              'Unlock this theme for $price',
-              style: TextStyle(
-                color: theme.subtitle(isDark),
-                fontSize: AppDimensions.fontS,
-              ),
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: AppDimensions.paddingL),
-
-            if (isLoading)
-              const Padding(
-                padding: EdgeInsets.only(bottom: AppDimensions.paddingM),
-                child: CircularProgressIndicator(),
-              ),
-
-            Row(
-              children: [
-                Expanded(
-                  child: PillButton(
-                    text: 'Cancel',
-                    onTap: () => Navigator.of(context).pop(),
-                    type: PillButtonType.secondary,
-                  ),
+                      )
+                      .toList(),
                 ),
-                const SizedBox(width: AppDimensions.paddingM),
-                Expanded(
-                  child: PillButton(
-                    text: 'Buy',
-                    // Disable if loading or product not found
-                    onTap: (isLoading || !canBuy)
-                        ? null
-                        : () {
-                            ref
-                                .read(shopProvider.notifier)
-                                .purchaseTheme(product);
-                            if (context.mounted) Navigator.of(context).pop();
-                          },
-                    type: PillButtonType.primary,
-                  ),
+              ),
+
+              const SizedBox(height: AppDimensions.paddingL),
+
+              Text(
+                'Unlock this theme for $price',
+                style: TextStyle(
+                  color: theme.subtitle(isDark),
+                  fontSize: AppDimensions.fontS,
                 ),
-              ],
-            ),
-          ],
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: AppDimensions.paddingL),
+
+              if (isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(bottom: AppDimensions.paddingM),
+                  child: CircularProgressIndicator(),
+                ),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: PillButton(
+                      text: 'Cancel',
+                      onTap: () => Navigator.of(context).pop(),
+                      type: PillButtonType.secondary,
+                    ),
+                  ),
+                  const SizedBox(width: AppDimensions.paddingM),
+                  Expanded(
+                    child: PillButton(
+                      text: 'Buy',
+                      // Disable if loading or product not found
+                      onTap: (isLoading || !canBuy)
+                          ? null
+                          : () {
+                              ref
+                                  .read(shopProvider.notifier)
+                                  .purchaseTheme(product);
+                              if (context.mounted) Navigator.of(context).pop();
+                            },
+                      type: PillButtonType.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

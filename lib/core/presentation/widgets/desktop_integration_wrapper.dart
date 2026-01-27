@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
+import 'package:chain_reaction/core/constants/constants.dart';
 
-/// Intent for closing the application
 class QuitIntent extends Intent {
   const QuitIntent();
 }
 
-/// Intent for navigating back
 class GoBackIntent extends Intent {
   const GoBackIntent();
 }
 
-/// Intent for toggling fullscreen
 class ToggleFullscreenIntent extends Intent {
   const ToggleFullscreenIntent();
 }
@@ -35,19 +33,7 @@ class DesktopIntegrationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // If context doesn't have localizations yet (top of tree), we might need a workaround.
-    // However, this wrapper is usually inside MaterialApp/WidgetsApp?
-    // Let's assume it has access or check usage.
-    // If it's ABOVE MaterialApp, it won't work.
-    // DesktopIntegrationWrapper seems to be used at root?
-    // Let's check main.dart.
-
-    // Assuming it's inside, or we use a fallback if not available?
-    // But it has navigatorKey, so it implies setup.
-    // Let's safe access via context.
     final l10n = AppLocalizations.of(context);
-    // If l10n is null, we can't localize menu bar nicely without context.
-    // But PlatformMenuBar IS a widget.
 
     return PlatformMenuBar(
       menus: [
@@ -60,7 +46,7 @@ class DesktopIntegrationWrapper extends StatelessWidget {
                 showAboutDialog(
                   context: navigatorKey.currentContext!,
                   applicationName: l10n?.appName ?? 'Chain Reaction',
-                  applicationVersion: '1.0.0',
+                  applicationVersion: AppConstants.appVersion,
                   children: [
                     const SizedBox(height: 12),
                     Row(
@@ -111,7 +97,6 @@ class DesktopIntegrationWrapper extends StatelessWidget {
             ),
             QuitIntent: CallbackAction<QuitIntent>(
               onInvoke: (intent) {
-                // On Windows/Linux, we can try using windowManager to close
                 if (!kIsWeb) {
                   windowManager.close();
                 }
