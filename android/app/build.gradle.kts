@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.chain_reaction"
+    namespace = "xyz.saatvik.chain_reaction_reborn"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.chain_reaction"
+        applicationId = "xyz.saatvik.chain_reaction_reborn"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

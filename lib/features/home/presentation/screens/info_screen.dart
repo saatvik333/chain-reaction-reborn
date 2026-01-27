@@ -90,7 +90,7 @@ class InfoScreen extends ConsumerWidget {
                     () async {
                       // Placeholder privacy policy Gist - Replace with your own hosted URL before release
                       final Uri url = Uri.parse(
-                        'https://gist.github.com/saatvik333/placeholder-privacy-policy',
+                        'https://gist.github.com/saatvik333/c864ffe4ed126430d719643c8ea068ad',
                       );
                       try {
                         await launchUrl(url);

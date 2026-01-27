@@ -13,9 +13,12 @@
 ---
 
 ## Overview
+
 **Chain Reaction Reborn** brings the addictive gameplay of the classic strategy board game to modern devices with a complete visual overhaul. Strategic placement, explosive reactions, and tactical dominance await.
 
 Compete against friends or challenge the smart AI in a battle for board control.
+
+![Chain Reaction Reborn Showcase](assets/images/showcase.png)
 
 ## Features
 
@@ -52,30 +55,34 @@ For a deep dive into the code structure, check out the [Architecture Documentati
 ## Getting Started
 
 ### Prerequisites
+
 - Flutter SDK (3.10.x or higher)
 - Dart SDK
 
 ### Installation
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/saatvik333/chain-reaction-reborn.git
-    cd chain-reaction-reborn
-    ```
+1. Clone the repository
 
-2.  **Install Dependencies**
-    ```bash
-    flutter pub get
-    ```
+```bash
+git clone https://github.com/saatvik333/chain-reaction-reborn.git
+cd chain-reaction-reborn
+```
 
-3.  **Run the App**
-    ```bash
-    # For Mobile 
-    flutter run
+2. Install dependencies
 
-    # For Desktop (Linux/Windows/Mac)
-    flutter run -d linux # or windows/macos
-    ```
+```bash
+flutter pub get
+```
+
+3. Run the app
+
+```bash
+# For Mobile
+flutter run
+
+# For Desktop (Linux/Windows/macOS)
+flutter run -d linux # or windows/macos
+```
 
 ### Building for Release
 
@@ -89,9 +96,7 @@ flutter build linux --release
 
 ## Project Structure
 
-The project follows a modular, feature-based structure:
-
-```
+```text
 lib/
 ├── core/            # Shared utilities, constants, themes, and UI widgets
 ├── features/        # Feature modules

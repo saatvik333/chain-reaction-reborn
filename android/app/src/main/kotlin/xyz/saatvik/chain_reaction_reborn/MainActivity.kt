@@ -1,4 +1,4 @@
-package com.example.chain_reaction
+package xyz.saatvik.chain_reaction_reborn
 
 import io.flutter.embedding.android.FlutterActivity
 
