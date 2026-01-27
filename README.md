@@ -6,7 +6,7 @@
 
 **A polished, modern reimplementation of the classic atomic strategy game.**
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-02569B?logo=flutter&style=for-the-badge)](https://flutter.dev) [![Release](https://img.shields.io/github/v/release/saatvik333/chain-reaction-reborn?style=for-the-badge)](https://github.com/saatvik333/chain-reaction-reborn/releases) [![License](https://img.shields.io/badge/License-GPLv3-green?style=for-the-badge)](LICENSE)
+[![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-02569B?logo=flutter&style=for-the-badge)](https://flutter.dev) [![Release](https://img.shields.io/github/v/release/saatvik333/chain-reaction-reborn?style=for-the-badge)](https://github.com/saatvik333/chain-reaction-reborn/releases) [![License](https://img.shields.io/badge/License-GPLv3-green?style=for-the-badge)](LICENSE) [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github)](https://github.com/sponsors/saatvik333)
 
 </div>
 
