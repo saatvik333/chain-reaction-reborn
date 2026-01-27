@@ -1,14 +1,16 @@
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:chain_reaction/routing/routes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/game/presentation/widgets/widgets.dart';
-import 'winner_screen.dart';
-import 'package:chain_reaction/widgets/game_menu_dialog.dart';
+import 'package:chain_reaction/core/presentation/widgets/game_menu_dialog.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
-import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
@@ -183,20 +185,19 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 ? next.players.firstWhere((p) => p.isAI)
                 : null;
 
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => WinnerScreen(
-                  winnerPlayerIndex: winnerIndex,
-                  totalMoves: next.totalMoves,
-                  gameDuration: next.formattedDuration,
-                  territoryPercentage: next.territoryPercentage,
-                  playerCount: next.players.length,
-                  gridSize:
-                      widget.gridSize ??
-                      AppLocalizations.of(context)!.unknownGrid,
-                  aiDifficulty: widget.aiDifficulty ?? aiPlayer?.difficulty,
-                ),
-              ),
+            context.pushReplacementNamed(
+              AppRouteNames.winner,
+              extra: {
+                'winnerPlayerIndex': winnerIndex,
+                'totalMoves': next.totalMoves,
+                'gameDuration': next.formattedDuration,
+                'territoryPercentage': next.territoryPercentage,
+                'playerCount': next.players.length,
+                'gridSize':
+                    widget.gridSize ??
+                    AppLocalizations.of(context)!.unknownGrid,
+                'aiDifficulty': widget.aiDifficulty ?? aiPlayer?.difficulty,
+              },
             );
           }
         });

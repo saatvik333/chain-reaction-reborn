@@ -1,48 +1,41 @@
-import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'cell.dart';
 import 'player.dart';
 import 'flying_atom.dart';
 
+part 'game_state.freezed.dart';
+part 'game_state.g.dart';
+
 /// Represents the complete state of a game session.
 ///
 /// GameState is immutable; use [copyWith] to derive new states.
-@immutable
-class GameState {
-  final List<List<Cell>> grid;
-  final List<Player> players;
-  final List<FlyingAtom> flyingAtoms;
-  final int currentPlayerIndex;
-  final bool isGameOver;
-  final Player? winner;
+@freezed
+abstract class GameState with _$GameState {
+  const GameState._();
 
-  /// Flag to block input during chain explosions.
-  final bool isProcessing;
+  const factory GameState({
+    required List<List<Cell>> grid,
+    required List<Player> players,
+    @Default([]) List<FlyingAtom> flyingAtoms,
+    @Default(0) int currentPlayerIndex,
+    @Default(false) bool isGameOver,
+    Player? winner,
 
-  /// Number of turns elapsed.
-  final int turnCount;
+    /// Flag to block input during chain explosions.
+    @Default(false) bool isProcessing,
 
-  /// Total number of moves made by all players.
-  final int totalMoves;
+    /// Number of turns elapsed.
+    @Default(0) int turnCount,
 
-  /// When the game started (for duration calculation).
-  final DateTime startTime;
+    /// Total number of moves made by all players.
+    @Default(0) int totalMoves,
 
-  /// When the game ended (for duration calculation).
-  final DateTime? endTime;
+    /// When the game started (for duration calculation).
+    required DateTime startTime,
 
-  GameState({
-    required this.grid,
-    required this.players,
-    this.flyingAtoms = const [],
-    this.currentPlayerIndex = 0,
-    this.isGameOver = false,
-    this.winner,
-    this.isProcessing = false,
-    this.turnCount = 0,
-    this.totalMoves = 0,
-    DateTime? startTime,
-    this.endTime,
-  }) : startTime = startTime ?? DateTime.now();
+    /// When the game ended (for duration calculation).
+    DateTime? endTime,
+  }) = _GameState;
 
   /// The player whose turn it currently is.
   Player get currentPlayer => players[currentPlayerIndex];
@@ -106,72 +99,8 @@ class GameState {
     return '$minutes:$seconds';
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'grid': grid.map((row) => row.map((c) => c.toMap()).toList()).toList(),
-      'players': players.map((p) => p.toMap()).toList(),
-      'flyingAtoms': flyingAtoms.map((f) => f.toMap()).toList(),
-      'currentPlayerIndex': currentPlayerIndex,
-      'isGameOver': isGameOver,
-      'winner': winner?.toMap(),
-      'isProcessing': isProcessing,
-      'turnCount': turnCount,
-      'totalMoves': totalMoves,
-      'startTime': startTime.toIso8601String(),
-      'endTime': endTime?.toIso8601String(),
-    };
-  }
-
-  factory GameState.fromMap(Map<String, dynamic> map) {
-    return GameState(
-      grid: (map['grid'] as List)
-          .map((row) => (row as List).map((c) => Cell.fromMap(c)).toList())
-          .toList(),
-      players: (map['players'] as List)
-          .map((p) => Player.fromMap(p))
-          .toList(),
-      flyingAtoms: (map['flyingAtoms'] as List)
-          .map((f) => FlyingAtom.fromMap(f))
-          .toList(),
-      currentPlayerIndex: map['currentPlayerIndex'] as int,
-      isGameOver: map['isGameOver'] as bool,
-      winner: map['winner'] != null ? Player.fromMap(map['winner']) : null,
-      isProcessing: map['isProcessing'] as bool,
-      turnCount: map['turnCount'] as int,
-      totalMoves: map['totalMoves'] as int,
-      startTime: DateTime.parse(map['startTime'] as String),
-      endTime: map['endTime'] != null ? DateTime.parse(map['endTime']) : null,
-    );
-  }
-
-  /// Creates a copy of this state with optional modifications.
-  GameState copyWith({
-    List<List<Cell>>? grid,
-    List<Player>? players,
-    List<FlyingAtom>? flyingAtoms,
-    int? currentPlayerIndex,
-    bool? isGameOver,
-    Player? winner,
-    bool? isProcessing,
-    int? turnCount,
-    int? totalMoves,
-    DateTime? startTime,
-    DateTime? endTime,
-  }) {
-    return GameState(
-      grid: grid ?? this.grid,
-      players: players ?? this.players,
-      flyingAtoms: flyingAtoms ?? this.flyingAtoms,
-      currentPlayerIndex: currentPlayerIndex ?? this.currentPlayerIndex,
-      isGameOver: isGameOver ?? this.isGameOver,
-      winner: winner ?? this.winner,
-      isProcessing: isProcessing ?? this.isProcessing,
-      turnCount: turnCount ?? this.turnCount,
-      totalMoves: totalMoves ?? this.totalMoves,
-      startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
-    );
-  }
+  factory GameState.fromJson(Map<String, dynamic> json) =>
+      _$GameStateFromJson(json);
 
   @override
   String toString() =>

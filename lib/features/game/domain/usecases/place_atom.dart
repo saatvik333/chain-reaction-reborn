@@ -88,7 +88,7 @@ class PlaceAtomUseCase {
       // 4. Phase 1: Remove atoms from source, Spawn Flying Atoms
       grid[cy][cx] = grid[cy][cx].copyWith(
         atomCount: newAtomCount,
-        clearOwner: newAtomCount <= 0,
+        ownerId: newAtomCount <= 0 ? null : grid[cy][cx].ownerId,
       );
 
       final flyingAtoms = <FlyingAtom>[];

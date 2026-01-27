@@ -6,7 +6,7 @@ import 'game_providers.dart';
 import '../../domain/repositories/game_repository.dart';
 
 import '../../../../core/services/haptic/haptic_service.dart';
-import 'theme_provider.dart'; // For haptic settings
+import '../../../../core/theme/providers/theme_provider.dart'; // For haptic settings
 // Audio imports removed
 
 /// Notifier for managing game state.

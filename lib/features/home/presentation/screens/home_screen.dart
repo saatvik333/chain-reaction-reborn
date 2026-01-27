@@ -1,8 +1,8 @@
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../../features/game/presentation/providers/providers.dart';
-import '../../../../widgets/responsive_container.dart';
+import '../../../../core/presentation/widgets/responsive_container.dart';
 import '../providers/home_provider.dart';
 import '../widgets/home_bottom_bar.dart';
 import '../widgets/home_configuration.dart';

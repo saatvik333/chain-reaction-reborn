@@ -1,16 +1,15 @@
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/core/theme/app_theme.dart';
-import 'package:chain_reaction/widgets/pill_button.dart';
-
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 import 'package:chain_reaction/features/shop/presentation/screens/purchase_screen.dart';
-import 'package:chain_reaction/widgets/fade_entry_widget.dart';
+import 'package:chain_reaction/core/presentation/widgets/fade_entry_widget.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
 import 'package:chain_reaction/features/shop/presentation/widgets/theme_preview_dialog.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
-import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class PaletteScreen extends ConsumerWidget {

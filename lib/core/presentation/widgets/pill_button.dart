@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/game/presentation/providers/providers.dart';
-import '../core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import '../../constants/app_dimensions.dart';
 
 class PillButton extends ConsumerStatefulWidget {
   final String text;

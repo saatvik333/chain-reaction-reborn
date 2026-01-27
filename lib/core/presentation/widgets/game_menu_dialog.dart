@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/features/game/presentation/screens/game_screen.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
+import '../../constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'custom_popup.dart';
 import 'pill_button.dart';
-import 'package:chain_reaction/features/game/presentation/screens/game_screen.dart';
-import '../core/constants/app_dimensions.dart';
-import 'package:chain_reaction/features/game/domain/entities/player.dart';
-import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class GameMenuDialog extends ConsumerWidget {
   final int playerCount;

@@ -21,6 +21,7 @@ void main() {
         players: players,
         currentPlayerIndex: 0,
         turnCount: 0,
+        startTime: DateTime.now(),
       );
 
       // p1 -> p2
@@ -52,6 +53,7 @@ void main() {
         players: activePlayers,
         currentPlayerIndex: 1, // Currently p2's turn
         turnCount: 10, // Late game (> player count)
+        startTime: DateTime.now(),
       );
 
       // p2 -> p3 (no cells, eliminated) -> p1 (has cells)
@@ -76,6 +78,7 @@ void main() {
         players: players,
         currentPlayerIndex: 0,
         turnCount: 10,
+        startTime: DateTime.now(),
       );
 
       expect(checkWinner(state), null);

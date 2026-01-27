@@ -1,11 +1,13 @@
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:chain_reaction/routing/routes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
-import 'package:chain_reaction/widgets/pill_button.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
-import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
-import 'game_screen.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class WinnerScreen extends ConsumerWidget {
@@ -95,14 +97,13 @@ class WinnerScreen extends ConsumerWidget {
                   text: l10n.playAgain,
                   onTap: () {
                     // Restart the game with the same configuration
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => GameScreen(
-                          playerCount: playerCount,
-                          gridSize: gridSize,
-                          aiDifficulty: aiDifficulty,
-                        ),
-                      ),
+                    context.pushReplacementNamed(
+                      AppRouteNames.game,
+                      extra: {
+                        'playerCount': playerCount,
+                        'gridSize': gridSize,
+                        'aiDifficulty': aiDifficulty,
+                      },
                     );
                   },
                   width: double.infinity,
@@ -111,7 +112,7 @@ class WinnerScreen extends ConsumerWidget {
                 PillButton(
                   text: l10n.mainMenu,
                   onTap: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    context.goNamed(AppRouteNames.home);
                   },
                   width: double.infinity,
                   borderColor: theme.border,

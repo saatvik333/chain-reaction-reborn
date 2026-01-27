@@ -1,3 +1,4 @@
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,11 +6,9 @@ import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:chain_reaction/features/home/presentation/screens/home_screen.dart';
-import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/routing/app_router.dart';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
-import 'package:chain_reaction/widgets/desktop_integration_wrapper.dart';
-
+import 'package:chain_reaction/core/presentation/widgets/desktop_integration_wrapper.dart';
 import 'package:chain_reaction/core/theme/custom_transitions.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
@@ -86,22 +85,14 @@ class _MainAppState extends ConsumerState<MainApp> {
     }
   }
 
-  final _navigatorKey =
-      GlobalKey<NavigatorState>(); // Key for navigation access
-
   @override
   Widget build(BuildContext context) {
     final themeState = ref.watch(themeProvider);
 
-    return MaterialApp(
-      navigatorKey: _navigatorKey, // Bind key
-      builder: (context, child) {
-        // Wrap the entire app (Navigator) in desktop integration wrapper
-        return DesktopIntegrationWrapper(
-          navigatorKey: _navigatorKey,
-          child: child ?? const SizedBox(),
-        );
-      },
+    final router = ref.watch(goRouterProvider);
+
+    return MaterialApp.router(
+      routerConfig: router,
       title: 'Chain Reaction Reborn',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
@@ -150,7 +141,13 @@ class _MainAppState extends ConsumerState<MainApp> {
           },
         ),
       ),
-      home: const HomeScreen(),
+      builder: (context, child) {
+        // Wrap the entire app (Navigator) in desktop integration wrapper
+        return DesktopIntegrationWrapper(
+          navigatorKey: router.routerDelegate.navigatorKey,
+          child: child ?? const SizedBox(),
+        );
+      },
     );
   }
 }

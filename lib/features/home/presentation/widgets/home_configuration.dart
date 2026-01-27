@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_dimensions.dart';
+import 'package:go_router/go_router.dart';
+import 'package:chain_reaction/routing/routes.dart';
 
-import '../../../../widgets/game_selector.dart';
-import '../../../../widgets/pill_button.dart';
-import '../../../game/presentation/screens/game_screen.dart';
+import '../../../../core/presentation/widgets/game_selector.dart';
+import '../../../../core/presentation/widgets/pill_button.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import '../providers/home_provider.dart';
 
@@ -49,14 +50,13 @@ class HomeConfiguration extends ConsumerWidget {
           text: l10n.startGame,
           onTap: () {
             final int players = isVsComputer ? 2 : state.playerCount;
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => GameScreen(
-                  playerCount: players,
-                  gridSize: state.currentGridSize,
-                  aiDifficulty: isVsComputer ? state.aiDifficulty : null,
-                ),
-              ),
+            context.pushNamed(
+              AppRouteNames.game,
+              extra: {
+                'playerCount': players,
+                'gridSize': state.currentGridSize,
+                'aiDifficulty': isVsComputer ? state.aiDifficulty : null,
+              },
             );
           },
           width: double.infinity,

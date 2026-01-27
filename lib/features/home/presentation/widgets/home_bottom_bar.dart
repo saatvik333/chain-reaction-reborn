@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../../../../features/game/presentation/providers/providers.dart';
-import '../../../../features/settings/presentation/screens/settings_screen.dart';
-import '../../../../features/shop/presentation/screens/palette_screen.dart';
-import '../../../../features/shop/presentation/screens/purchase_screen.dart';
-import '../screens/info_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/routing/routes.dart';
 
 class HomeBottomBar extends ConsumerWidget {
   const HomeBottomBar({super.key});
@@ -22,33 +20,25 @@ class HomeBottomBar extends ConsumerWidget {
           IconButton(
             icon: Icon(Icons.settings, color: theme.fg),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
+              context.pushNamed(AppRouteNames.settings);
             },
           ),
           IconButton(
             icon: Icon(Icons.shopping_cart, color: theme.fg),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const PurchaseScreen()),
-              );
+              context.pushNamed(AppRouteNames.shop);
             },
           ),
           IconButton(
             icon: Icon(Icons.palette, color: theme.fg),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const PaletteScreen()),
-              );
+              context.pushNamed(AppRouteNames.palette);
             },
           ),
           IconButton(
             icon: Icon(Icons.info, color: theme.fg),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const InfoScreen()),
-              );
+              context.pushNamed(AppRouteNames.info);
             },
           ),
         ],

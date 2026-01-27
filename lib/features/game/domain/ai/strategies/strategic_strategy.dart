@@ -166,7 +166,9 @@ class StrategicStrategy extends AIStrategy {
       final currentCell = grid[cy][cx];
       grid[cy][cx] = currentCell.copyWith(
         atomCount: currentCell.atomCount - neighbors.length,
-        clearOwner: (currentCell.atomCount - neighbors.length) <= 0,
+        ownerId: (currentCell.atomCount - neighbors.length) <= 0
+            ? null
+            : currentCell.ownerId,
       );
 
       for (final n in neighbors) {

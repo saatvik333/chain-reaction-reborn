@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/features/game/presentation/providers/theme_provider.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:chain_reaction/features/game/presentation/providers/player_names_provider.dart';
-import 'package:chain_reaction/widgets/edit_player_dialog.dart';
-import 'package:chain_reaction/widgets/pill_button.dart';
+import 'package:chain_reaction/core/presentation/widgets/edit_player_dialog.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
-import 'package:chain_reaction/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class SettingsScreen extends ConsumerWidget {

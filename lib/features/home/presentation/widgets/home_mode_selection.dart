@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../widgets/game_selector.dart';
-import '../../../../widgets/pill_button.dart';
+import '../../../../core/presentation/widgets/game_selector.dart';
+import '../../../../core/presentation/widgets/pill_button.dart';
 import '../providers/home_provider.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 

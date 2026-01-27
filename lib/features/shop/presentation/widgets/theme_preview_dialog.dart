@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../providers/shop_provider.dart';
-import '../../../../widgets/pill_button.dart';
+import '../../../../core/presentation/widgets/pill_button.dart';
 
 class ThemePreviewDialog extends ConsumerWidget {
   final AppTheme themeToPreview;

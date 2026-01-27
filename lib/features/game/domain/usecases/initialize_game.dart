@@ -41,6 +41,7 @@ class InitializeGameUseCase {
       currentPlayerIndex: 0,
       turnCount: 0,
       totalMoves: 0,
+      startTime: DateTime.now(),
     );
   }
 

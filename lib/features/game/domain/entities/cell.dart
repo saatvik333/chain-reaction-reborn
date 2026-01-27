@@ -1,40 +1,29 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
+
+part 'cell.freezed.dart';
+part 'cell.g.dart';
 
 /// Represents a single cell on the game grid.
 ///
 /// Cells are immutable and contain position, capacity, atom count, and owner.
-@immutable
-class Cell {
-  final int x;
-  final int y;
+@freezed
+abstract class Cell with _$Cell {
+  const Cell._(); // Added for custom getters
 
-  /// Maximum atoms before explosion (1=corner, 2=edge, 3=center).
-  final int capacity;
+  const factory Cell({
+    required int x,
+    required int y,
 
-  /// Current number of atoms in this cell.
-  final int atomCount;
+    /// Maximum atoms before explosion (1=corner, 2=edge, 3=center).
+    required int capacity,
 
-  /// ID of the player who owns this cell, or null if empty.
-  final String? ownerId;
+    /// Current number of atoms in this cell.
+    @Default(0) int atomCount,
 
-  const Cell({
-    required this.x,
-    required this.y,
-    required this.capacity,
-    this.atomCount = 0,
-    this.ownerId,
-  });
-
-  /// Creates a copy of this cell with optional modifications.
-  Cell copyWith({int? atomCount, String? ownerId, bool clearOwner = false}) {
-    return Cell(
-      x: x,
-      y: y,
-      capacity: capacity,
-      atomCount: atomCount ?? this.atomCount,
-      ownerId: clearOwner ? null : (ownerId ?? this.ownerId),
-    );
-  }
+    /// ID of the player who owns this cell, or null if empty.
+    String? ownerId,
+  }) = _Cell;
 
   /// Whether the cell is empty (no atoms).
   bool get isEmpty => atomCount == 0;
@@ -42,45 +31,5 @@ class Cell {
   /// Whether the cell is about to explode.
   bool get isAtCriticalMass => atomCount > capacity;
 
-  Map<String, dynamic> toMap() {
-    return {
-      'x': x,
-      'y': y,
-      'capacity': capacity,
-      'atomCount': atomCount,
-      'ownerId': ownerId,
-    };
-  }
-
-  factory Cell.fromMap(Map<String, dynamic> map) {
-    return Cell(
-      x: map['x'] as int,
-      y: map['y'] as int,
-      capacity: map['capacity'] as int,
-      atomCount: map['atomCount'] as int,
-      ownerId: map['ownerId'] as String?,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Cell &&
-          runtimeType == other.runtimeType &&
-          x == other.x &&
-          y == other.y &&
-          capacity == other.capacity &&
-          atomCount == other.atomCount &&
-          ownerId == other.ownerId;
-
-  @override
-  int get hashCode =>
-      x.hashCode ^
-      y.hashCode ^
-      capacity.hashCode ^
-      atomCount.hashCode ^
-      ownerId.hashCode;
-
-  @override
-  String toString() => 'Cell(x: $x, y: $y, atoms: $atomCount, owner: $ownerId)';
+  factory Cell.fromJson(Map<String, dynamic> json) => _$CellFromJson(json);
 }

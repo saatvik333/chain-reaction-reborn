@@ -1,8 +1,8 @@
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../../features/game/presentation/providers/providers.dart';
 
 class HomeOrb extends ConsumerStatefulWidget {
   const HomeOrb({super.key});

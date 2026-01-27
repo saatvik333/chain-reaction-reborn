@@ -12,7 +12,7 @@ class GameRepositoryImpl implements GameRepository {
   @override
   Future<void> saveGame(GameState state) async {
     try {
-      final jsonString = jsonEncode(state.toMap());
+      final jsonString = jsonEncode(state.toJson());
       await _prefs.setString(_keyGameState, jsonString);
     } catch (e) {
       // Handle serialization errors silently or log them
@@ -26,7 +26,7 @@ class GameRepositoryImpl implements GameRepository {
 
     try {
       final map = jsonDecode(jsonString) as Map<String, dynamic>;
-      return GameState.fromMap(map);
+      return GameState.fromJson(map);
     } catch (e) {
       // Handle deserialization errors (e.g., schema changes)
       return null;

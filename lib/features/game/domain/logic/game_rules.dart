@@ -33,9 +33,9 @@ class GameRules {
     if (state.isGameOver) return false;
     // We explicitly allow moves during processing in Simulation, but typically not in UI.
     // The caller determines if 'isProcessing' blocks the move.
-    
+
     if (y < 0 || y >= state.rows || x < 0 || x >= state.cols) return false;
-    
+
     final cell = state.grid[y][x];
     // Can play on empty cell OR cell owned by self
     return cell.ownerId == null || cell.ownerId == state.currentPlayer.id;
@@ -69,17 +69,14 @@ class GameRules {
 
     final neighbors = getNeighbors(cx, cy, rows, cols);
     final atomsToRemove = neighbors.length; // 2, 3, or 4
-    
+
     // Decrease atoms in source cell
     final currentSource = grid[cy][cx];
     final newSourceCount = currentSource.atomCount - atomsToRemove;
-    
+
     grid[cy][cx] = currentSource.copyWith(
       atomCount: newSourceCount,
-      // If atoms drop to 0 (or less?), clear ownership. 
-      // In standard CR, you keep ownership if you still have atoms?
-      // Usually source goes to 0 or very low.
-      clearOwner: newSourceCount <= 0,
+      ownerId: newSourceCount <= 0 ? null : currentSource.ownerId,
     );
 
     final newlyCriticalCells = <Cell>[];
@@ -88,7 +85,7 @@ class GameRules {
     for (final n in neighbors) {
       final neighbor = grid[n.y][n.x];
       final nextAtomCount = neighbor.atomCount + 1;
-      
+
       // Conquered!
       grid[n.y][n.x] = neighbor.copyWith(
         atomCount: nextAtomCount,
