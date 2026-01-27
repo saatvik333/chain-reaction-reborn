@@ -1,16 +1,18 @@
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/domain.dart';
 import '../../domain/ai/ai_service.dart';
 import 'game_providers.dart';
 import '../../domain/repositories/game_repository.dart';
 
 import '../../../../core/services/haptic/haptic_service.dart';
-import '../../../../core/theme/providers/theme_provider.dart'; // For haptic settings
-// Audio imports removed
+import '../../../../core/theme/providers/theme_provider.dart';
+
+part 'game_state_provider.g.dart';
 
 /// Notifier for managing game state.
-class GameNotifier extends Notifier<GameState?> {
+@riverpod
+class GameNotifier extends _$GameNotifier {
   late final InitializeGameUseCase _initializeGame;
   late final PlaceAtomUseCase _placeAtom;
   late final NextTurnUseCase _nextTurn;
@@ -60,7 +62,6 @@ class GameNotifier extends Notifier<GameState?> {
 
     // Play tap feedback
     if (ref.read(isHapticOnProvider)) _hapticService.lightImpact();
-    // Audio removed
 
     GameState? lastState;
     bool hasEmitted = false;
@@ -176,50 +177,64 @@ class GameNotifier extends Notifier<GameState?> {
   }
 
   void _cancelExplosions() {
+    // Only cancel subscription, do not nullify state logic blindly
     _explosionSubscription?.cancel();
     _explosionSubscription = null;
   }
 }
 
-/// Main game state provider.
-final gameStateProvider = NotifierProvider<GameNotifier, GameState?>(
-  GameNotifier.new,
-);
+// Derived providers
 
-// Derived providers for selective rebuilds
-
-/// Current player from game state.
-final currentPlayerProvider = Provider<Player?>((ref) {
-  final gameState = ref.watch(gameStateProvider);
+@riverpod
+Player? currentPlayer(Ref ref) {
+  final gameState = ref.watch(gameProvider);
   return gameState?.currentPlayer;
-});
+}
 
-/// Processing flag from game state.
-final isProcessingProvider = Provider<bool>((ref) {
-  return ref.watch(gameStateProvider.select((s) => s?.isProcessing ?? false));
-});
+@riverpod
+List<Player>? players(Ref ref) {
+  final gameState = ref.watch(gameProvider);
+  return gameState?.players;
+}
 
-/// Game over flag from game state.
-final isGameOverProvider = Provider<bool>((ref) {
-  return ref.watch(gameStateProvider.select((s) => s?.isGameOver ?? false));
-});
+@riverpod
+List<FlyingAtom> flyingAtoms(Ref ref) {
+  final gameState = ref.watch(gameProvider);
+  return gameState?.flyingAtoms ?? [];
+}
 
-/// Winner from game state.
-final winnerProvider = Provider<Player?>((ref) {
-  return ref.watch(gameStateProvider.select((s) => s?.winner));
-});
+@riverpod
+bool isProcessing(Ref ref) {
+  final gameState = ref.watch(gameProvider);
+  return gameState?.isProcessing ?? false;
+}
 
-/// Grid from game state.
-final gridProvider = Provider<List<List<Cell>>?>((ref) {
-  return ref.watch(gameStateProvider.select((s) => s?.grid));
-});
+@riverpod
+bool isGameOver(Ref ref) {
+  final gameState = ref.watch(gameProvider);
+  return gameState?.isGameOver ?? false;
+}
 
-/// Turn count from game state.
-final turnCountProvider = Provider<int>((ref) {
-  return ref.watch(gameStateProvider.select((s) => s?.turnCount ?? 0));
-});
+@riverpod
+Player? winner(Ref ref) {
+  final gameState = ref.watch(gameProvider);
+  return gameState?.winner;
+}
 
-/// Total moves from game state.
-final totalMovesProvider = Provider<int>((ref) {
-  return ref.watch(gameStateProvider.select((s) => s?.totalMoves ?? 0));
-});
+@riverpod
+List<List<Cell>>? grid(Ref ref) {
+  final gameState = ref.watch(gameProvider);
+  return gameState?.grid;
+}
+
+@riverpod
+int turnCount(Ref ref) {
+  final gameState = ref.watch(gameProvider);
+  return gameState?.turnCount ?? 0;
+}
+
+@riverpod
+int totalMoves(Ref ref) {
+  final gameState = ref.watch(gameProvider);
+  return gameState?.totalMoves ?? 0;
+}

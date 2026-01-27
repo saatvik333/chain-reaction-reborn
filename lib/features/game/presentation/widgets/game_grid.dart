@@ -46,10 +46,8 @@ class _GameGridState extends ConsumerState<GameGrid>
     final theme = themeState.currentTheme;
     final isDark = ref.watch(isDarkModeProvider);
     final borderColor = theme.border(isDark);
-    final players = ref.watch(gameStateProvider.select((s) => s?.players));
-    final flyingAtoms = ref.watch(
-      gameStateProvider.select((s) => s?.flyingAtoms ?? []),
-    );
+    final players = ref.watch(playersProvider);
+    final flyingAtoms = ref.watch(flyingAtomsProvider);
 
     if (grid == null || players == null) {
       return const Center(child: CircularProgressIndicator());

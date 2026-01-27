@@ -118,12 +118,12 @@ void main() {
     });
 
     test('Initial state is null', () {
-      final state = container.read(gameStateProvider);
+      final state = container.read(gameProvider);
       expect(state, isNull);
     });
 
     test('initGame creates a valid GameState', () {
-      final notifier = container.read(gameStateProvider.notifier);
+      final notifier = container.read(gameProvider.notifier);
       final players = [
         const Player(id: '1', name: 'P1', color: Color(0xFF000000)),
         const Player(id: '2', name: 'P2', color: Color(0xFFFFFFFF)),
@@ -131,7 +131,7 @@ void main() {
 
       notifier.initGame(players, gridSize: 'small');
 
-      final state = container.read(gameStateProvider);
+      final state = container.read(gameProvider);
       expect(state, isNotNull);
       expect(state!.players.length, 2);
       expect(state.grid.length, 8); // Rows
@@ -143,7 +143,7 @@ void main() {
     });
 
     test('placeAtom updates state', () async {
-      final notifier = container.read(gameStateProvider.notifier);
+      final notifier = container.read(gameProvider.notifier);
       final players = [
         const Player(id: '1', name: 'P1', color: Color(0xFF000000)),
         const Player(id: '2', name: 'P2', color: Color(0xFFFFFFFF)),
@@ -157,7 +157,7 @@ void main() {
       // Wait for stream processing (microtasks)
       await Future.delayed(const Duration(milliseconds: 100));
 
-      final state = container.read(gameStateProvider);
+      final state = container.read(gameProvider);
       expect(state!.grid[0][0].atomCount, 1);
       expect(state.grid[0][0].ownerId, '1');
     });

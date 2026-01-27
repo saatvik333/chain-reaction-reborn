@@ -13,12 +13,13 @@ class ThemePreviewDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = themeToPreview;
-    final shopState = ref.watch(shopProvider);
-    final product = shopState.getProduct(theme.name);
+    final shopAsync = ref.watch(shopProvider);
+    final product = shopAsync.asData?.value.getProduct(theme.name);
 
     // Determine price to show: Product price, or theme placeholder, or error
     final price = product?.price ?? theme.price ?? 'N/A';
     final canBuy = product != null;
+    final isLoading = shopAsync.isLoading;
 
     final isDark = true; // Preview in default dark mode
 
@@ -90,7 +91,7 @@ class ThemePreviewDialog extends ConsumerWidget {
 
             const SizedBox(height: AppDimensions.paddingL),
 
-            if (shopState.isLoading)
+            if (isLoading)
               const Padding(
                 padding: EdgeInsets.only(bottom: AppDimensions.paddingM),
                 child: CircularProgressIndicator(),
@@ -102,6 +103,7 @@ class ThemePreviewDialog extends ConsumerWidget {
                   child: PillButton(
                     text: 'Cancel',
                     onTap: () => Navigator.of(context).pop(),
+                    type: PillButtonType.secondary,
                   ),
                 ),
                 const SizedBox(width: AppDimensions.paddingM),
@@ -109,7 +111,7 @@ class ThemePreviewDialog extends ConsumerWidget {
                   child: PillButton(
                     text: 'Buy',
                     // Disable if loading or product not found
-                    onTap: (shopState.isLoading || !canBuy)
+                    onTap: (isLoading || !canBuy)
                         ? null
                         : () {
                             ref
@@ -117,6 +119,7 @@ class ThemePreviewDialog extends ConsumerWidget {
                                 .purchaseTheme(product);
                             if (context.mounted) Navigator.of(context).pop();
                           },
+                    type: PillButtonType.primary,
                   ),
                 ),
               ],

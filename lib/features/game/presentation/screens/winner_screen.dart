@@ -107,6 +107,7 @@ class WinnerScreen extends ConsumerWidget {
                     );
                   },
                   width: double.infinity,
+                  type: PillButtonType.primary,
                 ),
                 const SizedBox(height: AppDimensions.paddingM),
                 PillButton(
@@ -115,8 +116,7 @@ class WinnerScreen extends ConsumerWidget {
                     context.goNamed(AppRouteNames.home);
                   },
                   width: double.infinity,
-                  borderColor: theme.border,
-                  textColor: theme.subtitle,
+                  type: PillButtonType.secondary,
                 ),
                 const SizedBox(height: 48),
               ],

@@ -159,6 +159,7 @@ class SettingsScreen extends ConsumerWidget {
                         await ref.read(themeProvider.notifier).resetSettings();
                       },
                       width: double.infinity,
+                      type: PillButtonType.destructive,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                   ],

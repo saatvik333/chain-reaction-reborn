@@ -43,6 +43,7 @@ class GameMenuDialog extends ConsumerWidget {
             text: l10n.resume,
             onTap: () => Navigator.of(context).pop(),
             height: 48,
+            type: PillButtonType.primary,
           ),
           const SizedBox(height: AppDimensions.paddingM),
 
@@ -62,6 +63,7 @@ class GameMenuDialog extends ConsumerWidget {
               );
             },
             height: 48,
+            type: PillButtonType.secondary,
           ),
           const SizedBox(height: AppDimensions.paddingM),
 
@@ -71,8 +73,7 @@ class GameMenuDialog extends ConsumerWidget {
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
             height: 48,
-            borderColor: theme.currentTheme.red.withValues(alpha: 0.5),
-            textColor: theme.currentTheme.red,
+            type: PillButtonType.destructive,
           ),
         ],
       ),

@@ -65,12 +65,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     });
 
     ref
-        .read(gameStateProvider.notifier)
+        .read(gameProvider.notifier)
         .initGame(players, gridSize: widget.gridSize);
   }
 
   void _handleCellTap(int x, int y) {
-    final gameState = ref.read(gameStateProvider);
+    final gameState = ref.read(gameProvider);
     // Block input if game is processing (AI is thinking or chain reaction happening)
     if (gameState == null ||
         gameState.isProcessing ||
@@ -78,17 +78,17 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       return;
     }
 
-    if (!ref.read(gameStateProvider.notifier).isValidMove(x, y)) return;
+    if (!ref.read(gameProvider.notifier).isValidMove(x, y)) return;
 
     // Sound/Haptics now handled by Notifier
-    ref.read(gameStateProvider.notifier).placeAtom(x, y);
+    ref.read(gameProvider.notifier).placeAtom(x, y);
   }
 
   @override
   Widget build(BuildContext context) {
     _listenForGameEnd();
 
-    final gameState = ref.watch(gameStateProvider);
+    final gameState = ref.watch(gameProvider);
     final themeState = ref.watch(themeProvider);
 
     // Show loading if game not initialized yet
@@ -173,7 +173,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _listenForGameEnd() {
-    ref.listen(gameStateProvider, (previous, next) {
+    ref.listen(gameProvider, (previous, next) {
       if (next != null && next.isGameOver && next.winner != null) {
         final winnerIndex = next.players.indexOf(next.winner!) + 1;
 

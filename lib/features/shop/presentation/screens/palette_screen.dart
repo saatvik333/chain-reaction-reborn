@@ -18,7 +18,7 @@ class PaletteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(themeProvider);
-    final shopState = ref.watch(shopProvider);
+    final shopAsync = ref.watch(shopProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
@@ -48,82 +48,95 @@ class PaletteScreen extends ConsumerWidget {
             ),
           ),
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.paddingL,
-                vertical: AppDimensions.paddingM,
+            child: shopAsync.when(
+              loading: () => Center(
+                child: CircularProgressIndicator(color: themeState.fg),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.availableThemesHeader,
-                    style: TextStyle(
-                      color: themeState.subtitle,
-                      fontSize: AppDimensions.fontXS,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: AppDimensions.letterSpacingHeader,
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingL),
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: AppThemes.all.length,
-                      separatorBuilder: (context, index) => Divider(
-                        color: themeState.border,
-                        height: AppDimensions.paddingXL,
+              error: (e, st) => Center(
+                child: Text(
+                  'Error: $e',
+                  style: TextStyle(color: themeState.fg),
+                ),
+              ),
+              data: (shopState) => Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                  vertical: AppDimensions.paddingM,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.availableThemesHeader,
+                      style: TextStyle(
+                        color: themeState.subtitle,
+                        fontSize: AppDimensions.fontXS,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: AppDimensions.letterSpacingHeader,
                       ),
-                      itemBuilder: (context, index) {
-                        final theme = AppThemes.all[index];
-                        final isSelected =
-                            theme.name == themeState.currentTheme.name;
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    Expanded(
+                      child: ListView.separated(
+                        itemCount: AppThemes.all.length,
+                        separatorBuilder: (context, index) => Divider(
+                          color: themeState.border,
+                          height: AppDimensions.paddingXL,
+                        ),
+                        itemBuilder: (context, index) {
+                          final theme = AppThemes.all[index];
+                          final isSelected =
+                              theme.name == themeState.currentTheme.name;
 
-                        // Logic: Owned if NOT premium OR if in shop purchased list
-                        final isOwned =
-                            !theme.isPremium || shopState.isOwned(theme.name);
+                          // Logic: Owned if NOT premium OR if in shop purchased list
+                          final isOwned =
+                              !theme.isPremium || shopState.isOwned(theme.name);
 
-                        return FadeEntryWidget(
-                          delay: Duration(milliseconds: index * 50),
-                          child: _ThemeRow(
-                            theme: theme,
-                            isSelected: isSelected,
-                            isLocked: !isOwned,
-                            isDarkMode: themeState.isDarkMode,
-                            onTap: () {
-                              if (isOwned) {
-                                ref
-                                    .read(themeProvider.notifier)
-                                    .setTheme(theme);
-                              } else {
-                                // Show Preview Dialog
-                                showFluidDialog(
-                                  context: context,
-                                  builder: (_) =>
-                                      ThemePreviewDialog(themeToPreview: theme),
-                                );
-                              }
-                            },
-                            textColor: themeState.fg,
-                            backgroundColor: themeState.bg,
+                          return FadeEntryWidget(
+                            delay: Duration(milliseconds: index * 50),
+                            child: _ThemeRow(
+                              theme: theme,
+                              isSelected: isSelected,
+                              isLocked: !isOwned,
+                              isDarkMode: themeState.isDarkMode,
+                              onTap: () {
+                                if (isOwned) {
+                                  ref
+                                      .read(themeProvider.notifier)
+                                      .setTheme(theme);
+                                } else {
+                                  // Show Preview Dialog
+                                  showFluidDialog(
+                                    context: context,
+                                    builder: (_) => ThemePreviewDialog(
+                                      themeToPreview: theme,
+                                    ),
+                                  );
+                                }
+                              },
+                              textColor: themeState.fg,
+                              backgroundColor: themeState.bg,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                    PillButton(
+                      text: l10n.getMoreThemes,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const PurchaseScreen(),
                           ),
                         );
                       },
+                      width: double.infinity,
+                      type: PillButtonType.primary,
                     ),
-                  ),
-                  const SizedBox(height: AppDimensions.paddingL),
-                  PillButton(
-                    text: l10n.getMoreThemes,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const PurchaseScreen(),
-                        ),
-                      );
-                    },
-                    width: double.infinity,
-                  ),
-                  const SizedBox(height: AppDimensions.paddingL),
-                ],
+                    const SizedBox(height: AppDimensions.paddingL),
+                  ],
+                ),
               ),
             ),
           ),

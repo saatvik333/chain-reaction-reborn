@@ -96,8 +96,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
                   text: l10n.cancel,
                   onTap: () => Navigator.of(context).pop(),
                   height: 48,
-                  borderColor: themeState.border,
-                  textColor: themeState.subtitle,
+                  type: PillButtonType.secondary,
                 ),
               ),
               const SizedBox(width: AppDimensions.paddingM),
@@ -111,6 +110,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
                     Navigator.of(context).pop();
                   },
                   height: 48,
+                  type: PillButtonType.primary,
                 ),
               ),
             ],

@@ -15,7 +15,7 @@ class PurchaseScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
-    final shopState = ref.watch(shopProvider);
+    final shopAsync = ref.watch(shopProvider);
     final l10n = AppLocalizations.of(context)!;
 
     final paidThemes = AppThemes.all.where((t) => t.isPremium).toList();
@@ -47,155 +47,144 @@ class PurchaseScreen extends ConsumerWidget {
             ),
           ),
           body: SafeArea(
-            child: shopState.isLoading
-                ? Center(child: CircularProgressIndicator(color: theme.fg))
-                : SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (shopState.errorMessage != null)
-                          Padding(
-                            padding: const EdgeInsets.all(
-                              AppDimensions.paddingL,
-                            ),
-                            child: Text(
-                              shopState.errorMessage!,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          ),
-
-                        const SizedBox(height: AppDimensions.paddingM),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppDimensions.paddingL,
-                          ),
-                          child: _buildSectionHeader(
-                            l10n.themePacksHeader,
-                            theme,
-                          ),
-                        ),
-                        const SizedBox(height: AppDimensions.paddingM),
-
-                        ...paidThemes.map((targetTheme) {
-                          final isOwned = shopState.isOwned(targetTheme.name);
-                          final product = shopState.getProduct(
-                            targetTheme.name,
-                          );
-                          final price = isOwned
-                              ? 'OWNED'
-                              : (product?.price ??
-                                    (targetTheme.price ?? 'N/A'));
-
-                          final canBuy = !isOwned && product != null;
-
-                          return _buildShopItem(
-                            title: '${targetTheme.name} Theme',
-                            subtitle: isOwned
-                                ? 'Currently owned'
-                                : 'Unlock this theme',
-                            price: price,
-                            onTap: canBuy
-                                ? () {
-                                    ref
-                                        .read(shopProvider.notifier)
-                                        .purchaseTheme(product);
-                                  }
-                                : null,
-                            theme: theme,
-                          );
-                        }),
-
-                        const SizedBox(height: AppDimensions.paddingS),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppDimensions.paddingL,
-                          ),
-                          child: Divider(color: theme.border, thickness: 1),
-                        ),
-                        const SizedBox(height: AppDimensions.paddingXL),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppDimensions.paddingL,
-                          ),
-                          child: _buildSectionHeader(
-                            l10n.supportDevelopmentHeader,
-                            theme,
-                          ),
-                        ),
-                        const SizedBox(height: AppDimensions.paddingM),
-
-                        _buildShopItem(
-                          title: "Buy me a coffee",
-                          subtitle: "Support the developer",
-                          price: "OPEN",
-                          theme: theme,
-                          onTap: () async {
-                            final url = Uri.parse(
-                              'https://buymeacoffee.com/saatvik333',
-                            );
-                            try {
-                              await launchUrl(url);
-                            } catch (e) {
-                              // Fail silently
-                            }
-                          },
-                        ),
-
-                        const SizedBox(height: AppDimensions.paddingS),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppDimensions.paddingL,
-                          ),
-                          child: Divider(color: theme.border, thickness: 1),
-                        ),
-                        const SizedBox(height: AppDimensions.paddingXL),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppDimensions.paddingL,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildSectionHeader(l10n.purchasesHeader, theme),
-                              const SizedBox(height: AppDimensions.paddingM),
-                              Text(
-                                l10n.restorePurchasesText,
-                                style: TextStyle(
-                                  color: theme.subtitle,
-                                  fontSize: AppDimensions.fontS,
-                                  height: 1.5,
-                                ),
-                              ),
-                              const SizedBox(height: AppDimensions.paddingXL),
-                              PillButton(
-                                text: l10n.restorePurchasesButton,
-                                onTap: () async {
-                                  await ref
-                                      .read(shopProvider.notifier)
-                                      .restorePurchases();
-                                  if (!context.mounted) return;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Restoring purchases...',
-                                        style: TextStyle(color: theme.bg),
-                                      ),
-                                      backgroundColor: theme.fg,
-                                      duration: const Duration(seconds: 1),
-                                    ),
-                                  );
-                                },
-                                width: double.infinity,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: AppDimensions.paddingL),
-                      ],
-                    ),
+            child: shopAsync.when(
+              loading: () =>
+                  Center(child: CircularProgressIndicator(color: theme.fg)),
+              error: (e, st) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppDimensions.paddingL),
+                  child: Text(
+                    'Error: $e',
+                    style: TextStyle(color: theme.fg),
+                    textAlign: TextAlign.center,
                   ),
+                ),
+              ),
+              data: (state) => SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: AppDimensions.paddingM),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: _buildSectionHeader(l10n.themePacksHeader, theme),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingM),
+                    ...paidThemes.map((targetTheme) {
+                      final isOwned = state.isOwned(targetTheme.name);
+                      final product = state.getProduct(targetTheme.name);
+                      final price = isOwned
+                          ? 'OWNED'
+                          : (product?.price ?? (targetTheme.price ?? 'N/A'));
+
+                      final canBuy = !isOwned && product != null;
+
+                      return _buildShopItem(
+                        title: '${targetTheme.name} Theme',
+                        subtitle: isOwned
+                            ? 'Currently owned'
+                            : 'Unlock this theme',
+                        price: price,
+                        onTap: canBuy
+                            ? () {
+                                ref
+                                    .read(shopProvider.notifier)
+                                    .purchaseTheme(product);
+                              }
+                            : null,
+                        theme: theme,
+                      );
+                    }),
+                    const SizedBox(height: AppDimensions.paddingS),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: Divider(color: theme.border, thickness: 1),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingXL),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: _buildSectionHeader(
+                        l10n.supportDevelopmentHeader,
+                        theme,
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingM),
+                    _buildShopItem(
+                      title: "Buy me a coffee",
+                      subtitle: "Support the developer",
+                      price: "OPEN",
+                      theme: theme,
+                      onTap: () async {
+                        final url = Uri.parse(
+                          'https://buymeacoffee.com/saatvik333',
+                        );
+                        try {
+                          await launchUrl(url);
+                        } catch (e) {
+                          // Fail silently
+                        }
+                      },
+                    ),
+                    const SizedBox(height: AppDimensions.paddingS),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: Divider(color: theme.border, thickness: 1),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingXL),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionHeader(l10n.purchasesHeader, theme),
+                          const SizedBox(height: AppDimensions.paddingM),
+                          Text(
+                            l10n.restorePurchasesText,
+                            style: TextStyle(
+                              color: theme.subtitle,
+                              fontSize: AppDimensions.fontS,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: AppDimensions.paddingXL),
+                          PillButton(
+                            text: l10n.restorePurchasesButton,
+                            onTap: () async {
+                              await ref
+                                  .read(shopProvider.notifier)
+                                  .restorePurchases();
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Restoring purchases...',
+                                    style: TextStyle(color: theme.bg),
+                                  ),
+                                  backgroundColor: theme.fg,
+                                  duration: const Duration(seconds: 1),
+                                ),
+                              );
+                            },
+                            width: double.infinity,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),

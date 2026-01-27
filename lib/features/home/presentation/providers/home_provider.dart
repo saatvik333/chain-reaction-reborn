@@ -1,35 +1,27 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../game/domain/entities/player.dart';
 
-// Re-using the enums from HomeScreen or moving them here is better.
-// For now I will import them to avoid breaking changes, but better to redefine or move.
-// Actually, I'll move them here to avoid circular dependencies if widgets import this.
-// But HomeScreen already has them. I should verify if I can move them.
-// Providing I move them to a common place or keep them in logic.
-// Let's redefine them in a clean way or assuming they are in HomeScreen.
-// To make it clean, I will move logic enums to a state file or keep them here.
+part 'home_provider.freezed.dart';
+part 'home_provider.g.dart';
 
 enum HomeStep { modeSelection, configuration }
 
 enum GameMode { localMultiplayer, vsComputer }
 
-class HomeState {
-  final HomeStep currentStep;
-  final GameMode selectedMode;
-  final int playerCount;
-  final AIDifficulty aiDifficulty;
-  final int gridSizeIndex;
-  final List<String> gridSizes;
+@freezed
+abstract class HomeState with _$HomeState {
+  const HomeState._();
 
-  const HomeState({
-    required this.currentStep,
-    required this.selectedMode,
-    required this.playerCount,
-    required this.aiDifficulty,
-    required this.gridSizeIndex,
-    required this.gridSizes,
-  });
+  const factory HomeState({
+    required HomeStep currentStep,
+    required GameMode selectedMode,
+    required int playerCount,
+    required AIDifficulty aiDifficulty,
+    required int gridSizeIndex,
+    required List<String> gridSizes,
+  }) = _HomeState;
 
   factory HomeState.initial() {
     return const HomeState(
@@ -39,24 +31,6 @@ class HomeState {
       aiDifficulty: AIDifficulty.medium,
       gridSizeIndex: 2,
       gridSizes: ['x_small', 'small', 'medium', 'large', 'x_large'],
-    );
-  }
-
-  HomeState copyWith({
-    HomeStep? currentStep,
-    GameMode? selectedMode,
-    int? playerCount,
-    AIDifficulty? aiDifficulty,
-    int? gridSizeIndex,
-    List<String>? gridSizes,
-  }) {
-    return HomeState(
-      currentStep: currentStep ?? this.currentStep,
-      selectedMode: selectedMode ?? this.selectedMode,
-      playerCount: playerCount ?? this.playerCount,
-      aiDifficulty: aiDifficulty ?? this.aiDifficulty,
-      gridSizeIndex: gridSizeIndex ?? this.gridSizeIndex,
-      gridSizes: gridSizes ?? this.gridSizes,
     );
   }
 
@@ -76,7 +50,8 @@ class HomeState {
   }
 }
 
-class HomeNotifier extends Notifier<HomeState> {
+@riverpod
+class HomeNotifier extends _$HomeNotifier {
   @override
   HomeState build() {
     return HomeState.initial();
@@ -126,7 +101,3 @@ class HomeNotifier extends Notifier<HomeState> {
     state = state.copyWith(gridSizeIndex: nextIndex);
   }
 }
-
-final homeProvider = NotifierProvider<HomeNotifier, HomeState>(
-  HomeNotifier.new,
-);

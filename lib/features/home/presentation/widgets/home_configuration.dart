@@ -60,6 +60,7 @@ class HomeConfiguration extends ConsumerWidget {
             );
           },
           width: double.infinity,
+          type: PillButtonType.primary,
         ),
       ],
     );
