@@ -59,9 +59,10 @@ class GreedyStrategy extends AIStrategy {
 
     for (final n in neighbors) {
       final cell = state.grid[n.y][n.x];
+      // Enemy cell is at critical mass - it will explode and capture our cell
       if (cell.ownerId != null &&
           cell.ownerId != player.id &&
-          cell.atomCount == cell.capacity) {
+          cell.isAtCriticalMass) {
         return true;
       }
     }

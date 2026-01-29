@@ -56,7 +56,11 @@ class _PillButtonState extends ConsumerState<PillButton> {
     switch (widget.type) {
       case PillButtonType.primary:
         // Filled: FG background, BG text
-        backgroundColor = theme.fg.withValues(alpha: isDisabled ? 0.3 : 1.0);
+        backgroundColor = theme.fg.withValues(
+          alpha: isDisabled
+              ? AppDimensions.disabledOpacity
+              : AppDimensions.activeOpacity,
+        );
         textColor = theme.bg.withValues(alpha: isDisabled ? 0.5 : 1.0);
         border = null;
         break;
@@ -64,12 +68,18 @@ class _PillButtonState extends ConsumerState<PillButton> {
       case PillButtonType.secondary:
         // Outline: Transparent BG, FG text, dimmed border
         backgroundColor = theme.surface.withValues(
-          alpha: isDisabled ? 0.1 : 0.0,
+          alpha: isDisabled ? AppDimensions.surfaceOpacity : 0.0,
         );
-        textColor = theme.fg.withValues(alpha: isDisabled ? 0.3 : 1.0);
+        textColor = theme.fg.withValues(
+          alpha: isDisabled
+              ? AppDimensions.disabledOpacity
+              : AppDimensions.activeOpacity,
+        );
         border = Border.all(
           color: (theme.border).withValues(
-            alpha: isDisabled ? 0.1 : 0.3,
+            alpha: isDisabled
+                ? AppDimensions.surfaceOpacity
+                : AppDimensions.outlineOpacity,
           ), // Very faint outline
           width: AppDimensions.pillButtonBorderWidth,
         );
@@ -91,8 +101,10 @@ class _PillButtonState extends ConsumerState<PillButton> {
     }
 
     return AnimatedScale(
-      scale: _isPressed ? 0.96 : 1.0,
-      duration: const Duration(milliseconds: 100),
+      scale: _isPressed ? AppDimensions.buttonPressScale : 1.0,
+      duration: const Duration(
+        milliseconds: AppDimensions.buttonPressDurationMs,
+      ),
       curve: Curves.easeOutQuad,
       child: SizedBox(
         width: widget.width ?? double.infinity,
@@ -120,7 +132,7 @@ class _PillButtonState extends ConsumerState<PillButton> {
                   color: textColor,
                   fontSize: AppDimensions.fontL,
                   fontWeight: FontWeight.w600,
-                  letterSpacing: 1.2,
+                  letterSpacing: AppDimensions.letterSpacingButton,
                 ),
               ),
             ),

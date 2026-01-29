@@ -123,8 +123,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 8,
-                    height: 8,
+                    width: AppDimensions.playerIndicatorSize,
+                    height: AppDimensions.playerIndicatorSize,
                     decoration: BoxDecoration(
                       color: currentPlayer.color,
                       shape: BoxShape.circle,
@@ -146,16 +146,28 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               centerTitle: true,
               actions: [
                 if (gameState.isProcessing)
-                  const Padding(
-                    padding: EdgeInsets.only(right: AppDimensions.paddingM),
-                    child: SizedBox(
-                      width: AppDimensions.iconM,
-                      height: AppDimensions.iconM,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                  const SizedBox(
+                    width: AppDimensions.actionButtonSize,
+                    height: AppDimensions.actionButtonSize,
+                    child: Center(
+                      child: SizedBox(
+                        width: AppDimensions.iconM,
+                        height: AppDimensions.iconM,
+                        child: CircularProgressIndicator(
+                          strokeWidth: AppDimensions.loaderStrokeWidth,
+                        ),
+                      ),
                     ),
                   )
                 else
-                  const SizedBox(width: AppDimensions.paddingS),
+                  IconButton(
+                    icon: const Icon(Icons.undo),
+                    color: themeState.fg,
+                    onPressed: ref.read(gameProvider.notifier).canUndo
+                        ? () => ref.read(gameProvider.notifier).undo()
+                        : null,
+                  ),
+                const SizedBox(width: AppDimensions.paddingS),
               ],
             ),
             body: SafeArea(

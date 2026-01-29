@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers.dart';
 import 'cell_widget.dart';
 import 'flying_atom_widget.dart';
+import '../../../../core/constants/app_dimensions.dart';
 
 /// Renders the game grid with cells and flying atoms.
 /// Renders the game grid with cells and flying atoms.
@@ -28,7 +29,9 @@ class _GameGridState extends ConsumerState<GameGrid>
     // AtomPainter scales this for speed (e.g. 4x for unstable).
     _masterController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(
+        seconds: AppDimensions.masterAnimationDurationSec,
+      ),
     )..repeat();
   }
 
@@ -89,8 +92,13 @@ class _GameGridState extends ConsumerState<GameGrid>
                             // Calculate a deterministic phase offset (0.0 to 1.0)
                             // This ensures atoms don't rotate in perfect unison.
                             // We use prime number multipliers to avoid noticeable patterns.
+                            const int phasePrime1 = 13;
+                            const int phasePrime2 = 23;
+                            const int phaseMod = 100;
                             final double angleOffset =
-                                ((col * 13 + row * 23) % 100) / 100.0;
+                                ((col * phasePrime1 + row * phasePrime2) %
+                                    phaseMod) /
+                                phaseMod.toDouble();
 
                             return CellWidget(
                               cell: cell,

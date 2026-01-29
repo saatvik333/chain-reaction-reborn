@@ -1,0 +1,872 @@
+diff --git a/.github/workflows/release.yml b/.github/workflows/release.yml
+index 9bac9b0..c4104e2 100644
+--- a/.github/workflows/release.yml
++++ b/.github/workflows/release.yml
+@@ -180,5 +180,5 @@ jobs:
+             chain_reaction_windows/chain_reaction_windows.zip
+             chain_reaction_macos/chain_reaction_macos.zip
+             chain_reaction_web/chain_reaction_web.zip
+-          body_path: RELEASE_NOTES_v1.1.0.md
++          body_path: RELEASE_NOTES_v1.1.1.md
+           generate_release_notes: false
+diff --git a/android/app/src/main/res/drawable-hdpi/android12splash.png b/android/app/src/main/res/drawable-hdpi/android12splash.png
+index e44c093..1598f01 100644
+Binary files a/android/app/src/main/res/drawable-hdpi/android12splash.png and b/android/app/src/main/res/drawable-hdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-mdpi/android12splash.png b/android/app/src/main/res/drawable-mdpi/android12splash.png
+index 0fdf694..52c09c8 100644
+Binary files a/android/app/src/main/res/drawable-mdpi/android12splash.png and b/android/app/src/main/res/drawable-mdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-night-hdpi/android12splash.png b/android/app/src/main/res/drawable-night-hdpi/android12splash.png
+index 77e9a44..c7dd360 100644
+Binary files a/android/app/src/main/res/drawable-night-hdpi/android12splash.png and b/android/app/src/main/res/drawable-night-hdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-night-mdpi/android12splash.png b/android/app/src/main/res/drawable-night-mdpi/android12splash.png
+index 652a649..6a42e6c 100644
+Binary files a/android/app/src/main/res/drawable-night-mdpi/android12splash.png and b/android/app/src/main/res/drawable-night-mdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-night-xhdpi/android12splash.png b/android/app/src/main/res/drawable-night-xhdpi/android12splash.png
+index 45879bb..b8bbe64 100644
+Binary files a/android/app/src/main/res/drawable-night-xhdpi/android12splash.png and b/android/app/src/main/res/drawable-night-xhdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-night-xxhdpi/android12splash.png b/android/app/src/main/res/drawable-night-xxhdpi/android12splash.png
+index bb3fd1d..bbcd27d 100644
+Binary files a/android/app/src/main/res/drawable-night-xxhdpi/android12splash.png and b/android/app/src/main/res/drawable-night-xxhdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-night-xxxhdpi/android12splash.png b/android/app/src/main/res/drawable-night-xxxhdpi/android12splash.png
+index 7e4bf3c..615c5f5 100644
+Binary files a/android/app/src/main/res/drawable-night-xxxhdpi/android12splash.png and b/android/app/src/main/res/drawable-night-xxxhdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-xhdpi/android12splash.png b/android/app/src/main/res/drawable-xhdpi/android12splash.png
+index e8a16ac..410e1e6 100644
+Binary files a/android/app/src/main/res/drawable-xhdpi/android12splash.png and b/android/app/src/main/res/drawable-xhdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-xxhdpi/android12splash.png b/android/app/src/main/res/drawable-xxhdpi/android12splash.png
+index 3afdc7f..48e10fa 100644
+Binary files a/android/app/src/main/res/drawable-xxhdpi/android12splash.png and b/android/app/src/main/res/drawable-xxhdpi/android12splash.png differ
+diff --git a/android/app/src/main/res/drawable-xxxhdpi/android12splash.png b/android/app/src/main/res/drawable-xxxhdpi/android12splash.png
+index 3c9d972..f2db6c8 100644
+Binary files a/android/app/src/main/res/drawable-xxxhdpi/android12splash.png and b/android/app/src/main/res/drawable-xxxhdpi/android12splash.png differ
+diff --git a/assets/logo-dark-padded.png b/assets/logo-dark-padded.png
+new file mode 100644
+index 0000000..ab1b88b
+Binary files /dev/null and b/assets/logo-dark-padded.png differ
+diff --git a/assets/logo-light-padded.png b/assets/logo-light-padded.png
+new file mode 100644
+index 0000000..d1e8b0d
+Binary files /dev/null and b/assets/logo-light-padded.png differ
+diff --git a/lib/core/constants/app_dimensions.dart b/lib/core/constants/app_dimensions.dart
+index bfee060..d25258f 100644
+--- a/lib/core/constants/app_dimensions.dart
++++ b/lib/core/constants/app_dimensions.dart
+@@ -55,5 +55,43 @@ class AppDimensions {
+ 
+   // Animation durations (ms)
+   static const int explosionDurationMs = 50;
++  static const int flightDurationMs = 250;
+   static const int turnTransitionMs = 200;
++
++  // UI Components
++  static const double actionButtonSize = 48.0;
++  static const double playerIndicatorSize = 8.0;
++  static const double loaderStrokeWidth = 2.0;
++
++  // Atom Rendering
++  static const double atomShadowBlur = 8.0;
++  static const double atomShadowOpacity = 0.4;
++  static const double atomVibrationAmplitude = 0.8;
++  static const double atomVibrationFrequency = 100.0;
++  static const double atomBreathingScaleBy = 0.15;
++  static const double atomSpacing2 = 6.0;
++  // Triangle Layout (Count 3)
++  static const double atomTriangleTopY = 8.0;
++  static const double atomTriangleBottomX = 7.0;
++  static const double atomTriangleBottomY = 5.0;
++  // Square Layout (Count 4)
++  static const double atomSpacing4 = 12.0;
++
++  // Grid & Cell
++  static const double gridBorderWidth = 0.5;
++  static const double gridBorderOpacity = 0.5;
++  static const double cellHighlightOpacity = 0.1;
++  static const double cellHoverOpacity = 0.2;
++  static const double cellSplashOpacity = 0.3;
++  static const int cellAnimationDurationMs = 300;
++  static const int masterAnimationDurationSec = 4;
++
++  // Buttons
++  static const double buttonPressScale = 0.96;
++  static const int buttonPressDurationMs = 100;
++  static const double letterSpacingButton = 1.2;
++  static const double disabledOpacity = 0.3;
++  static const double activeOpacity = 1.0;
++  static const double surfaceOpacity = 0.1;
++  static const double outlineOpacity = 0.3;
+ }
+diff --git a/lib/core/constants/constants.dart b/lib/core/constants/constants.dart
+index 5959778..d03855b 100644
+--- a/lib/core/constants/constants.dart
++++ b/lib/core/constants/constants.dart
+@@ -4,5 +4,5 @@ library;
+ export 'app_dimensions.dart';
+ 
+ class AppConstants {
+-  static const String appVersion = '1.1.0';
++  static const String appVersion = '1.1.1';
+ }
+diff --git a/lib/core/presentation/widgets/edit_player_dialog.dart b/lib/core/presentation/widgets/edit_player_dialog.dart
+index bc99591..924e70a 100644
+--- a/lib/core/presentation/widgets/edit_player_dialog.dart
++++ b/lib/core/presentation/widgets/edit_player_dialog.dart
+@@ -73,6 +73,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
+           const SizedBox(height: AppDimensions.paddingL),
+           TextField(
+             autofocus: true,
++            textCapitalization: TextCapitalization.sentences,
+             controller: _controller,
+             style: TextStyle(color: themeState.fg),
+             decoration: InputDecoration(
+diff --git a/lib/core/presentation/widgets/pill_button.dart b/lib/core/presentation/widgets/pill_button.dart
+index 963327c..14264d2 100644
+--- a/lib/core/presentation/widgets/pill_button.dart
++++ b/lib/core/presentation/widgets/pill_button.dart
+@@ -56,7 +56,11 @@ class _PillButtonState extends ConsumerState<PillButton> {
+     switch (widget.type) {
+       case PillButtonType.primary:
+         // Filled: FG background, BG text
+-        backgroundColor = theme.fg.withValues(alpha: isDisabled ? 0.3 : 1.0);
++        backgroundColor = theme.fg.withValues(
++          alpha: isDisabled
++              ? AppDimensions.disabledOpacity
++              : AppDimensions.activeOpacity,
++        );
+         textColor = theme.bg.withValues(alpha: isDisabled ? 0.5 : 1.0);
+         border = null;
+         break;
+@@ -64,12 +68,18 @@ class _PillButtonState extends ConsumerState<PillButton> {
+       case PillButtonType.secondary:
+         // Outline: Transparent BG, FG text, dimmed border
+         backgroundColor = theme.surface.withValues(
+-          alpha: isDisabled ? 0.1 : 0.0,
++          alpha: isDisabled ? AppDimensions.surfaceOpacity : 0.0,
++        );
++        textColor = theme.fg.withValues(
++          alpha: isDisabled
++              ? AppDimensions.disabledOpacity
++              : AppDimensions.activeOpacity,
+         );
+-        textColor = theme.fg.withValues(alpha: isDisabled ? 0.3 : 1.0);
+         border = Border.all(
+           color: (theme.border).withValues(
+-            alpha: isDisabled ? 0.1 : 0.3,
++            alpha: isDisabled
++                ? AppDimensions.surfaceOpacity
++                : AppDimensions.outlineOpacity,
+           ), // Very faint outline
+           width: AppDimensions.pillButtonBorderWidth,
+         );
+@@ -91,8 +101,10 @@ class _PillButtonState extends ConsumerState<PillButton> {
+     }
+ 
+     return AnimatedScale(
+-      scale: _isPressed ? 0.96 : 1.0,
+-      duration: const Duration(milliseconds: 100),
++      scale: _isPressed ? AppDimensions.buttonPressScale : 1.0,
++      duration: const Duration(
++        milliseconds: AppDimensions.buttonPressDurationMs,
++      ),
+       curve: Curves.easeOutQuad,
+       child: SizedBox(
+         width: widget.width ?? double.infinity,
+@@ -120,7 +132,7 @@ class _PillButtonState extends ConsumerState<PillButton> {
+                   color: textColor,
+                   fontSize: AppDimensions.fontL,
+                   fontWeight: FontWeight.w600,
+-                  letterSpacing: 1.2,
++                  letterSpacing: AppDimensions.letterSpacingButton,
+                 ),
+               ),
+             ),
+diff --git a/lib/features/game/domain/ai/strategies/extreme_strategy.dart b/lib/features/game/domain/ai/strategies/extreme_strategy.dart
+index 06b41e4..36bc61b 100644
+--- a/lib/features/game/domain/ai/strategies/extreme_strategy.dart
++++ b/lib/features/game/domain/ai/strategies/extreme_strategy.dart
+@@ -28,49 +28,61 @@ class ExtremeStrategy extends AIStrategy {
+     Point<int>? bestMove;
+     double maxScore = double.negativeInfinity;
+ 
++    // 22% chance to have a "lapse" and fail to look ahead (Depth 1 only)
++    // This simulates human error and allows players to win more often
++    final bool isLapse = _random.nextDouble() < 0.22;
++
+     for (final move in validMoves) {
+       // 1. Simulate AI Move
+       final stateAfterAi = _simulateMove(state, move, player);
+ 
+-      // Check for immediate win
++      // Check for immediate win (Always take these, even if lapsing)
+       if (_isWin(stateAfterAi, player)) {
+         return move; // Instant win, take it!
+       }
+ 
+-      // 2. Minimax Step: Anticipate Opponent's Best Response
+-      double minOpponentScore = double.infinity;
+-      final opponent = _getNextPlayer(stateAfterAi, player);
+-
+-      if (opponent != null) {
+-        final opponentMoves = getValidMoves(stateAfterAi, opponent);
+-
+-        if (opponentMoves.isEmpty) {
+-          minOpponentScore = 1000.0; // Good for me
+-        } else {
+-          for (final oppMove in opponentMoves) {
+-            final stateAfterOpp = _simulateMove(
+-              stateAfterAi,
+-              oppMove,
+-              opponent,
+-            );
+-
+-            if (_isWin(stateAfterOpp, opponent)) {
+-              minOpponentScore = double.negativeInfinity;
+-              break;
+-            }
++      double moveScore;
+ 
+-            final score = _evaluateState(stateAfterOpp, player);
+-            if (score < minOpponentScore) {
+-              minOpponentScore = score;
++      if (isLapse) {
++        // Short-sighted: Just evaluate the board after my move (Depth 1)
++        moveScore = _evaluateState(stateAfterAi, player);
++      } else {
++        // 2. Minimax Step: Anticipate Opponent's Best Response
++        double minOpponentScore = double.infinity;
++        final opponent = _getNextPlayer(stateAfterAi, player);
++
++        if (opponent != null) {
++          final opponentMoves = getValidMoves(stateAfterAi, opponent);
++
++          if (opponentMoves.isEmpty) {
++            minOpponentScore = 1000.0; // Good for me
++          } else {
++            for (final oppMove in opponentMoves) {
++              final stateAfterOpp = _simulateMove(
++                stateAfterAi,
++                oppMove,
++                opponent,
++              );
++
++              if (_isWin(stateAfterOpp, opponent)) {
++                minOpponentScore = double.negativeInfinity;
++                break;
++              }
++
++              final score = _evaluateState(stateAfterOpp, player);
++              if (score < minOpponentScore) {
++                minOpponentScore = score;
++              }
+             }
+           }
++        } else {
++          minOpponentScore = 10000.0;
+         }
+-      } else {
+-        minOpponentScore = 10000.0;
++        moveScore = minOpponentScore;
+       }
+ 
+       final jitter = _random.nextDouble();
+-      final totalScore = minOpponentScore + jitter;
++      final totalScore = moveScore + jitter;
+ 
+       if (totalScore > maxScore) {
+         maxScore = totalScore;
+diff --git a/lib/features/game/domain/ai/strategies/greedy_strategy.dart b/lib/features/game/domain/ai/strategies/greedy_strategy.dart
+index 7ac339f..96d4162 100644
+--- a/lib/features/game/domain/ai/strategies/greedy_strategy.dart
++++ b/lib/features/game/domain/ai/strategies/greedy_strategy.dart
+@@ -59,9 +59,10 @@ class GreedyStrategy extends AIStrategy {
+ 
+     for (final n in neighbors) {
+       final cell = state.grid[n.y][n.x];
++      // Enemy cell is at critical mass - it will explode and capture our cell
+       if (cell.ownerId != null &&
+           cell.ownerId != player.id &&
+-          cell.atomCount == cell.capacity) {
++          cell.isAtCriticalMass) {
+         return true;
+       }
+     }
+diff --git a/lib/features/game/domain/ai/strategies/strategic_strategy.dart b/lib/features/game/domain/ai/strategies/strategic_strategy.dart
+index fc4ea5b..4300226 100644
+--- a/lib/features/game/domain/ai/strategies/strategic_strategy.dart
++++ b/lib/features/game/domain/ai/strategies/strategic_strategy.dart
+@@ -10,9 +10,9 @@ import '../../entities/cell.dart';
+ /// state prediction depth extremely computationally expensive.
+ class StrategicStrategy extends AIStrategy {
+   final Random _random = Random();
+-  // 85% chance to play the "best" move, 15% chance to play randomly.
++  // 75% chance to play the "best" move, 25% chance to play randomly.
+   // This simulates human error and prevents the AI from being perfectly ruthless.
+-  static const double _difficultyFactor = 0.85;
++  static const double _difficultyFactor = 0.75;
+ 
+   @override
+   Future<Point<int>> getMove(GameState state, Player player) async {
+@@ -99,9 +99,10 @@ class StrategicStrategy extends AIStrategy {
+           final neighbors = _getNeighbors(simulatedState, Point(x, y));
+           for (final n in neighbors) {
+             final nCell = simulatedState.grid[n.y][n.x];
++            // Enemy cell at critical mass will explode on their turn
+             if (nCell.ownerId != null &&
+                 nCell.ownerId != player.id &&
+-                nCell.atomCount == nCell.capacity) {
++                nCell.isAtCriticalMass) {
+               score -= 5.0; // Penalty for being next to a bomb
+             }
+           }
+diff --git a/lib/features/game/domain/usecases/place_atom.dart b/lib/features/game/domain/usecases/place_atom.dart
+index b0cab6a..e2d7c79 100644
+--- a/lib/features/game/domain/usecases/place_atom.dart
++++ b/lib/features/game/domain/usecases/place_atom.dart
+@@ -2,6 +2,7 @@ import 'dart:collection';
+ import 'package:uuid/uuid.dart';
+ import '../entities/entities.dart';
+ import '../logic/game_rules.dart';
++import '../../../../core/constants/app_dimensions.dart';
+ 
+ /// Use case for placing an atom on the grid.
+ ///
+@@ -110,7 +111,7 @@ class PlaceAtomUseCase {
+ 
+       // Wait for flight
+       await Future.delayed(
+-        const Duration(milliseconds: 250),
++        const Duration(milliseconds: AppDimensions.flightDurationMs),
+       ); // Flight duration
+ 
+       // 5. Phase 2: Land Atoms
+diff --git a/lib/features/game/presentation/providers/game_state_provider.dart b/lib/features/game/presentation/providers/game_state_provider.dart
+index b974743..d4ee3a7 100644
+--- a/lib/features/game/presentation/providers/game_state_provider.dart
++++ b/lib/features/game/presentation/providers/game_state_provider.dart
+@@ -22,6 +22,7 @@ class GameNotifier extends _$GameNotifier {
+   late final HapticService _hapticService;
+ 
+   StreamSubscription<GameState>? _explosionSubscription;
++  final List<GameState> _history = [];
+ 
+   @override
+   GameState? build() {
+@@ -49,6 +50,7 @@ class GameNotifier extends _$GameNotifier {
+   /// Initializes a new game with the given players and grid size.
+   void initGame(List<Player> players, {String? gridSize}) {
+     _cancelExplosions();
++    _history.clear();
+     state = _initializeGame(players, gridSize: gridSize);
+     _saveGame();
+   }
+@@ -58,6 +60,7 @@ class GameNotifier extends _$GameNotifier {
+     final currentState = state;
+     if (currentState == null) return;
+ 
++    _history.add(currentState);
+     _cancelExplosions();
+ 
+     // Play tap feedback
+@@ -98,6 +101,29 @@ class GameNotifier extends _$GameNotifier {
+     );
+   }
+ 
++  /// Undo the last move.
++  ///
++  /// If the previous player was AI, this will recursively undo to reach a human player's turn.
++  void undo() {
++    final currentState = state;
++    if (currentState == null || currentState.isProcessing || _history.isEmpty) {
++      return;
++    }
++
++    // Pop the last state from history
++    final previousState = _history.removeLast();
++    state = previousState.copyWith(isProcessing: false);
++    _saveGame();
++
++    // If we reverted to an AI turn, we must undo again to get back to a human
++    // (unless history is now empty, in which case we start over or stay at AI start)
++    if (previousState.currentPlayer.isAI && _history.isNotEmpty) {
++      undo();
++    }
++  }
++
++  bool get canUndo => _history.isNotEmpty;
++
+   /// Trigger AI move if it's AI turn
+   Future<void> _processAIMove() async {
+     final currentState = state;
+@@ -172,6 +198,7 @@ class GameNotifier extends _$GameNotifier {
+   /// Resets the game to null state.
+   void resetGame() {
+     _cancelExplosions();
++    _history.clear();
+     state = null;
+     _gameRepository.clearGame();
+   }
+diff --git a/lib/features/game/presentation/screens/game_screen.dart b/lib/features/game/presentation/screens/game_screen.dart
+index 9390cdd..24d5d99 100644
+--- a/lib/features/game/presentation/screens/game_screen.dart
++++ b/lib/features/game/presentation/screens/game_screen.dart
+@@ -123,8 +123,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
+                 mainAxisSize: MainAxisSize.min,
+                 children: [
+                   Container(
+-                    width: 8,
+-                    height: 8,
++                    width: AppDimensions.playerIndicatorSize,
++                    height: AppDimensions.playerIndicatorSize,
+                     decoration: BoxDecoration(
+                       color: currentPlayer.color,
+                       shape: BoxShape.circle,
+@@ -146,16 +146,28 @@ class _GameScreenState extends ConsumerState<GameScreen> {
+               centerTitle: true,
+               actions: [
+                 if (gameState.isProcessing)
+-                  const Padding(
+-                    padding: EdgeInsets.only(right: AppDimensions.paddingM),
+-                    child: SizedBox(
+-                      width: AppDimensions.iconM,
+-                      height: AppDimensions.iconM,
+-                      child: CircularProgressIndicator(strokeWidth: 2),
++                  const SizedBox(
++                    width: AppDimensions.actionButtonSize,
++                    height: AppDimensions.actionButtonSize,
++                    child: Center(
++                      child: SizedBox(
++                        width: AppDimensions.iconM,
++                        height: AppDimensions.iconM,
++                        child: CircularProgressIndicator(
++                          strokeWidth: AppDimensions.loaderStrokeWidth,
++                        ),
++                      ),
+                     ),
+                   )
+                 else
+-                  const SizedBox(width: AppDimensions.paddingS),
++                  IconButton(
++                    icon: const Icon(Icons.undo),
++                    color: themeState.fg,
++                    onPressed: ref.read(gameProvider.notifier).canUndo
++                        ? () => ref.read(gameProvider.notifier).undo()
++                        : null,
++                  ),
++                const SizedBox(width: AppDimensions.paddingS),
+               ],
+             ),
+             body: SafeArea(
+diff --git a/lib/features/game/presentation/widgets/atom_painter.dart b/lib/features/game/presentation/widgets/atom_painter.dart
+index fccfae1..9bc3709 100644
+--- a/lib/features/game/presentation/widgets/atom_painter.dart
++++ b/lib/features/game/presentation/widgets/atom_painter.dart
+@@ -17,9 +17,6 @@ class AtomPainter extends CustomPainter {
+   static const double _orbSize = AppDimensions.orbSizeSmall;
+   static const double _orbRadius = _orbSize / 2;
+ 
+-  // Pre-calculated spacing offsets for different layouts
+-  static const double _spacing4 = 12.0; // Distance for 4-atom cluster
+-
+   AtomPainter({
+     required this.color,
+     required this.count,
+@@ -57,9 +54,14 @@ class AtomPainter extends CustomPainter {
+     if (isVibrationOn && (isCritical || isUnstable)) {
+       // High frequency vibration using sine waves on the main animation value
+       // 100 * 2pi = 100 cycles per Animation Loop
+-      final vVal = math.sin(animationValue * 100 * math.pi);
+-      vibrateX = vVal * 0.8;
+-      vibrateY = (1 - vVal.abs()) * 0.8 * (vVal > 0 ? 1 : -1);
++      final vVal = math.sin(
++        animationValue * AppDimensions.atomVibrationFrequency * math.pi,
++      );
++      vibrateX = vVal * AppDimensions.atomVibrationAmplitude;
++      vibrateY =
++          (1 - vVal.abs()) *
++          AppDimensions.atomVibrationAmplitude *
++          (vVal > 0 ? 1 : -1);
+     }
+ 
+     // Apply transformations
+@@ -70,12 +72,14 @@ class AtomPainter extends CustomPainter {
+     // Draw Shadows (Using MaskFilter.blur as requested)
+     final shadowPaint = Paint()
+       ..color = color.withAlpha(
+-        ((color.a * 255.0).round().clamp(0, 255) * 0.4).toInt(),
++        ((color.a * 255.0).round().clamp(0, 255) *
++                AppDimensions.atomShadowOpacity)
++            .toInt(),
+       )
+       ..maskFilter = const MaskFilter.blur(
+         BlurStyle.normal,
+-        8,
+-      ); // Same as blurRadius 8
++        AppDimensions.atomShadowBlur,
++      );
+ 
+     // 3. Organic Breathing (Simulated Physics)
+     // Instead of fixed offsets, we modulate the distance from center using sine waves.
+@@ -86,7 +90,8 @@ class AtomPainter extends CustomPainter {
+     final breatheVal = math.sin(
+       (animationValue + angleOffset) * 4 * math.pi,
+     ); // 2 breaths per rotation cycle
+-    final breathingFactor = 1.0 + (breatheVal * 0.15); // +/- 15% scale
++    final breathingFactor =
++        1.0 + (breatheVal * AppDimensions.atomBreathingScaleBy);
+ 
+     // Draw based on count (Applying breathingFactor to spacing)
+     switch (count) {
+@@ -97,7 +102,7 @@ class AtomPainter extends CustomPainter {
+         break;
+       case 2:
+         // spacing 6.0 becomes dynamic
+-        final d = 6.0 * breathingFactor;
++        final d = AppDimensions.atomSpacing2 * breathingFactor;
+         _drawAtom(canvas, Offset(-d, -d), paint, shadowPaint);
+         _drawAtom(canvas, Offset(d, d), paint, shadowPaint);
+         break;
+@@ -108,13 +113,34 @@ class AtomPainter extends CustomPainter {
+         //  7,  5
+         // We scale these vectors from center
+         final s = breathingFactor;
+-        _drawAtom(canvas, Offset(0, -8 * s), paint, shadowPaint);
+-        _drawAtom(canvas, Offset(-7 * s, 5 * s), paint, shadowPaint);
+-        _drawAtom(canvas, Offset(7 * s, 5 * s), paint, shadowPaint);
++        _drawAtom(
++          canvas,
++          Offset(0, -AppDimensions.atomTriangleTopY * s),
++          paint,
++          shadowPaint,
++        );
++        _drawAtom(
++          canvas,
++          Offset(
++            -AppDimensions.atomTriangleBottomX * s,
++            AppDimensions.atomTriangleBottomY * s,
++          ),
++          paint,
++          shadowPaint,
++        );
++        _drawAtom(
++          canvas,
++          Offset(
++            AppDimensions.atomTriangleBottomX * s,
++            AppDimensions.atomTriangleBottomY * s,
++          ),
++          paint,
++          shadowPaint,
++        );
+         break;
+       case 4:
+         // Square layout (12.0)
+-        final d4 = _spacing4 * breathingFactor;
++        final d4 = AppDimensions.atomSpacing4 * breathingFactor;
+         _drawAtom(canvas, Offset(0, -d4), paint, shadowPaint);
+         _drawAtom(canvas, Offset(-d4, 0), paint, shadowPaint);
+         _drawAtom(canvas, Offset(d4, 0), paint, shadowPaint);
+@@ -122,7 +148,7 @@ class AtomPainter extends CustomPainter {
+         break;
+       default:
+         if (count > 4) {
+-          final d4 = _spacing4 * breathingFactor;
++          final d4 = AppDimensions.atomSpacing4 * breathingFactor;
+           _drawAtom(canvas, Offset(0, -d4), paint, shadowPaint);
+           _drawAtom(canvas, Offset(-d4, 0), paint, shadowPaint);
+           _drawAtom(canvas, Offset(d4, 0), paint, shadowPaint);
+diff --git a/lib/features/game/presentation/widgets/cell_widget.dart b/lib/features/game/presentation/widgets/cell_widget.dart
+index 55c3a8e..054859b 100644
+--- a/lib/features/game/presentation/widgets/cell_widget.dart
++++ b/lib/features/game/presentation/widgets/cell_widget.dart
+@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
+ import 'package:flutter/material.dart';
+ import '../../domain/entities/cell.dart';
+ import 'atom_widget.dart';
++import '../../../../core/constants/app_dimensions.dart';
+ 
+ /// Renders a single cell in the game grid.
+ class CellWidget extends StatelessWidget {
+@@ -48,15 +49,21 @@ class CellWidget extends StatelessWidget {
+                     defaultTargetPlatform == TargetPlatform.iOS);
+ 
+             final childContainer = AnimatedContainer(
+-              duration: const Duration(milliseconds: 300),
++              duration: const Duration(
++                milliseconds: AppDimensions.cellAnimationDurationMs,
++              ),
+               curve: Curves.easeOut,
+               decoration: BoxDecoration(
+                 color: (isCellHighlightOn && cell.ownerId != null)
+-                    ? cellColor.withValues(alpha: 0.1)
++                    ? cellColor.withValues(
++                        alpha: AppDimensions.cellHighlightOpacity,
++                      )
+                     : Colors.transparent,
+                 border: Border.all(
+-                  color: borderColor.withValues(alpha: 0.5),
+-                  width: 0.5,
++                  color: borderColor.withValues(
++                    alpha: AppDimensions.gridBorderOpacity,
++                  ),
++                  width: AppDimensions.gridBorderWidth,
+                 ),
+               ),
+               child: Center(
+@@ -88,8 +95,12 @@ class CellWidget extends StatelessWidget {
+ 
+             return InkWell(
+               onTap: onTap,
+-              hoverColor: borderColor.withValues(alpha: 0.2),
+-              splashColor: borderColor.withValues(alpha: 0.3),
++              hoverColor: borderColor.withValues(
++                alpha: AppDimensions.cellHoverOpacity,
++              ),
++              splashColor: borderColor.withValues(
++                alpha: AppDimensions.cellSplashOpacity,
++              ),
+               child: childContainer,
+             );
+           },
+diff --git a/lib/features/game/presentation/widgets/game_grid.dart b/lib/features/game/presentation/widgets/game_grid.dart
+index 3473d3f..913d49a 100644
+--- a/lib/features/game/presentation/widgets/game_grid.dart
++++ b/lib/features/game/presentation/widgets/game_grid.dart
+@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
+ import '../providers/providers.dart';
+ import 'cell_widget.dart';
+ import 'flying_atom_widget.dart';
++import '../../../../core/constants/app_dimensions.dart';
+ 
+ /// Renders the game grid with cells and flying atoms.
+ /// Renders the game grid with cells and flying atoms.
+@@ -28,7 +29,9 @@ class _GameGridState extends ConsumerState<GameGrid>
+     // AtomPainter scales this for speed (e.g. 4x for unstable).
+     _masterController = AnimationController(
+       vsync: this,
+-      duration: const Duration(seconds: 4),
++      duration: const Duration(
++        seconds: AppDimensions.masterAnimationDurationSec,
++      ),
+     )..repeat();
+   }
+ 
+@@ -89,8 +92,13 @@ class _GameGridState extends ConsumerState<GameGrid>
+                             // Calculate a deterministic phase offset (0.0 to 1.0)
+                             // This ensures atoms don't rotate in perfect unison.
+                             // We use prime number multipliers to avoid noticeable patterns.
++                            const int phasePrime1 = 13;
++                            const int phasePrime2 = 23;
++                            const int phaseMod = 100;
+                             final double angleOffset =
+-                                ((col * 13 + row * 23) % 100) / 100.0;
++                                ((col * phasePrime1 + row * phasePrime2) %
++                                    phaseMod) /
++                                phaseMod.toDouble();
+ 
+                             return CellWidget(
+                               cell: cell,
+diff --git a/pubspec.yaml b/pubspec.yaml
+index 8a719eb..a97c8e2 100644
+--- a/pubspec.yaml
++++ b/pubspec.yaml
+@@ -1,7 +1,7 @@
+ name: chain_reaction
+ description: "Chain Reaction Reborn - A polished strategy game."
+ publish_to: 'none'
+-version: 1.1.0+1
++version: 1.1.1+1
+ 
+ environment:
+   sdk: ^3.10.7
+@@ -54,8 +54,8 @@ flutter_native_splash:
+   image_dark: "assets/logo-dark.png"
+ 
+   android_12:
+-    image: "assets/logo-light.png"
+-    image_dark: "assets/logo-dark.png"
++    image: "assets/logo-light-padded.png"
++    image_dark: "assets/logo-dark-padded.png"
+     color: "#F5F5F5"
+     color_dark: "#151515"
+ 
+diff --git a/test/features/game/presentation/providers/game_notifier_test.dart b/test/features/game/presentation/providers/game_notifier_test.dart
+index 02888eb..f8fde89 100644
+--- a/test/features/game/presentation/providers/game_notifier_test.dart
++++ b/test/features/game/presentation/providers/game_notifier_test.dart
+@@ -1,3 +1,4 @@
++import 'dart:math';
+ import 'package:flutter/painting.dart'; // For Color
+ import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+ import 'package:chain_reaction/features/game/domain/entities/player.dart';
+@@ -6,6 +7,7 @@ import 'package:chain_reaction/features/game/presentation/providers/game_state_p
+ import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
+ import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
+ import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
++import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
+ import 'package:flutter_riverpod/flutter_riverpod.dart';
+ import 'package:flutter_test/flutter_test.dart';
+ 
+@@ -96,24 +98,43 @@ class FakeSettingsRepository implements SettingsRepository {
+   Future<void> setThemeName(String value) async => themeName = value;
+ }
+ 
++class FakeAIService implements AIService {
++  @override
++  Future<Point<int>> getMove(GameState state, Player player) async {
++    // Return a dummy move (1, 0) -> x=1, y=0 -> grid[0][1]
++    return const Point(1, 0);
++  }
++}
++
++// Test Constants
++const logicDelay = Duration(milliseconds: 100);
++const aiDelay = Duration(milliseconds: 200);
++
+ void main() {
+   group('GameNotifier Integration Test', () {
+     late ProviderContainer container;
+     late FakeGameRepository fakeRepository;
+     late FakeSettingsRepository fakeSettingsRepository;
++    late FakeAIService fakeAIService;
++    late ProviderSubscription subscription;
+ 
+     setUp(() {
+       fakeRepository = FakeGameRepository();
+       fakeSettingsRepository = FakeSettingsRepository();
++      fakeAIService = FakeAIService();
+       container = ProviderContainer(
+         overrides: [
+           gameRepositoryProvider.overrideWithValue(fakeRepository),
+           settingsRepositoryProvider.overrideWithValue(fakeSettingsRepository),
++          aiServiceProvider.overrideWithValue(fakeAIService),
+         ],
+       );
++      // Keep provider alive
++      subscription = container.listen(gameProvider, (_, _) {});
+     });
+ 
+     tearDown(() {
++      subscription.close();
+       container.dispose();
+     });
+ 
+@@ -154,12 +175,98 @@ void main() {
+       // Initial move
+       notifier.placeAtom(0, 0);
+ 
+-      // Wait for stream processing (microtasks)
+-      await Future.delayed(const Duration(milliseconds: 100));
++      // Wait for logic
++      await Future.delayed(logicDelay);
+ 
+       final state = container.read(gameProvider);
+       expect(state!.grid[0][0].atomCount, 1);
+       expect(state.grid[0][0].ownerId, '1');
+     });
++
++    test('Undo reverts state in PvP', () async {
++      final notifier = container.read(gameProvider.notifier);
++      final players = [
++        const Player(id: '1', name: 'P1', color: Color(0xFF000000)),
++        const Player(id: '2', name: 'P2', color: Color(0xFFFFFFFF)),
++      ];
++
++      notifier.initGame(players);
++
++      // Verify initial state
++      final state1 = container.read(gameProvider);
++      expect(state1!.currentPlayer.id, '1');
++
++      // P1 moves
++      notifier.placeAtom(0, 0);
++      await Future.delayed(logicDelay); // Wait for P1 logic
++
++      final state2 = container.read(gameProvider);
++      // P1 move applied, turn advanced to P2
++      expect(state2!.currentPlayer.id, '2');
++
++      // Undo
++      expect(notifier.canUndo, isTrue);
++      notifier.undo();
++
++      final state3 = container.read(gameProvider);
++      // Should revert to P1
++      expect(state3!.currentPlayer.id, '1');
++      // Board should be clear
++      expect(state3.grid[0][0].atomCount, 0);
++    });
++
++    test('Undo reverts state in PvAI (reverts 2 turns)', () async {
++      final notifier = container.read(gameProvider.notifier);
++      final players = [
++        const Player(id: '1', name: 'P1', color: Color(0xFF000000)),
++        const Player(
++          id: '2',
++          name: 'Computer',
++          color: Color(0xFFFFFFFF),
++          type: PlayerType.ai,
++          difficulty: AIDifficulty.easy,
++        ),
++      ];
++
++      notifier.initGame(players);
++
++      // P1 moves
++      notifier.placeAtom(0, 0);
++
++      // Wait for P1 move AND FakeAI move
++      await Future.delayed(aiDelay);
++
++      final stateAfterAIMove = container.read(gameProvider);
++
++      // P1 moved -> P2 (AI) -> AI moved -> P1.
++      // So current turn should be P1 again.
++      // And grid should have atoms at (0,0) [P1] and (0,1) [AI].
++      expect(stateAfterAIMove, isNotNull);
++      expect(
++        stateAfterAIMove!.currentPlayer.id,
++        '1',
++        reason: 'Current player should be P1',
++      );
++      expect(
++        stateAfterAIMove.grid[0][0].atomCount,
++        1,
++        reason: 'P1 move missing at 0,0',
++      ); // P1
++      expect(
++        stateAfterAIMove.grid[0][1].atomCount,
++        1,
++        reason: 'AI move missing at 0,1',
++      ); // AI
++
++      // Now UNDO.
++      notifier.undo();
++
++      final stateAfterUndo = container.read(gameProvider);
++      expect(stateAfterUndo!.currentPlayer.id, '1');
++      expect(stateAfterUndo.grid[0][0].atomCount, 0);
++      expect(stateAfterUndo.grid[0][1].atomCount, 0);
++
++      expect(notifier.canUndo, isFalse);
++    });
+   });
+ }
+diff --git a/web/index.html b/web/index.html
+index 7244bf1..3783605 100644
+--- a/web/index.html
++++ b/web/index.html
+@@ -36,6 +36,8 @@
+   
+   
+   
++  
++  
+   <style id="splash-screen-style">
+     html {
+       height: 100%
+@@ -117,6 +119,7 @@
+   
+   
+   
++  
+   <script src="flutter_bootstrap.js" async=""></script>
+ 
+ 

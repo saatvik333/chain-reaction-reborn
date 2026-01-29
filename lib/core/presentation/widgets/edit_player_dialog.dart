@@ -73,6 +73,7 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
           const SizedBox(height: AppDimensions.paddingL),
           TextField(
             autofocus: true,
+            textCapitalization: TextCapitalization.sentences,
             controller: _controller,
             style: TextStyle(color: themeState.fg),
             decoration: InputDecoration(

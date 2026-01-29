@@ -55,5 +55,43 @@ class AppDimensions {
 
   // Animation durations (ms)
   static const int explosionDurationMs = 50;
+  static const int flightDurationMs = 250;
   static const int turnTransitionMs = 200;
+
+  // UI Components
+  static const double actionButtonSize = 48.0;
+  static const double playerIndicatorSize = 8.0;
+  static const double loaderStrokeWidth = 2.0;
+
+  // Atom Rendering
+  static const double atomShadowBlur = 8.0;
+  static const double atomShadowOpacity = 0.4;
+  static const double atomVibrationAmplitude = 0.8;
+  static const double atomVibrationFrequency = 100.0;
+  static const double atomBreathingScaleBy = 0.15;
+  static const double atomSpacing2 = 6.0;
+  // Triangle Layout (Count 3)
+  static const double atomTriangleTopY = 8.0;
+  static const double atomTriangleBottomX = 7.0;
+  static const double atomTriangleBottomY = 5.0;
+  // Square Layout (Count 4)
+  static const double atomSpacing4 = 12.0;
+
+  // Grid & Cell
+  static const double gridBorderWidth = 0.5;
+  static const double gridBorderOpacity = 0.5;
+  static const double cellHighlightOpacity = 0.1;
+  static const double cellHoverOpacity = 0.2;
+  static const double cellSplashOpacity = 0.3;
+  static const int cellAnimationDurationMs = 300;
+  static const int masterAnimationDurationSec = 4;
+
+  // Buttons
+  static const double buttonPressScale = 0.96;
+  static const int buttonPressDurationMs = 100;
+  static const double letterSpacingButton = 1.2;
+  static const double disabledOpacity = 0.3;
+  static const double activeOpacity = 1.0;
+  static const double surfaceOpacity = 0.1;
+  static const double outlineOpacity = 0.3;
 }

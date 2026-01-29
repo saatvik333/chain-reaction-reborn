@@ -10,9 +10,9 @@ import '../../entities/cell.dart';
 /// state prediction depth extremely computationally expensive.
 class StrategicStrategy extends AIStrategy {
   final Random _random = Random();
-  // 85% chance to play the "best" move, 15% chance to play randomly.
+  // 75% chance to play the "best" move, 25% chance to play randomly.
   // This simulates human error and prevents the AI from being perfectly ruthless.
-  static const double _difficultyFactor = 0.85;
+  static const double _difficultyFactor = 0.75;
 
   @override
   Future<Point<int>> getMove(GameState state, Player player) async {
@@ -99,9 +99,10 @@ class StrategicStrategy extends AIStrategy {
           final neighbors = _getNeighbors(simulatedState, Point(x, y));
           for (final n in neighbors) {
             final nCell = simulatedState.grid[n.y][n.x];
+            // Enemy cell at critical mass will explode on their turn
             if (nCell.ownerId != null &&
                 nCell.ownerId != player.id &&
-                nCell.atomCount == nCell.capacity) {
+                nCell.isAtCriticalMass) {
               score -= 5.0; // Penalty for being next to a bomb
             }
           }

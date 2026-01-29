@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'package:uuid/uuid.dart';
 import '../entities/entities.dart';
 import '../logic/game_rules.dart';
+import '../../../../core/constants/app_dimensions.dart';
 
 /// Use case for placing an atom on the grid.
 ///
@@ -110,7 +111,7 @@ class PlaceAtomUseCase {
 
       // Wait for flight
       await Future.delayed(
-        const Duration(milliseconds: 250),
+        const Duration(milliseconds: AppDimensions.flightDurationMs),
       ); // Flight duration
 
       // 5. Phase 2: Land Atoms

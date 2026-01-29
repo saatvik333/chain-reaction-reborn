@@ -22,6 +22,7 @@ class GameNotifier extends _$GameNotifier {
   late final HapticService _hapticService;
 
   StreamSubscription<GameState>? _explosionSubscription;
+  final List<GameState> _history = [];
 
   @override
   GameState? build() {
@@ -49,6 +50,7 @@ class GameNotifier extends _$GameNotifier {
   /// Initializes a new game with the given players and grid size.
   void initGame(List<Player> players, {String? gridSize}) {
     _cancelExplosions();
+    _history.clear();
     state = _initializeGame(players, gridSize: gridSize);
     _saveGame();
   }
@@ -58,6 +60,7 @@ class GameNotifier extends _$GameNotifier {
     final currentState = state;
     if (currentState == null) return;
 
+    _history.add(currentState);
     _cancelExplosions();
 
     // Play tap feedback
@@ -97,6 +100,29 @@ class GameNotifier extends _$GameNotifier {
       },
     );
   }
+
+  /// Undo the last move.
+  ///
+  /// If the previous player was AI, this will recursively undo to reach a human player's turn.
+  void undo() {
+    final currentState = state;
+    if (currentState == null || currentState.isProcessing || _history.isEmpty) {
+      return;
+    }
+
+    // Pop the last state from history
+    final previousState = _history.removeLast();
+    state = previousState.copyWith(isProcessing: false);
+    _saveGame();
+
+    // If we reverted to an AI turn, we must undo again to get back to a human
+    // (unless history is now empty, in which case we start over or stay at AI start)
+    if (previousState.currentPlayer.isAI && _history.isNotEmpty) {
+      undo();
+    }
+  }
+
+  bool get canUndo => _history.isNotEmpty;
 
   /// Trigger AI move if it's AI turn
   Future<void> _processAIMove() async {
@@ -172,6 +198,7 @@ class GameNotifier extends _$GameNotifier {
   /// Resets the game to null state.
   void resetGame() {
     _cancelExplosions();
+    _history.clear();
     state = null;
     _gameRepository.clearGame();
   }

@@ -28,49 +28,61 @@ class ExtremeStrategy extends AIStrategy {
     Point<int>? bestMove;
     double maxScore = double.negativeInfinity;
 
+    // 22% chance to have a "lapse" and fail to look ahead (Depth 1 only)
+    // This simulates human error and allows players to win more often
+    final bool isLapse = _random.nextDouble() < 0.22;
+
     for (final move in validMoves) {
       // 1. Simulate AI Move
       final stateAfterAi = _simulateMove(state, move, player);
 
-      // Check for immediate win
+      // Check for immediate win (Always take these, even if lapsing)
       if (_isWin(stateAfterAi, player)) {
         return move; // Instant win, take it!
       }
 
-      // 2. Minimax Step: Anticipate Opponent's Best Response
-      double minOpponentScore = double.infinity;
-      final opponent = _getNextPlayer(stateAfterAi, player);
+      double moveScore;
 
-      if (opponent != null) {
-        final opponentMoves = getValidMoves(stateAfterAi, opponent);
+      if (isLapse) {
+        // Short-sighted: Just evaluate the board after my move (Depth 1)
+        moveScore = _evaluateState(stateAfterAi, player);
+      } else {
+        // 2. Minimax Step: Anticipate Opponent's Best Response
+        double minOpponentScore = double.infinity;
+        final opponent = _getNextPlayer(stateAfterAi, player);
 
-        if (opponentMoves.isEmpty) {
-          minOpponentScore = 1000.0; // Good for me
-        } else {
-          for (final oppMove in opponentMoves) {
-            final stateAfterOpp = _simulateMove(
-              stateAfterAi,
-              oppMove,
-              opponent,
-            );
+        if (opponent != null) {
+          final opponentMoves = getValidMoves(stateAfterAi, opponent);
 
-            if (_isWin(stateAfterOpp, opponent)) {
-              minOpponentScore = double.negativeInfinity;
-              break;
-            }
+          if (opponentMoves.isEmpty) {
+            minOpponentScore = 1000.0; // Good for me
+          } else {
+            for (final oppMove in opponentMoves) {
+              final stateAfterOpp = _simulateMove(
+                stateAfterAi,
+                oppMove,
+                opponent,
+              );
 
-            final score = _evaluateState(stateAfterOpp, player);
-            if (score < minOpponentScore) {
-              minOpponentScore = score;
+              if (_isWin(stateAfterOpp, opponent)) {
+                minOpponentScore = double.negativeInfinity;
+                break;
+              }
+
+              final score = _evaluateState(stateAfterOpp, player);
+              if (score < minOpponentScore) {
+                minOpponentScore = score;
+              }
             }
           }
+        } else {
+          minOpponentScore = 10000.0;
         }
-      } else {
-        minOpponentScore = 10000.0;
+        moveScore = minOpponentScore;
       }
 
       final jitter = _random.nextDouble();
-      final totalScore = minOpponentScore + jitter;
+      final totalScore = moveScore + jitter;
 
       if (totalScore > maxScore) {
         maxScore = totalScore;

@@ -17,9 +17,6 @@ class AtomPainter extends CustomPainter {
   static const double _orbSize = AppDimensions.orbSizeSmall;
   static const double _orbRadius = _orbSize / 2;
 
-  // Pre-calculated spacing offsets for different layouts
-  static const double _spacing4 = 12.0; // Distance for 4-atom cluster
-
   AtomPainter({
     required this.color,
     required this.count,
@@ -57,9 +54,14 @@ class AtomPainter extends CustomPainter {
     if (isVibrationOn && (isCritical || isUnstable)) {
       // High frequency vibration using sine waves on the main animation value
       // 100 * 2pi = 100 cycles per Animation Loop
-      final vVal = math.sin(animationValue * 100 * math.pi);
-      vibrateX = vVal * 0.8;
-      vibrateY = (1 - vVal.abs()) * 0.8 * (vVal > 0 ? 1 : -1);
+      final vVal = math.sin(
+        animationValue * AppDimensions.atomVibrationFrequency * math.pi,
+      );
+      vibrateX = vVal * AppDimensions.atomVibrationAmplitude;
+      vibrateY =
+          (1 - vVal.abs()) *
+          AppDimensions.atomVibrationAmplitude *
+          (vVal > 0 ? 1 : -1);
     }
 
     // Apply transformations
@@ -70,12 +72,14 @@ class AtomPainter extends CustomPainter {
     // Draw Shadows (Using MaskFilter.blur as requested)
     final shadowPaint = Paint()
       ..color = color.withAlpha(
-        ((color.a * 255.0).round().clamp(0, 255) * 0.4).toInt(),
+        ((color.a * 255.0).round().clamp(0, 255) *
+                AppDimensions.atomShadowOpacity)
+            .toInt(),
       )
       ..maskFilter = const MaskFilter.blur(
         BlurStyle.normal,
-        8,
-      ); // Same as blurRadius 8
+        AppDimensions.atomShadowBlur,
+      );
 
     // 3. Organic Breathing (Simulated Physics)
     // Instead of fixed offsets, we modulate the distance from center using sine waves.
@@ -86,7 +90,8 @@ class AtomPainter extends CustomPainter {
     final breatheVal = math.sin(
       (animationValue + angleOffset) * 4 * math.pi,
     ); // 2 breaths per rotation cycle
-    final breathingFactor = 1.0 + (breatheVal * 0.15); // +/- 15% scale
+    final breathingFactor =
+        1.0 + (breatheVal * AppDimensions.atomBreathingScaleBy);
 
     // Draw based on count (Applying breathingFactor to spacing)
     switch (count) {
@@ -97,7 +102,7 @@ class AtomPainter extends CustomPainter {
         break;
       case 2:
         // spacing 6.0 becomes dynamic
-        final d = 6.0 * breathingFactor;
+        final d = AppDimensions.atomSpacing2 * breathingFactor;
         _drawAtom(canvas, Offset(-d, -d), paint, shadowPaint);
         _drawAtom(canvas, Offset(d, d), paint, shadowPaint);
         break;
@@ -108,13 +113,34 @@ class AtomPainter extends CustomPainter {
         //  7,  5
         // We scale these vectors from center
         final s = breathingFactor;
-        _drawAtom(canvas, Offset(0, -8 * s), paint, shadowPaint);
-        _drawAtom(canvas, Offset(-7 * s, 5 * s), paint, shadowPaint);
-        _drawAtom(canvas, Offset(7 * s, 5 * s), paint, shadowPaint);
+        _drawAtom(
+          canvas,
+          Offset(0, -AppDimensions.atomTriangleTopY * s),
+          paint,
+          shadowPaint,
+        );
+        _drawAtom(
+          canvas,
+          Offset(
+            -AppDimensions.atomTriangleBottomX * s,
+            AppDimensions.atomTriangleBottomY * s,
+          ),
+          paint,
+          shadowPaint,
+        );
+        _drawAtom(
+          canvas,
+          Offset(
+            AppDimensions.atomTriangleBottomX * s,
+            AppDimensions.atomTriangleBottomY * s,
+          ),
+          paint,
+          shadowPaint,
+        );
         break;
       case 4:
         // Square layout (12.0)
-        final d4 = _spacing4 * breathingFactor;
+        final d4 = AppDimensions.atomSpacing4 * breathingFactor;
         _drawAtom(canvas, Offset(0, -d4), paint, shadowPaint);
         _drawAtom(canvas, Offset(-d4, 0), paint, shadowPaint);
         _drawAtom(canvas, Offset(d4, 0), paint, shadowPaint);
@@ -122,7 +148,7 @@ class AtomPainter extends CustomPainter {
         break;
       default:
         if (count > 4) {
-          final d4 = _spacing4 * breathingFactor;
+          final d4 = AppDimensions.atomSpacing4 * breathingFactor;
           _drawAtom(canvas, Offset(0, -d4), paint, shadowPaint);
           _drawAtom(canvas, Offset(-d4, 0), paint, shadowPaint);
           _drawAtom(canvas, Offset(d4, 0), paint, shadowPaint);

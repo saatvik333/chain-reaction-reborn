@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/cell.dart';
 import 'atom_widget.dart';
+import '../../../../core/constants/app_dimensions.dart';
 
 /// Renders a single cell in the game grid.
 class CellWidget extends StatelessWidget {
@@ -48,15 +49,21 @@ class CellWidget extends StatelessWidget {
                     defaultTargetPlatform == TargetPlatform.iOS);
 
             final childContainer = AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(
+                milliseconds: AppDimensions.cellAnimationDurationMs,
+              ),
               curve: Curves.easeOut,
               decoration: BoxDecoration(
                 color: (isCellHighlightOn && cell.ownerId != null)
-                    ? cellColor.withValues(alpha: 0.1)
+                    ? cellColor.withValues(
+                        alpha: AppDimensions.cellHighlightOpacity,
+                      )
                     : Colors.transparent,
                 border: Border.all(
-                  color: borderColor.withValues(alpha: 0.5),
-                  width: 0.5,
+                  color: borderColor.withValues(
+                    alpha: AppDimensions.gridBorderOpacity,
+                  ),
+                  width: AppDimensions.gridBorderWidth,
                 ),
               ),
               child: Center(
@@ -88,8 +95,12 @@ class CellWidget extends StatelessWidget {
 
             return InkWell(
               onTap: onTap,
-              hoverColor: borderColor.withValues(alpha: 0.2),
-              splashColor: borderColor.withValues(alpha: 0.3),
+              hoverColor: borderColor.withValues(
+                alpha: AppDimensions.cellHoverOpacity,
+              ),
+              splashColor: borderColor.withValues(
+                alpha: AppDimensions.cellSplashOpacity,
+              ),
               child: childContainer,
             );
           },
