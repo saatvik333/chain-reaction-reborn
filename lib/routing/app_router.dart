@@ -11,6 +11,7 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/shop/presentation/screens/purchase_screen.dart';
 import '../../features/shop/presentation/screens/palette_screen.dart';
 import '../../features/home/presentation/screens/info_screen.dart';
+import '../../features/auth/presentation/screens/auth_screen.dart';
 import '../../features/game/domain/entities/player.dart';
 
 /// Provider for the GoRouter instance.
@@ -102,7 +103,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) =>
             _fadeTransition(context, state, const InfoScreen()),
       ),
+      GoRoute(
+        path: '/${AppRoutes.auth}',
+        name: AppRouteNames.auth,
+        pageBuilder: (context, state) =>
+            _fadeTransition(context, state, const AuthScreen()),
+      ),
     ],
+
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Error: ${state.error}'))),
   );

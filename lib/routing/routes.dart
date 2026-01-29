@@ -7,6 +7,7 @@ class AppRoutes {
   static const String shop = 'shop';
   static const String palette = 'palette';
   static const String info = 'info';
+  static const String auth = 'auth';
 }
 
 /// Defines the names for named navigation.
@@ -18,4 +19,5 @@ class AppRouteNames {
   static const String shop = 'shop';
   static const String palette = 'palette';
   static const String info = 'info';
+  static const String auth = 'auth';
 }

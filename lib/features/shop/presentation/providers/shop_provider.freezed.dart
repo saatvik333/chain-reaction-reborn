@@ -12,7 +12,7 @@ part of 'shop_provider.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$ShopState {
+mixin _$ShopState implements DiagnosticableTreeMixin {
 
  List<String> get ownedThemeIds; List<ProductDetails> get products;
 /// Create a copy of ShopState
@@ -22,6 +22,12 @@ mixin _$ShopState {
 $ShopStateCopyWith<ShopState> get copyWith => _$ShopStateCopyWithImpl<ShopState>(this as ShopState, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ShopState'))
+    ..add(DiagnosticsProperty('ownedThemeIds', ownedThemeIds))..add(DiagnosticsProperty('products', products));
+}
 
 @override
 bool operator ==(Object other) {
@@ -33,7 +39,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(ownedThemeIds),const DeepCollectionEquality().hash(products));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'ShopState(ownedThemeIds: $ownedThemeIds, products: $products)';
 }
 
@@ -206,7 +212,7 @@ return $default(_that.ownedThemeIds,_that.products);case _:
 /// @nodoc
 
 
-class _ShopState extends ShopState {
+class _ShopState extends ShopState with DiagnosticableTreeMixin {
   const _ShopState({final  List<String> ownedThemeIds = const [], final  List<ProductDetails> products = const []}): _ownedThemeIds = ownedThemeIds,_products = products,super._();
   
 
@@ -232,6 +238,12 @@ class _ShopState extends ShopState {
 _$ShopStateCopyWith<_ShopState> get copyWith => __$ShopStateCopyWithImpl<_ShopState>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ShopState'))
+    ..add(DiagnosticsProperty('ownedThemeIds', ownedThemeIds))..add(DiagnosticsProperty('products', products));
+}
 
 @override
 bool operator ==(Object other) {
@@ -243,7 +255,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_ownedThemeIds),const DeepCollectionEquality().hash(_products));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'ShopState(ownedThemeIds: $ownedThemeIds, products: $products)';
 }
 

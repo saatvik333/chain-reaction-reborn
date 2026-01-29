@@ -30,6 +30,12 @@ dependencies:
   json_annotation: ^4.9.0
   riverpod_annotation: ^3.0.3
 
+  # Online Multiplayer
+  supabase_flutter: ^2.8.0
+  google_sign_in: ^6.2.2
+  flutter_dotenv: ^6.0.0
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
