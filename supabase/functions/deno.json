@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "types": ["https://deno.land/x/types/index.d.ts"],
+    "strict": true,
+    "lib": ["esnext"]
+  },
+  "imports": {
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
+  }
+}
