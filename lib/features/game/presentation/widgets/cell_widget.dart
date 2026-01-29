@@ -4,6 +4,12 @@ import '../../domain/entities/cell.dart';
 import 'atom_widget.dart';
 import '../../../../core/constants/app_dimensions.dart';
 
+/// Platform check hoisted to top-level constant (computed once at startup).
+final bool _isMobilePlatform =
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS);
+
 /// Renders a single cell in the game grid.
 class CellWidget extends StatelessWidget {
   final Cell cell;
@@ -33,78 +39,59 @@ class CellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A cell is unstable (wobbling/spinning fast) only if it's overflowing (exploding)
-    // This keeps full cells (Critical Mass) running at the stable speed
     final isUnstable = cell.atomCount > cell.capacity;
     final isCritical = cell.atomCount == cell.capacity;
+
+    final childContainer = AnimatedContainer(
+      duration: const Duration(
+        milliseconds: AppDimensions.cellAnimationDurationMs,
+      ),
+      curve: Curves.easeOut,
+      decoration: BoxDecoration(
+        color: (isCellHighlightOn && cell.ownerId != null)
+            ? cellColor.withValues(alpha: AppDimensions.cellHighlightOpacity)
+            : Colors.transparent,
+        border: Border.all(
+          color: borderColor.withValues(alpha: AppDimensions.gridBorderOpacity),
+          width: AppDimensions.gridBorderWidth,
+        ),
+      ),
+      child: Center(
+        child: AtomWidget(
+          color: cellColor,
+          count: cell.atomCount > cell.capacity
+              ? cell.capacity
+              : cell.atomCount,
+          isUnstable: isUnstable,
+          isCritical: isCritical,
+          isAtomRotationOn: isAtomRotationOn,
+          isAtomVibrationOn: isAtomVibrationOn,
+          isAtomBreathingOn: isAtomBreathingOn,
+          animation: animation,
+          angleOffset: angleOffset,
+        ),
+      ),
+    );
 
     return Expanded(
       child: Material(
         color: Colors.transparent,
-        child: Builder(
-          builder: (context) {
-            final isMobile =
-                !kIsWeb &&
-                (defaultTargetPlatform == TargetPlatform.android ||
-                    defaultTargetPlatform == TargetPlatform.iOS);
-
-            final childContainer = AnimatedContainer(
-              duration: const Duration(
-                milliseconds: AppDimensions.cellAnimationDurationMs,
-              ),
-              curve: Curves.easeOut,
-              decoration: BoxDecoration(
-                color: (isCellHighlightOn && cell.ownerId != null)
-                    ? cellColor.withValues(
-                        alpha: AppDimensions.cellHighlightOpacity,
-                      )
-                    : Colors.transparent,
-                border: Border.all(
-                  color: borderColor.withValues(
-                    alpha: AppDimensions.gridBorderOpacity,
-                  ),
-                  width: AppDimensions.gridBorderWidth,
-                ),
-              ),
-              child: Center(
-                child: AtomWidget(
-                  color: cellColor,
-                  // Visually cap the atoms to capacity to prevent "overloaded" shapes
-                  // (e.g. 4 atoms in a 3-capacity cell) from appearing briefly before explosion.
-                  count: cell.atomCount > cell.capacity
-                      ? cell.capacity
-                      : cell.atomCount,
-                  isUnstable: isUnstable,
-                  isCritical: isCritical,
-                  isAtomRotationOn: isAtomRotationOn,
-                  isAtomVibrationOn: isAtomVibrationOn,
-                  isAtomBreathingOn: isAtomBreathingOn,
-                  animation: animation,
-                  angleOffset: angleOffset,
-                ),
-              ),
-            );
-
-            if (isMobile) {
-              return GestureDetector(
+        child: _isMobilePlatform
+            ? GestureDetector(
                 onTap: onTap,
                 behavior: HitTestBehavior.opaque,
                 child: childContainer,
-              );
-            }
-
-            return InkWell(
-              onTap: onTap,
-              hoverColor: borderColor.withValues(
-                alpha: AppDimensions.cellHoverOpacity,
+              )
+            : InkWell(
+                onTap: onTap,
+                hoverColor: borderColor.withValues(
+                  alpha: AppDimensions.cellHoverOpacity,
+                ),
+                splashColor: borderColor.withValues(
+                  alpha: AppDimensions.cellSplashOpacity,
+                ),
+                child: childContainer,
               ),
-              splashColor: borderColor.withValues(
-                alpha: AppDimensions.cellSplashOpacity,
-              ),
-              child: childContainer,
-            );
-          },
-        ),
       ),
     );
   }

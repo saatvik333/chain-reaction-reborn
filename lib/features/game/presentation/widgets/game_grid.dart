@@ -5,8 +5,9 @@ import '../providers/providers.dart';
 import 'cell_widget.dart';
 import 'flying_atom_widget.dart';
 import '../../../../core/constants/app_dimensions.dart';
+import '../../domain/entities/cell.dart';
+import '../../domain/entities/player.dart';
 
-/// Renders the game grid with cells and flying atoms.
 /// Renders the game grid with cells and flying atoms.
 class GameGrid extends ConsumerStatefulWidget {
   final Function(int x, int y) onCellTap;
@@ -19,14 +20,12 @@ class GameGrid extends ConsumerStatefulWidget {
 
 class _GameGridState extends ConsumerState<GameGrid>
     with SingleTickerProviderStateMixin {
+  /// Continuous animation for atom rotation/breathing effects.
   late final AnimationController _masterController;
 
   @override
   void initState() {
     super.initState();
-    // Master loop: 4 seconds.
-    // 0.0 -> 1.0 continuously.
-    // AtomPainter scales this for speed (e.g. 4x for unstable).
     _masterController = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -43,7 +42,6 @@ class _GameGridState extends ConsumerState<GameGrid>
 
   @override
   Widget build(BuildContext context) {
-    // Watch precise parts of the state to optimize rebuilds
     final grid = ref.watch(gridProvider);
     final themeState = ref.watch(themeProvider);
     final theme = themeState.currentTheme;
@@ -58,6 +56,11 @@ class _GameGridState extends ConsumerState<GameGrid>
 
     final rows = grid.length;
     final cols = grid[0].length;
+
+    // Precompute phase constants outside render loop
+    const int phasePrime1 = 13;
+    const int phasePrime2 = 23;
+    const int phaseMod = 100;
 
     return Center(
       child: AspectRatio(
@@ -74,64 +77,83 @@ class _GameGridState extends ConsumerState<GameGrid>
                 children: [
                   // Layer 1: The Grid
                   Column(
-                    children: List.generate(rows, (row) {
-                      return Expanded(
-                        child: Row(
-                          children: List.generate(cols, (col) {
-                            final cell = grid[row][col];
-                            Color cellColor = Colors.transparent;
-
-                            if (cell.ownerId != null) {
-                              final owner = players.firstWhere(
-                                (p) => p.id == cell.ownerId,
-                                orElse: () => players.first,
-                              );
-                              cellColor = owner.color;
-                            }
-
-                            // Calculate a deterministic phase offset (0.0 to 1.0)
-                            // This ensures atoms don't rotate in perfect unison.
-                            // We use prime number multipliers to avoid noticeable patterns.
-                            const int phasePrime1 = 13;
-                            const int phasePrime2 = 23;
-                            const int phaseMod = 100;
-                            final double angleOffset =
-                                ((col * phasePrime1 + row * phasePrime2) %
-                                    phaseMod) /
-                                phaseMod.toDouble();
-
-                            return CellWidget(
-                              cell: cell,
-                              borderColor: borderColor,
-                              cellColor: cellColor,
-                              onTap: () => widget.onCellTap(col, row),
-                              isAtomRotationOn: themeState.isAtomRotationOn,
-                              isAtomVibrationOn: themeState.isAtomVibrationOn,
-                              isAtomBreathingOn: themeState.isAtomBreathingOn,
-                              isCellHighlightOn: themeState.isCellHighlightOn,
-                              animation: _masterController,
-                              angleOffset: angleOffset,
-                            );
-                          }),
+                    children: [
+                      for (int row = 0; row < rows; row++)
+                        Expanded(
+                          child: Row(
+                            children: [
+                              for (int col = 0; col < cols; col++)
+                                _buildCell(
+                                  grid[row][col],
+                                  row,
+                                  col,
+                                  players,
+                                  borderColor,
+                                  themeState,
+                                  phasePrime1,
+                                  phasePrime2,
+                                  phaseMod,
+                                ),
+                            ],
+                          ),
                         ),
-                      );
-                    }),
+                    ],
                   ),
 
                   // Layer 2: Flying Atoms (Projectiles)
-                  ...flyingAtoms.map(
-                    (atom) => FlyingAtomWidget(
+                  for (final atom in flyingAtoms)
+                    FlyingAtomWidget(
                       key: ValueKey(atom.id),
                       atom: atom,
                       cellSize: cellSize,
                     ),
-                  ),
                 ],
               );
             },
           ),
         ),
       ),
+    );
+  }
+
+  /// Builds a single cell widget with pre-computed parameters.
+  Widget _buildCell(
+    Cell cell,
+    int row,
+    int col,
+    List<Player> players,
+    Color borderColor,
+    ThemeState themeState,
+    int phasePrime1,
+    int phasePrime2,
+    int phaseMod,
+  ) {
+    Color cellColor = Colors.transparent;
+
+    if (cell.ownerId != null) {
+      final owner = players.firstWhere(
+        (p) => p.id == cell.ownerId,
+        orElse: () => players.first,
+      );
+      cellColor = owner.color;
+    }
+
+    final double angleOffset =
+        ((col * phasePrime1 + row * phasePrime2) % phaseMod) /
+        phaseMod.toDouble();
+
+    return CellWidget(
+      key: ValueKey('cell_${col}_$row'),
+      cell: cell,
+      borderColor: borderColor,
+      cellColor: cellColor,
+      onTap: () => widget.onCellTap(col, row),
+      isAtomRotationOn: themeState.isAtomRotationOn,
+      isAtomVibrationOn: themeState.isAtomVibrationOn,
+      isAtomBreathingOn: themeState.isAtomBreathingOn,
+      isCellHighlightOn: themeState.isCellHighlightOn,
+      animation: _masterController,
+      angleOffset: angleOffset,
     );
   }
 }

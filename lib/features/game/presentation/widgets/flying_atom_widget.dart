@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../domain/entities/flying_atom.dart';
 
+/// Renders an atom traveling between cells during an explosion.
+///
+/// Each flying atom manages its own animation lifecycle since
+/// multiple explosion batches may occur during a chain reaction.
 class FlyingAtomWidget extends StatefulWidget {
   final FlyingAtom atom;
   final Size cellSize;
@@ -20,16 +24,14 @@ class FlyingAtomWidget extends StatefulWidget {
 
 class _FlyingAtomWidgetState extends State<FlyingAtomWidget>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _positionAnimation;
+  late final AnimationController _controller;
+  late final Animation<Offset> _positionAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
 
-    // Convert grid coordinates to relative offsets
-    // This assumes the widget is placed in a Stack covering the grid
     final startOffset = Offset(
       widget.atom.fromX * widget.cellSize.width,
       widget.atom.fromY * widget.cellSize.height,
