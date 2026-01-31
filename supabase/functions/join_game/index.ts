@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
+import { createPlayer, type GameState } from "../_shared/game_engine.ts";
 
 Deno.serve(async (req: Request) => {
     // Handle CORS preflight
@@ -85,13 +86,16 @@ Deno.serve(async (req: Request) => {
             );
         }
 
+        // Create player 2 with proper schema
+        const player2 = createPlayer(
+            user.id,
+            profile.display_name ?? profile.username,
+            1  // Color index 1 for player 2
+        );
+
         // Update game state with player 2
-        const gameState = game.game_state as any;
-        gameState.players.push({
-            id: user.id,
-            name: profile.display_name ?? profile.username,
-            colorIndex: 1,
-        });
+        const gameState = game.game_state as GameState;
+        gameState.players.push(player2);
 
         // Update game record
         const { data: updatedGame, error: updateError } = await supabase
@@ -103,6 +107,7 @@ Deno.serve(async (req: Request) => {
             })
             .eq("id", game.id)
             .eq("status", "waiting") // Optimistic lock
+            .is("player2_id", null) // Prevent race condition
             .select("id, room_code, game_state, status")
             .single();
 

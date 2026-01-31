@@ -2,12 +2,17 @@ import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:chain_reaction/routing/routes.dart';
+import 'package:chain_reaction/routing/route_args.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/features/game/presentation/providers/online_game_provider.dart';
+import 'package:chain_reaction/features/auth/presentation/providers/auth_provider.dart';
+import 'package:chain_reaction/features/auth/domain/entities/app_auth_state.dart';
 import 'package:chain_reaction/features/game/presentation/widgets/widgets.dart';
+
 import 'package:chain_reaction/core/presentation/widgets/game_menu_dialog.dart';
 import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
@@ -18,6 +23,8 @@ class GameScreen extends ConsumerStatefulWidget {
   final String? gridSize;
   final AIDifficulty? aiDifficulty;
   final bool isResuming;
+  final String?
+  mode; // 'online', 'local', 'computer' or use Enum if possible. String for now as passed from router.
 
   const GameScreen({
     super.key,
@@ -25,6 +32,7 @@ class GameScreen extends ConsumerStatefulWidget {
     this.gridSize,
     this.aiDifficulty,
     this.isResuming = false,
+    this.mode,
   });
 
   @override
@@ -37,10 +45,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     super.initState();
     // Initialize game after first frame to ensure providers are ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!widget.isResuming) {
+      if (!widget.isResuming && widget.mode != 'online') {
         _initializeGame();
+      } else if (widget.mode == 'online') {
+        _initializeOnlineGame();
       }
     });
+  }
+
+  void _initializeOnlineGame() {
+    final onlineState = ref.read(onlineGameProvider).value;
+    if (onlineState != null && onlineState.gameState != null) {
+      final initialGameState = GameState.fromJson(onlineState.gameState!);
+      ref.read(gameProvider.notifier).setExternalState(initialGameState);
+    }
   }
 
   void _initializeGame() {
@@ -70,6 +88,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   void _handleCellTap(int x, int y) {
+    if (widget.mode == 'online') {
+      _handleOnlineTap(x, y);
+      return;
+    }
+
     final gameState = ref.read(gameProvider);
     // Block input if game is processing (AI is thinking or chain reaction happening)
     if (gameState == null ||
@@ -78,15 +101,40 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       return;
     }
 
-    if (!ref.read(gameProvider.notifier).isValidMove(x, y)) return;
+    if (!ref.read(gameProvider.notifier).isValidMove(x, y)) {
+      return;
+    }
 
     // Sound/Haptics now handled by Notifier
     ref.read(gameProvider.notifier).placeAtom(x, y);
   }
 
+  void _handleOnlineTap(int x, int y) {
+    // In online mode, we submit the move to the server.
+    // The server validates and applies the move, then broadcasts via Realtime.
+    final gameState = ref.read(gameProvider);
+    final authState = ref.read(authProvider);
+
+    if (gameState == null || gameState.isProcessing) {
+      return; // Wait for animations
+    }
+
+    // Validate it's current user's turn
+    if (authState is AppAuthStateAuthenticated) {
+      final currentPlayerId = gameState.currentPlayer.id;
+      if (currentPlayerId != authState.userId) {
+        // Optional: Show "Not your turn" feedback
+        return;
+      }
+    }
+
+    ref.read(onlineGameProvider.notifier).makeMove(x, y);
+  }
+
   @override
   Widget build(BuildContext context) {
     _listenForGameEnd();
+    _listenForOnlineUpdates();
 
     final gameState = ref.watch(gameProvider);
     final themeState = ref.watch(themeProvider);
@@ -199,21 +247,37 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
             context.pushReplacementNamed(
               AppRouteNames.winner,
-              extra: {
-                'winnerPlayerIndex': winnerIndex,
-                'totalMoves': next.totalMoves,
-                'gameDuration': next.formattedDuration,
-                'territoryPercentage': next.territoryPercentage,
-                'playerCount': next.players.length,
-                'gridSize':
+              extra: WinnerRouteArgs(
+                winnerPlayerIndex: winnerIndex,
+                totalMoves: next.totalMoves,
+                gameDuration: next.formattedDuration,
+                territoryPercentage: next.territoryPercentage,
+                playerCount: next.players.length,
+                gridSize:
                     widget.gridSize ??
                     AppLocalizations.of(context)!.unknownGrid,
-                'aiDifficulty': widget.aiDifficulty ?? aiPlayer?.difficulty,
-              },
+                aiDifficulty: widget.aiDifficulty ?? aiPlayer?.difficulty,
+              ),
             );
           }
         });
       }
+    });
+  }
+
+  void _listenForOnlineUpdates() {
+    if (widget.mode != 'online') return;
+
+    ref.listen(onlineGameProvider, (prev, next) {
+      next.whenData((onlineState) {
+        if (onlineState != null && onlineState.gameState != null) {
+          // Sync state from server.
+          // Optimization: Future work could diff the state to avoid unnecessary rebuilds.
+
+          final newGameState = GameState.fromJson(onlineState.gameState!);
+          ref.read(gameProvider.notifier).setExternalState(newGameState);
+        }
+      });
     });
   }
 

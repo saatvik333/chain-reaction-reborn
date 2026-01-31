@@ -8,7 +8,9 @@ part 'home_provider.g.dart';
 
 enum HomeStep { modeSelection, configuration }
 
-enum GameMode { localMultiplayer, vsComputer }
+enum GameMode { localMultiplayer, vsComputer, online }
+
+enum OnlineMode { create, join }
 
 @freezed
 abstract class HomeState with _$HomeState {
@@ -21,6 +23,8 @@ abstract class HomeState with _$HomeState {
     required AIDifficulty aiDifficulty,
     required int gridSizeIndex,
     required List<String> gridSizes,
+    required OnlineMode onlineMode,
+    required String roomCode,
   }) = _HomeState;
 
   factory HomeState.initial() {
@@ -31,6 +35,8 @@ abstract class HomeState with _$HomeState {
       aiDifficulty: AIDifficulty.medium,
       gridSizeIndex: 2,
       gridSizes: ['x_small', 'small', 'medium', 'large', 'x_large'],
+      onlineMode: OnlineMode.create,
+      roomCode: '',
     );
   }
 
@@ -61,11 +67,35 @@ class HomeNotifier extends _$HomeNotifier {
     state = state.copyWith(currentStep: step);
   }
 
-  void toggleMode() {
-    final newMode = state.selectedMode == GameMode.localMultiplayer
-        ? GameMode.vsComputer
-        : GameMode.localMultiplayer;
-    state = state.copyWith(selectedMode: newMode);
+  void setMode(GameMode mode) {
+    state = state.copyWith(selectedMode: mode);
+  }
+
+  void enterOnlineMode() {
+    state = state.copyWith(
+      selectedMode: GameMode.online,
+      currentStep: HomeStep.configuration,
+      roomCode: '',
+    );
+  }
+
+  void reset() {
+    state = HomeState.initial();
+  }
+
+  void cycleMode() {
+    final nextMode = switch (state.selectedMode) {
+      GameMode.localMultiplayer => GameMode.vsComputer,
+      GameMode.vsComputer => GameMode.online,
+      GameMode.online => GameMode.localMultiplayer,
+    };
+    state = state.copyWith(selectedMode: nextMode);
+  }
+
+  void toggleMode() => cycleMode();
+
+  void setPlayerCount(int count) {
+    state = state.copyWith(playerCount: count);
   }
 
   void incrementPlayers() {
@@ -99,5 +129,41 @@ class HomeNotifier extends _$HomeNotifier {
         : (state.gridSizeIndex - 1 + state.gridSizes.length) %
               state.gridSizes.length;
     state = state.copyWith(gridSizeIndex: nextIndex);
+  }
+
+  void cycleOnlineMode() {
+    state = state.copyWith(
+      onlineMode: state.onlineMode == OnlineMode.create
+          ? OnlineMode.join
+          : OnlineMode.create,
+    );
+  }
+
+  void setRoomCode(String code) {
+    state = state.copyWith(roomCode: code);
+  }
+
+  /// Validates the current online game configuration.
+  ///
+  /// Returns `true` if valid, `false` if the room code is invalid (for join mode).
+  /// This method does NOT perform the actual network call; that's still done by
+  /// the OnlineGameProvider. This just pre-validates before making the call.
+  bool validateOnlineConfig() {
+    if (state.onlineMode == OnlineMode.join) {
+      return state.roomCode.length == 4;
+    }
+    return true;
+  }
+
+  /// Gets the grid dimensions for creating an online game.
+  (int rows, int cols) getGridDimensions() {
+    const gridSizes = {
+      'x_small': (4, 4),
+      'small': (6, 5),
+      'medium': (8, 6),
+      'large': (10, 7),
+      'x_large': (12, 8),
+    };
+    return gridSizes[state.currentGridSize] ?? (8, 6);
   }
 }

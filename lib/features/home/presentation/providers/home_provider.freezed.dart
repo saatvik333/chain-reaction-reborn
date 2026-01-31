@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeState {
 
- HomeStep get currentStep; GameMode get selectedMode; int get playerCount; AIDifficulty get aiDifficulty; int get gridSizeIndex; List<String> get gridSizes;
+ HomeStep get currentStep; GameMode get selectedMode; int get playerCount; AIDifficulty get aiDifficulty; int get gridSizeIndex; List<String> get gridSizes; OnlineMode get onlineMode; String get roomCode;
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $HomeStateCopyWith<HomeState> get copyWith => _$HomeStateCopyWithImpl<HomeState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.selectedMode, selectedMode) || other.selectedMode == selectedMode)&&(identical(other.playerCount, playerCount) || other.playerCount == playerCount)&&(identical(other.aiDifficulty, aiDifficulty) || other.aiDifficulty == aiDifficulty)&&(identical(other.gridSizeIndex, gridSizeIndex) || other.gridSizeIndex == gridSizeIndex)&&const DeepCollectionEquality().equals(other.gridSizes, gridSizes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.selectedMode, selectedMode) || other.selectedMode == selectedMode)&&(identical(other.playerCount, playerCount) || other.playerCount == playerCount)&&(identical(other.aiDifficulty, aiDifficulty) || other.aiDifficulty == aiDifficulty)&&(identical(other.gridSizeIndex, gridSizeIndex) || other.gridSizeIndex == gridSizeIndex)&&const DeepCollectionEquality().equals(other.gridSizes, gridSizes)&&(identical(other.onlineMode, onlineMode) || other.onlineMode == onlineMode)&&(identical(other.roomCode, roomCode) || other.roomCode == roomCode));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentStep,selectedMode,playerCount,aiDifficulty,gridSizeIndex,const DeepCollectionEquality().hash(gridSizes));
+int get hashCode => Object.hash(runtimeType,currentStep,selectedMode,playerCount,aiDifficulty,gridSizeIndex,const DeepCollectionEquality().hash(gridSizes),onlineMode,roomCode);
 
 @override
 String toString() {
-  return 'HomeState(currentStep: $currentStep, selectedMode: $selectedMode, playerCount: $playerCount, aiDifficulty: $aiDifficulty, gridSizeIndex: $gridSizeIndex, gridSizes: $gridSizes)';
+  return 'HomeState(currentStep: $currentStep, selectedMode: $selectedMode, playerCount: $playerCount, aiDifficulty: $aiDifficulty, gridSizeIndex: $gridSizeIndex, gridSizes: $gridSizes, onlineMode: $onlineMode, roomCode: $roomCode)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
 @useResult
 $Res call({
- HomeStep currentStep, GameMode selectedMode, int playerCount, AIDifficulty aiDifficulty, int gridSizeIndex, List<String> gridSizes
+ HomeStep currentStep, GameMode selectedMode, int playerCount, AIDifficulty aiDifficulty, int gridSizeIndex, List<String> gridSizes, OnlineMode onlineMode, String roomCode
 });
 
 
@@ -62,7 +62,7 @@ class _$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? currentStep = null,Object? selectedMode = null,Object? playerCount = null,Object? aiDifficulty = null,Object? gridSizeIndex = null,Object? gridSizes = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? currentStep = null,Object? selectedMode = null,Object? playerCount = null,Object? aiDifficulty = null,Object? gridSizeIndex = null,Object? gridSizes = null,Object? onlineMode = null,Object? roomCode = null,}) {
   return _then(_self.copyWith(
 currentStep: null == currentStep ? _self.currentStep : currentStep // ignore: cast_nullable_to_non_nullable
 as HomeStep,selectedMode: null == selectedMode ? _self.selectedMode : selectedMode // ignore: cast_nullable_to_non_nullable
@@ -70,7 +70,9 @@ as GameMode,playerCount: null == playerCount ? _self.playerCount : playerCount /
 as int,aiDifficulty: null == aiDifficulty ? _self.aiDifficulty : aiDifficulty // ignore: cast_nullable_to_non_nullable
 as AIDifficulty,gridSizeIndex: null == gridSizeIndex ? _self.gridSizeIndex : gridSizeIndex // ignore: cast_nullable_to_non_nullable
 as int,gridSizes: null == gridSizes ? _self.gridSizes : gridSizes // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,onlineMode: null == onlineMode ? _self.onlineMode : onlineMode // ignore: cast_nullable_to_non_nullable
+as OnlineMode,roomCode: null == roomCode ? _self.roomCode : roomCode // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -155,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStep currentStep,  GameMode selectedMode,  int playerCount,  AIDifficulty aiDifficulty,  int gridSizeIndex,  List<String> gridSizes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStep currentStep,  GameMode selectedMode,  int playerCount,  AIDifficulty aiDifficulty,  int gridSizeIndex,  List<String> gridSizes,  OnlineMode onlineMode,  String roomCode)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiDifficulty,_that.gridSizeIndex,_that.gridSizes);case _:
+return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiDifficulty,_that.gridSizeIndex,_that.gridSizes,_that.onlineMode,_that.roomCode);case _:
   return orElse();
 
 }
@@ -176,10 +178,10 @@ return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiD
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStep currentStep,  GameMode selectedMode,  int playerCount,  AIDifficulty aiDifficulty,  int gridSizeIndex,  List<String> gridSizes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStep currentStep,  GameMode selectedMode,  int playerCount,  AIDifficulty aiDifficulty,  int gridSizeIndex,  List<String> gridSizes,  OnlineMode onlineMode,  String roomCode)  $default,) {final _that = this;
 switch (_that) {
 case _HomeState():
-return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiDifficulty,_that.gridSizeIndex,_that.gridSizes);case _:
+return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiDifficulty,_that.gridSizeIndex,_that.gridSizes,_that.onlineMode,_that.roomCode);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +198,10 @@ return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiD
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStep currentStep,  GameMode selectedMode,  int playerCount,  AIDifficulty aiDifficulty,  int gridSizeIndex,  List<String> gridSizes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStep currentStep,  GameMode selectedMode,  int playerCount,  AIDifficulty aiDifficulty,  int gridSizeIndex,  List<String> gridSizes,  OnlineMode onlineMode,  String roomCode)?  $default,) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiDifficulty,_that.gridSizeIndex,_that.gridSizes);case _:
+return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiDifficulty,_that.gridSizeIndex,_that.gridSizes,_that.onlineMode,_that.roomCode);case _:
   return null;
 
 }
@@ -211,7 +213,7 @@ return $default(_that.currentStep,_that.selectedMode,_that.playerCount,_that.aiD
 
 
 class _HomeState extends HomeState {
-  const _HomeState({required this.currentStep, required this.selectedMode, required this.playerCount, required this.aiDifficulty, required this.gridSizeIndex, required final  List<String> gridSizes}): _gridSizes = gridSizes,super._();
+  const _HomeState({required this.currentStep, required this.selectedMode, required this.playerCount, required this.aiDifficulty, required this.gridSizeIndex, required final  List<String> gridSizes, required this.onlineMode, required this.roomCode}): _gridSizes = gridSizes,super._();
   
 
 @override final  HomeStep currentStep;
@@ -226,6 +228,8 @@ class _HomeState extends HomeState {
   return EqualUnmodifiableListView(_gridSizes);
 }
 
+@override final  OnlineMode onlineMode;
+@override final  String roomCode;
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +241,16 @@ _$HomeStateCopyWith<_HomeState> get copyWith => __$HomeStateCopyWithImpl<_HomeSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.selectedMode, selectedMode) || other.selectedMode == selectedMode)&&(identical(other.playerCount, playerCount) || other.playerCount == playerCount)&&(identical(other.aiDifficulty, aiDifficulty) || other.aiDifficulty == aiDifficulty)&&(identical(other.gridSizeIndex, gridSizeIndex) || other.gridSizeIndex == gridSizeIndex)&&const DeepCollectionEquality().equals(other._gridSizes, _gridSizes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.selectedMode, selectedMode) || other.selectedMode == selectedMode)&&(identical(other.playerCount, playerCount) || other.playerCount == playerCount)&&(identical(other.aiDifficulty, aiDifficulty) || other.aiDifficulty == aiDifficulty)&&(identical(other.gridSizeIndex, gridSizeIndex) || other.gridSizeIndex == gridSizeIndex)&&const DeepCollectionEquality().equals(other._gridSizes, _gridSizes)&&(identical(other.onlineMode, onlineMode) || other.onlineMode == onlineMode)&&(identical(other.roomCode, roomCode) || other.roomCode == roomCode));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentStep,selectedMode,playerCount,aiDifficulty,gridSizeIndex,const DeepCollectionEquality().hash(_gridSizes));
+int get hashCode => Object.hash(runtimeType,currentStep,selectedMode,playerCount,aiDifficulty,gridSizeIndex,const DeepCollectionEquality().hash(_gridSizes),onlineMode,roomCode);
 
 @override
 String toString() {
-  return 'HomeState(currentStep: $currentStep, selectedMode: $selectedMode, playerCount: $playerCount, aiDifficulty: $aiDifficulty, gridSizeIndex: $gridSizeIndex, gridSizes: $gridSizes)';
+  return 'HomeState(currentStep: $currentStep, selectedMode: $selectedMode, playerCount: $playerCount, aiDifficulty: $aiDifficulty, gridSizeIndex: $gridSizeIndex, gridSizes: $gridSizes, onlineMode: $onlineMode, roomCode: $roomCode)';
 }
 
 
@@ -257,7 +261,7 @@ abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Re
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
 @override @useResult
 $Res call({
- HomeStep currentStep, GameMode selectedMode, int playerCount, AIDifficulty aiDifficulty, int gridSizeIndex, List<String> gridSizes
+ HomeStep currentStep, GameMode selectedMode, int playerCount, AIDifficulty aiDifficulty, int gridSizeIndex, List<String> gridSizes, OnlineMode onlineMode, String roomCode
 });
 
 
@@ -274,7 +278,7 @@ class __$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? currentStep = null,Object? selectedMode = null,Object? playerCount = null,Object? aiDifficulty = null,Object? gridSizeIndex = null,Object? gridSizes = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? currentStep = null,Object? selectedMode = null,Object? playerCount = null,Object? aiDifficulty = null,Object? gridSizeIndex = null,Object? gridSizes = null,Object? onlineMode = null,Object? roomCode = null,}) {
   return _then(_HomeState(
 currentStep: null == currentStep ? _self.currentStep : currentStep // ignore: cast_nullable_to_non_nullable
 as HomeStep,selectedMode: null == selectedMode ? _self.selectedMode : selectedMode // ignore: cast_nullable_to_non_nullable
@@ -282,7 +286,9 @@ as GameMode,playerCount: null == playerCount ? _self.playerCount : playerCount /
 as int,aiDifficulty: null == aiDifficulty ? _self.aiDifficulty : aiDifficulty // ignore: cast_nullable_to_non_nullable
 as AIDifficulty,gridSizeIndex: null == gridSizeIndex ? _self.gridSizeIndex : gridSizeIndex // ignore: cast_nullable_to_non_nullable
 as int,gridSizes: null == gridSizes ? _self._gridSizes : gridSizes // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,onlineMode: null == onlineMode ? _self.onlineMode : onlineMode // ignore: cast_nullable_to_non_nullable
+as OnlineMode,roomCode: null == roomCode ? _self.roomCode : roomCode // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
-import { validateMove, applyMove, type GameState, type Player } from "../_shared/game_engine.ts";
+import { validateMove, applyMove, type GameState } from "../_shared/game_engine.ts";
 
 Deno.serve(async (req: Request) => {
     // Handle CORS preflight
@@ -70,7 +70,7 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        const gameState = game.game_state as GameState & { players: Player[] };
+        const gameState = game.game_state as GameState;
         const players = gameState.players;
 
         // Validate move
@@ -82,24 +82,21 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Apply move
-        const newState = applyMove(gameState, x, y, user.id, players.length);
-
-        // Preserve players array (not part of core GameState)
-        const fullNewState = { ...newState, players };
+        // Apply move (returns new GameState matching Flutter schema)
+        const newState = applyMove(gameState, x, y, user.id);
 
         // Determine new status
         const newStatus = newState.isGameOver ? "completed" : "active";
-        const newTurnNumber = newState.turnNumber;
+        const newTurnNumber = newState.turnCount;
 
         // Update game with optimistic locking
         const { data: updatedGame, error: updateError } = await supabase
             .from("games")
             .update({
-                game_state: fullNewState,
+                game_state: newState,
                 current_player_index: newState.currentPlayerIndex,
                 turn_number: newTurnNumber,
-                winner_id: newState.winnerId,
+                winner_id: newState.winner?.id ?? null,
                 status: newStatus,
             })
             .eq("id", gameId)
@@ -124,7 +121,7 @@ Deno.serve(async (req: Request) => {
         });
 
         // Update player stats if game is over
-        if (newState.isGameOver && newState.winnerId) {
+        if (newState.isGameOver && newState.winner) {
             // Increment games_played for both
             await supabase.rpc("increment_games_played", {
                 p1_id: game.player1_id,
@@ -135,7 +132,7 @@ Deno.serve(async (req: Request) => {
             await supabase
                 .from("profiles")
                 .update({ games_won: supabase.rpc("increment", { x: 1 }) })
-                .eq("id", newState.winnerId)
+                .eq("id", newState.winner.id)
                 .catch(() => { }); // Non-critical
         }
 
@@ -144,7 +141,7 @@ Deno.serve(async (req: Request) => {
                 success: true,
                 gameState: updatedGame.game_state,
                 isGameOver: newState.isGameOver,
-                winnerId: newState.winnerId,
+                winnerId: newState.winner?.id ?? null,
             }),
             { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );

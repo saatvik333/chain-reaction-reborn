@@ -604,11 +604,89 @@ abstract class AppLocalizations {
   /// **'Vs Computer'**
   String get vsComputer;
 
+  /// No description provided for @onlineMultiplayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Multiplayer'**
+  String get onlineMultiplayer;
+
+  /// No description provided for @enterLobby.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Lobby'**
+  String get enterLobby;
+
+  /// No description provided for @createRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Room'**
+  String get createRoom;
+
+  /// No description provided for @joinRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Room'**
+  String get joinRoom;
+
+  /// No description provided for @enterCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Code'**
+  String get enterCode;
+
+  /// No description provided for @roomCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Room Code'**
+  String get roomCode;
+
+  /// No description provided for @waitingForOpponent.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for opponent...'**
+  String get waitingForOpponent;
+
+  /// No description provided for @shareCodeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this code with your friend'**
+  String get shareCodeMessage;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
   /// No description provided for @next.
   ///
   /// In en, this message translates to:
   /// **'Next'**
   String get next;
+
+  /// No description provided for @difficultyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DIFFICULTY'**
+  String get difficultyLabel;
+
+  /// No description provided for @roomModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ROOM'**
+  String get roomModeLabel;
+
+  /// No description provided for @joinArenaMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the global arena!'**
+  String get joinArenaMessage;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copiedToClipboard;
 
   /// No description provided for @supportDevelopmentHeader.
   ///

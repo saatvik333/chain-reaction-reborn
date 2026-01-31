@@ -1,5 +1,6 @@
 // Game Engine - TypeScript port of game_rules.dart
 // Server-authoritative game logic for Chain Reaction
+// Schema matches Flutter's GameState exactly
 
 export interface Cell {
     x: number;
@@ -9,18 +10,35 @@ export interface Cell {
     capacity: number;
 }
 
-export interface GameState {
-    grid: Cell[][];
-    currentPlayerIndex: number;
-    turnNumber: number;
-    isGameOver: boolean;
-    winnerId: string | null;
-}
-
 export interface Player {
     id: string;
     name: string;
-    colorIndex: number;
+    color: number;  // Color as int (Flutter Color.value)
+    type: 'human' | 'ai';
+    difficulty: string | null;
+}
+
+export interface FlyingAtom {
+    id: string;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    ownerId: string;
+}
+
+export interface GameState {
+    grid: Cell[][];
+    players: Player[];
+    flyingAtoms: FlyingAtom[];
+    currentPlayerIndex: number;
+    isGameOver: boolean;
+    winner: Player | null;
+    isProcessing: boolean;
+    turnCount: number;
+    totalMoves: number;
+    startTime: string;  // ISO string
+    endTime: string | null;
 }
 
 export interface MoveResult {
@@ -28,6 +46,14 @@ export interface MoveResult {
     newState: GameState;
     error?: string;
 }
+
+// Default player colors (matching Flutter theme)
+export const PLAYER_COLORS = [
+    4294198070,  // Red-ish (0xFFE57373)
+    4280391411,  // Blue (0xFF64B5F6)
+    4289920857,  // Green (0xFFA5D6A7)
+    4294945600,  // Yellow (0xFFFFF176)
+];
 
 /**
  * Calculate cell capacity based on position
@@ -61,6 +87,46 @@ export function initializeGrid(rows: number, cols: number): Cell[][] {
         grid.push(row);
     }
     return grid;
+}
+
+/**
+ * Create initial game state
+ */
+export function createInitialGameState(
+    rows: number,
+    cols: number,
+    player1: Player
+): GameState {
+    return {
+        grid: initializeGrid(rows, cols),
+        players: [player1],
+        flyingAtoms: [],
+        currentPlayerIndex: 0,
+        isGameOver: false,
+        winner: null,
+        isProcessing: false,
+        turnCount: 0,
+        totalMoves: 0,
+        startTime: new Date().toISOString(),
+        endTime: null,
+    };
+}
+
+/**
+ * Create a Player object
+ */
+export function createPlayer(
+    id: string,
+    name: string,
+    colorIndex: number
+): Player {
+    return {
+        id,
+        name,
+        color: PLAYER_COLORS[colorIndex % PLAYER_COLORS.length],
+        type: 'human',
+        difficulty: null,
+    };
 }
 
 /**
@@ -173,22 +239,23 @@ function processExplosions(grid: Cell[][], playerId: string): Cell[][] {
 /**
  * Check for winner
  */
-function checkWinner(grid: Cell[][], turnNumber: number): string | null {
+function checkWinner(grid: Cell[][], players: Player[], turnCount: number): Player | null {
     // No winner check on first two turns (each player needs at least one move)
-    if (turnNumber < 2) return null;
+    if (turnCount < 2) return null;
 
-    const owners = new Set<string>();
+    const ownerIds = new Set<string>();
     for (const row of grid) {
         for (const cell of row) {
             if (cell.ownerId) {
-                owners.add(cell.ownerId);
+                ownerIds.add(cell.ownerId);
             }
         }
     }
 
     // Winner if only one player remains
-    if (owners.size === 1) {
-        return Array.from(owners)[0];
+    if (ownerIds.size === 1) {
+        const winnerId = Array.from(ownerIds)[0];
+        return players.find(p => p.id === winnerId) ?? null;
     }
 
     return null;
@@ -201,11 +268,12 @@ export function applyMove(
     state: GameState,
     x: number,
     y: number,
-    playerId: string,
-    playerCount: number
+    playerId: string
 ): GameState {
-    // Deep clone grid
+    // Deep clone
     let grid = JSON.parse(JSON.stringify(state.grid)) as Cell[][];
+    const players = state.players;
+    const playerCount = players.length;
 
     // Place atom
     const cell = grid[y][x];
@@ -215,19 +283,26 @@ export function applyMove(
     // Process chain reactions
     grid = processExplosions(grid, playerId);
 
-    // Update turn
-    const newTurnNumber = state.turnNumber + 1;
+    // Update counters
+    const newTurnCount = state.turnCount + 1;
+    const newTotalMoves = state.totalMoves + 1;
     const newPlayerIndex = (state.currentPlayerIndex + 1) % playerCount;
 
     // Check winner
-    const winnerId = checkWinner(grid, newTurnNumber);
-    const isGameOver = winnerId !== null;
+    const winner = checkWinner(grid, players, newTurnCount);
+    const isGameOver = winner !== null;
 
     return {
         grid,
+        players: state.players,
+        flyingAtoms: [], // Server doesn't animate
         currentPlayerIndex: isGameOver ? state.currentPlayerIndex : newPlayerIndex,
-        turnNumber: newTurnNumber,
         isGameOver,
-        winnerId,
+        winner,
+        isProcessing: false,
+        turnCount: newTurnCount,
+        totalMoves: newTotalMoves,
+        startTime: state.startTime,
+        endTime: isGameOver ? new Date().toISOString() : null,
     };
 }

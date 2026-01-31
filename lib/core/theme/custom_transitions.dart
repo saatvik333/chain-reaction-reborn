@@ -12,10 +12,9 @@ class FluidFadePageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-
     final curve = CurvedAnimation(
       parent: animation,
-      curve: Curves.fastOutSlowIn, 
+      curve: Curves.fastOutSlowIn,
       reverseCurve: Curves.easeIn,
     );
 
@@ -24,7 +23,8 @@ class FluidFadePageTransitionsBuilder extends PageTransitionsBuilder {
       builder: (context, child) {
         // Show opaque background ONLY when pushing (forward).
         // When popping (reverse), we want transparency to see the underlying page.
-        final showBackground = animation.status == AnimationStatus.forward ||
+        final showBackground =
+            animation.status == AnimationStatus.forward ||
             animation.status == AnimationStatus.completed;
 
         return Stack(

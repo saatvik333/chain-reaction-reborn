@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chain_reaction/features/auth/domain/entities/app_auth_state.dart';
+import 'package:chain_reaction/features/auth/presentation/providers/auth_provider.dart';
+import 'package:chain_reaction/routing/routes.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../../core/presentation/widgets/game_selector.dart';
 import '../../../../core/presentation/widgets/pill_button.dart';
 import '../providers/home_provider.dart';
@@ -19,16 +24,33 @@ class HomeModeSelection extends ConsumerWidget {
       children: [
         GameSelector(
           label: l10n.gameModeLabel,
-          value: state.selectedMode == GameMode.localMultiplayer
-              ? l10n.localMultiplayer
-              : l10n.vsComputer,
-          onPrevious: () => notifier.toggleMode(),
-          onNext: () => notifier.toggleMode(),
+          value: switch (state.selectedMode) {
+            GameMode.localMultiplayer => l10n.localMultiplayer,
+            GameMode.vsComputer => l10n.vsComputer,
+            GameMode.online => l10n.onlineMultiplayer,
+          },
+
+          onPrevious: () => notifier.cycleMode(),
+          onNext: () => notifier.cycleMode(),
         ),
+
         const Spacer(),
         PillButton(
           text: l10n.next,
-          onTap: () => notifier.setStep(HomeStep.configuration),
+          onTap: () {
+            if (state.selectedMode == GameMode.online) {
+              final authState = ref.read(authProvider);
+              switch (authState) {
+                case AppAuthStateAuthenticated():
+                  // Go to inline configuration instead of separate lobby screen
+                  notifier.setStep(HomeStep.configuration);
+                case _:
+                  context.pushNamed(AppRouteNames.auth);
+              }
+            } else {
+              notifier.setStep(HomeStep.configuration);
+            }
+          },
           width: double.infinity,
         ),
       ],

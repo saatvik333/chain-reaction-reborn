@@ -11,6 +11,8 @@ class PillButton extends ConsumerStatefulWidget {
   final double? width;
   final double height;
   final PillButtonType type;
+  final Widget? icon;
+  final bool isLoading;
 
   const PillButton({
     super.key,
@@ -19,6 +21,8 @@ class PillButton extends ConsumerStatefulWidget {
     this.width,
     this.height = AppDimensions.pillButtonHeight,
     this.type = PillButtonType.secondary,
+    this.icon,
+    this.isLoading = false,
   });
 
   @override
@@ -112,7 +116,7 @@ class _PillButtonState extends ConsumerState<PillButton> {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: widget.onTap,
+            onTap: widget.isLoading ? null : widget.onTap,
             onTapDown: _handleTapDown,
             onTapUp: _handleTapUp,
             onTapCancel: _handleTapCancel,
@@ -126,15 +130,34 @@ class _PillButtonState extends ConsumerState<PillButton> {
                 color: backgroundColor,
               ),
               alignment: Alignment.center,
-              child: Text(
-                widget.text,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: AppDimensions.fontL,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: AppDimensions.letterSpacingButton,
-                ),
-              ),
+              child: widget.isLoading
+                  ? SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(textColor),
+                      ),
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (widget.icon != null) ...[
+                          widget.icon!,
+                          const SizedBox(width: AppDimensions.iconTextSpacing),
+                        ],
+                        Text(
+                          widget.text,
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: AppDimensions.fontL,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: AppDimensions.letterSpacingButton,
+                          ),
+                        ),
+                      ],
+                    ),
             ),
           ),
         ),

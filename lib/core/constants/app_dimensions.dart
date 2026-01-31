@@ -90,6 +90,7 @@ class AppDimensions {
   static const double buttonPressScale = 0.96;
   static const int buttonPressDurationMs = 100;
   static const double letterSpacingButton = 1.2;
+  static const double iconTextSpacing = 12.0;
   static const double disabledOpacity = 0.3;
   static const double activeOpacity = 1.0;
   static const double surfaceOpacity = 0.1;

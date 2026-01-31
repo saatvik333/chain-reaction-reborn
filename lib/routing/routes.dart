@@ -8,6 +8,7 @@ class AppRoutes {
   static const String palette = 'palette';
   static const String info = 'info';
   static const String auth = 'auth';
+  static const String onlineWaiting = 'online-waiting';
 }
 
 /// Defines the names for named navigation.
@@ -20,4 +21,5 @@ class AppRouteNames {
   static const String palette = 'palette';
   static const String info = 'info';
   static const String auth = 'auth';
+  static const String onlineWaiting = 'onlineWaiting';
 }

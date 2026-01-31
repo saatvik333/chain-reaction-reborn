@@ -42,87 +42,104 @@ class WinnerScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.bg,
-      body: SafeArea(
-        child: ResponsiveContainer(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingL,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: SafeArea(
+                child: ResponsiveContainer(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.paddingL,
+                      vertical: AppDimensions.paddingM,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: AppDimensions.paddingL),
+                        Text(
+                          l10n.winner,
+                          style: TextStyle(
+                            color: theme.fg,
+                            fontSize: AppDimensions.fontGiant,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: AppDimensions.spacingXXL),
+
+                        Container(
+                          width: 120, // Specific for winner circle
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: winnerColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(height: AppDimensions.paddingL),
+                        Text(
+                          winnerName,
+                          style: TextStyle(
+                            color: theme.fg,
+                            fontSize: AppDimensions.fontXXL,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingXXXL),
+
+                        _buildStatRow(
+                          l10n.totalMoves,
+                          totalMoves.toString(),
+                          theme,
+                        ),
+                        const SizedBox(height: AppDimensions.paddingL),
+                        _buildStatRow(l10n.duration, gameDuration, theme),
+                        const SizedBox(height: AppDimensions.paddingL),
+                        _buildStatRow(
+                          l10n.territory,
+                          '$territoryPercentage%',
+                          theme,
+                        ),
+
+                        const SizedBox(height: AppDimensions.paddingXXXL),
+
+                        PillButton(
+                          text: l10n.playAgain,
+                          onTap: () {
+                            // Restart the game with the same configuration
+                            context.pushReplacementNamed(
+                              AppRouteNames.game,
+                              extra: {
+                                'playerCount': playerCount,
+                                'gridSize': gridSize,
+                                'aiDifficulty': aiDifficulty,
+                              },
+                            );
+                          },
+                          width: double.infinity,
+                          type: PillButtonType.primary,
+                        ),
+                        const SizedBox(height: AppDimensions.paddingM),
+                        PillButton(
+                          text: l10n.mainMenu,
+                          onTap: () {
+                            context.goNamed(AppRouteNames.home);
+                          },
+                          width: double.infinity,
+                          type: PillButtonType.secondary,
+                        ),
+                        const SizedBox(height: AppDimensions.paddingL),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Spacer(flex: 2),
-                Text(
-                  l10n.winner,
-                  style: TextStyle(
-                    color: theme.fg,
-                    fontSize: AppDimensions.fontGiant,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(
-                  height: AppDimensions.spacingXXL,
-                ), // Intentionally keeping larger spacing as per design
-
-                Container(
-                  width: 120, // Specific for winner circle
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: winnerColor,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(height: AppDimensions.paddingL),
-                Text(
-                  winnerName,
-                  style: TextStyle(
-                    color: theme.fg,
-                    fontSize: AppDimensions.fontXXL,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-
-                const SizedBox(height: AppDimensions.paddingXXXL),
-
-                _buildStatRow(l10n.totalMoves, totalMoves.toString(), theme),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildStatRow(l10n.duration, gameDuration, theme),
-                const SizedBox(height: AppDimensions.paddingL),
-                _buildStatRow(l10n.territory, '$territoryPercentage%', theme),
-
-                const Spacer(flex: 3),
-
-                PillButton(
-                  text: l10n.playAgain,
-                  onTap: () {
-                    // Restart the game with the same configuration
-                    context.pushReplacementNamed(
-                      AppRouteNames.game,
-                      extra: {
-                        'playerCount': playerCount,
-                        'gridSize': gridSize,
-                        'aiDifficulty': aiDifficulty,
-                      },
-                    );
-                  },
-                  width: double.infinity,
-                  type: PillButtonType.primary,
-                ),
-                const SizedBox(height: AppDimensions.paddingM),
-                PillButton(
-                  text: l10n.mainMenu,
-                  onTap: () {
-                    context.goNamed(AppRouteNames.home);
-                  },
-                  width: double.infinity,
-                  type: PillButtonType.secondary,
-                ),
-                const SizedBox(height: 48),
-              ],
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

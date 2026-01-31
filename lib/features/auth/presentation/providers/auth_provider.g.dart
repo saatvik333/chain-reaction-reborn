@@ -8,52 +8,6 @@ part of 'auth_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Supabase client provider
-
-@ProviderFor(supabaseClient)
-const supabaseClientProvider = SupabaseClientProvider._();
-
-/// Supabase client provider
-
-final class SupabaseClientProvider
-    extends $FunctionalProvider<SupabaseClient, SupabaseClient, SupabaseClient>
-    with $Provider<SupabaseClient> {
-  /// Supabase client provider
-  const SupabaseClientProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'supabaseClientProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$supabaseClientHash();
-
-  @$internal
-  @override
-  $ProviderElement<SupabaseClient> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  SupabaseClient create(Ref ref) {
-    return supabaseClient(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(SupabaseClient value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<SupabaseClient>(value),
-    );
-  }
-}
-
-String _$supabaseClientHash() => r'2df5a38617329a3bb0a7e149189bea875722d7b8';
-
 /// Google Sign-In provider
 
 @ProviderFor(googleSignIn)
@@ -98,7 +52,7 @@ final class GoogleSignInProvider
   }
 }
 
-String _$googleSignInHash() => r'd8439bc335832b8824537004ef2d6ba1b5ccc2b5';
+String _$googleSignInHash() => r'b1c381c93fa98ec01719c08c4c165dbc439ae3e1';
 
 /// Auth repository provider
 
@@ -146,6 +100,64 @@ final class AuthRepositoryProvider
 
 String _$authRepositoryHash() => r'904b7e379edbb3970fdeeaae8ad0072287f1f5ec';
 
+/// Auth mode provider (true = login, false = signup)
+
+@ProviderFor(AuthMode)
+const authModeProvider = AuthModeProvider._();
+
+/// Auth mode provider (true = login, false = signup)
+final class AuthModeProvider extends $NotifierProvider<AuthMode, bool> {
+  /// Auth mode provider (true = login, false = signup)
+  const AuthModeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authModeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authModeHash();
+
+  @$internal
+  @override
+  AuthMode create() => AuthMode();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$authModeHash() => r'07cc367305bad11a170e54d5fe9e3cb7bf377e49';
+
+/// Auth mode provider (true = login, false = signup)
+
+abstract class _$AuthMode extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
 /// Auth state notifier
 
 @ProviderFor(AuthNotifier)
@@ -182,7 +194,7 @@ final class AuthNotifierProvider
   }
 }
 
-String _$authNotifierHash() => r'1949885e4cfef6f3d806d27490e24f16f9eeeec2';
+String _$authNotifierHash() => r'de332883dd8bfa75428b624b28e41d5938ce3c13';
 
 /// Auth state notifier
 

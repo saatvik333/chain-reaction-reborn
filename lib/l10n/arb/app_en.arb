@@ -85,6 +85,20 @@
   "gameModeLabel": "GAME MODE",
   "localMultiplayer": "Local Multiplayer",
   "vsComputer": "Vs Computer",
+  "onlineMultiplayer": "Online Multiplayer",
+  "enterLobby": "Enter Lobby",
+  "createRoom": "Create Room",
+  "joinRoom": "Join Room",
+  "enterCode": "Enter Code",
+  "roomCode": "Room Code",
+  "waitingForOpponent": "Waiting for opponent...",
+  "shareCodeMessage": "Share this code with your friend",
+  "copy": "Copy",
   "next": "Next",
+  "difficultyLabel": "DIFFICULTY",
+  "roomModeLabel": "ROOM",
+  "joinArenaMessage": "Join the global arena!",
+  "copiedToClipboard": "Copied to clipboard",
+
   "supportDevelopmentHeader": "SUPPORT DEVELOPMENT"
 }

@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
-import { initializeGrid } from "../_shared/game_engine.ts";
+import { createInitialGameState, createPlayer } from "../_shared/game_engine.ts";
 
 Deno.serve(async (req: Request) => {
     // Handle CORS preflight
@@ -55,22 +55,15 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Initialize game state
-        const initialGrid = initializeGrid(gridRows, gridCols);
-        const gameState = {
-            grid: initialGrid,
-            currentPlayerIndex: 0,
-            turnNumber: 0,
-            isGameOver: false,
-            winnerId: null,
-            players: [
-                {
-                    id: user.id,
-                    name: profile.display_name ?? profile.username,
-                    colorIndex: 0,
-                },
-            ],
-        };
+        // Create player 1
+        const player1 = createPlayer(
+            user.id,
+            profile.display_name ?? profile.username,
+            0  // Color index 0 for player 1
+        );
+
+        // Initialize game state (matches Flutter GameState schema)
+        const gameState = createInitialGameState(gridRows, gridCols, player1);
 
         // Create game record
         const { data: game, error: gameError } = await supabase
@@ -81,6 +74,8 @@ Deno.serve(async (req: Request) => {
                 grid_rows: gridRows,
                 grid_cols: gridCols,
                 status: "waiting",
+                current_player_index: 0,
+                turn_number: 0,
             })
             .select("id, room_code, expires_at")
             .single();

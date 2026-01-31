@@ -176,39 +176,46 @@ class _ThemeRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              if (isSelected)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Icon(
-                    Icons.check_circle,
-                    color: playerColors.isNotEmpty
-                        ? playerColors[0]
-                        : textColor,
-                    size: AppDimensions.iconM,
+          Expanded(
+            child: Row(
+              children: [
+                if (isSelected)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: Icon(
+                      Icons.check_circle,
+                      color: playerColors.isNotEmpty
+                          ? playerColors[0]
+                          : textColor,
+                      size: AppDimensions.iconM,
+                    ),
+                  )
+                else if (isLocked)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: Icon(
+                      Icons.lock,
+                      color: textColor.withValues(alpha: 0.5),
+                      size: AppDimensions.iconM,
+                    ),
                   ),
-                )
-              else if (isLocked)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Icon(
-                    Icons.lock,
-                    color: textColor.withValues(alpha: 0.5),
-                    size: AppDimensions.iconM,
+                Flexible(
+                  child: Text(
+                    theme.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: isLocked
+                          ? textColor.withValues(alpha: 0.5)
+                          : textColor,
+                      fontSize: AppDimensions.fontL,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                    ),
                   ),
                 ),
-              Text(
-                theme.name,
-                style: TextStyle(
-                  color: isLocked
-                      ? textColor.withValues(alpha: 0.5)
-                      : textColor,
-                  fontSize: AppDimensions.fontL,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
           SizedBox(
             height: 30,

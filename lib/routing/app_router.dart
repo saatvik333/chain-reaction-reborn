@@ -2,25 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'routes.dart';
+import 'route_args.dart';
 
 // Screen imports
-import '../../features/home/presentation/screens/home_screen.dart';
-import '../../features/game/presentation/screens/game_screen.dart';
-import '../../features/game/presentation/screens/winner_screen.dart';
-import '../../features/settings/presentation/screens/settings_screen.dart';
-import '../../features/shop/presentation/screens/purchase_screen.dart';
-import '../../features/shop/presentation/screens/palette_screen.dart';
-import '../../features/home/presentation/screens/info_screen.dart';
-import '../../features/auth/presentation/screens/auth_screen.dart';
-import '../../features/game/domain/entities/player.dart';
+import '../features/home/presentation/screens/home_screen.dart';
+import '../features/game/presentation/screens/game_screen.dart';
+import '../features/game/presentation/screens/winner_screen.dart';
+import '../features/game/presentation/screens/online_waiting_screen.dart';
+
+import '../features/settings/presentation/screens/settings_screen.dart';
+import '../features/shop/presentation/screens/purchase_screen.dart';
+import '../features/shop/presentation/screens/palette_screen.dart';
+import '../features/home/presentation/screens/info_screen.dart';
+import '../features/auth/presentation/screens/auth_screen.dart';
 
 /// Provider for the GoRouter instance.
 final goRouterProvider = Provider<GoRouter>((ref) {
-  // Future: Add authentication state listening logic here.
-
   return GoRouter(
     initialLocation: AppRoutes.home,
-    debugLogDiagnostics: true, // Helpful for debugging
+    debugLogDiagnostics: true,
     routes: [
       GoRoute(
         path: AppRoutes.home,
@@ -32,11 +32,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/${AppRoutes.game}',
         name: AppRouteNames.game,
         pageBuilder: (context, state) {
-          final extras = state.extra as Map<String, dynamic>?;
-          final playerCount = extras?['playerCount'] as int?;
-          final gridSize = extras?['gridSize'] as String?;
-          final aiDifficulty = extras?['aiDifficulty'] as AIDifficulty?;
-          final isResuming = extras?['isResuming'] as bool? ?? false;
+          final args = state.extra as GameRouteArgs?;
+          final playerCount = args?.playerCount;
+          final gridSize = args?.gridSize;
+          final aiDifficulty = args?.aiDifficulty;
+          final isResuming = args?.isResuming ?? false;
 
           return _fadeTransition(
             context,
@@ -54,15 +54,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/${AppRoutes.winner}',
         name: AppRouteNames.winner,
         pageBuilder: (context, state) {
-          final extras = state.extra as Map<String, dynamic>?;
-          final winnerPlayerIndex = extras?['winnerPlayerIndex'] as int? ?? 1;
-          final totalMoves = extras?['totalMoves'] as int? ?? 0;
-          final gameDuration = extras?['gameDuration'] as String? ?? '00:00';
-          final territoryPercentage =
-              extras?['territoryPercentage'] as int? ?? 100;
-          final playerCount = extras?['playerCount'] as int? ?? 2;
-          final gridSize = extras?['gridSize'] as String? ?? 'medium';
-          final aiDifficulty = extras?['aiDifficulty'] as AIDifficulty?;
+          final args = state.extra as WinnerRouteArgs?;
+          final winnerPlayerIndex = args?.winnerPlayerIndex ?? 1;
+          final totalMoves = args?.totalMoves ?? 0;
+          final gameDuration = args?.gameDuration ?? '00:00';
+          final territoryPercentage = args?.territoryPercentage ?? 100;
+          final playerCount = args?.playerCount ?? 2;
+          final gridSize = args?.gridSize ?? 'medium';
+          final aiDifficulty = args?.aiDifficulty;
 
           return _fadeTransition(
             context,
@@ -108,6 +107,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: AppRouteNames.auth,
         pageBuilder: (context, state) =>
             _fadeTransition(context, state, const AuthScreen()),
+      ),
+      GoRoute(
+        path: '/${AppRoutes.onlineWaiting}',
+        name: AppRouteNames.onlineWaiting,
+        pageBuilder: (context, state) =>
+            _fadeTransition(context, state, const OnlineWaitingScreen()),
       ),
     ],
 

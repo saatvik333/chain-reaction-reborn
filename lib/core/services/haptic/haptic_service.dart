@@ -14,15 +14,15 @@ class HapticService {
   }
 
   Future<void> heavyImpact() async {
-     if (await Vibration.hasVibrator() == true) {
+    if (await Vibration.hasVibrator() == true) {
       Vibration.vibrate(duration: 50, amplitude: 255);
     }
   }
-  
+
   Future<void> explosionPattern() async {
-     if (await Vibration.hasVibrator() == true) {
-       // Pattern: wait, vibrate, wait, vibrate...
-       Vibration.vibrate(pattern: [0, 20, 30, 40]);
-     }
+    if (await Vibration.hasVibrator() == true) {
+      // Pattern: wait, vibrate, wait, vibrate...
+      Vibration.vibrate(pattern: [0, 20, 30, 40]);
+    }
   }
 }

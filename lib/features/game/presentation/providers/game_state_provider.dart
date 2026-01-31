@@ -55,6 +55,21 @@ class GameNotifier extends _$GameNotifier {
     _saveGame();
   }
 
+  /// Sets the state from an external source (e.g. online game update).
+  void setExternalState(GameState newState) {
+    // Determine if we need to process flying atoms (animations)
+    // If the new state has flying atoms, we should probably just set the state using placeAtom logic?
+    // OR, we just update the state and let the UI render.
+    // However, for smooth animations, we might want to manually trigger the animation via placeAtom
+    // if we detect a difference.
+    // For MVP, simplistic state sync is safer.
+    _cancelExplosions();
+    // We don't clear history because we might want to support "Undo" locally for view purposes?
+    // No, undo in online is complex. Clear history to disable undo?
+    _history.clear();
+    state = newState;
+  }
+
   /// Places an atom at the given coordinates.
   void placeAtom(int x, int y) {
     final currentState = state;

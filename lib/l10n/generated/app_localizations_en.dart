@@ -269,7 +269,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vsComputer => 'Vs Computer';
 
   @override
+  String get onlineMultiplayer => 'Online Multiplayer';
+
+  @override
+  String get enterLobby => 'Enter Lobby';
+
+  @override
+  String get createRoom => 'Create Room';
+
+  @override
+  String get joinRoom => 'Join Room';
+
+  @override
+  String get enterCode => 'Enter Code';
+
+  @override
+  String get roomCode => 'Room Code';
+
+  @override
+  String get waitingForOpponent => 'Waiting for opponent...';
+
+  @override
+  String get shareCodeMessage => 'Share this code with your friend';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
   String get next => 'Next';
+
+  @override
+  String get difficultyLabel => 'DIFFICULTY';
+
+  @override
+  String get roomModeLabel => 'ROOM';
+
+  @override
+  String get joinArenaMessage => 'Join the global arena!';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
 
   @override
   String get supportDevelopmentHeader => 'SUPPORT DEVELOPMENT';
