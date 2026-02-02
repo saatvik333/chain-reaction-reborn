@@ -54,6 +54,55 @@ final class ShopRepositoryProvider
 
 String _$shopRepositoryHash() => r'f4650e6bdb86852a4e9b9fa144c5d5444d2026e3';
 
+/// Provider for [IAPService].
+/// This allows us to override the service in tests with a mock.
+
+@ProviderFor(iapService)
+const iapServiceProvider = IapServiceProvider._();
+
+/// Provider for [IAPService].
+/// This allows us to override the service in tests with a mock.
+
+final class IapServiceProvider
+    extends $FunctionalProvider<IAPService, IAPService, IAPService>
+    with $Provider<IAPService> {
+  /// Provider for [IAPService].
+  /// This allows us to override the service in tests with a mock.
+  const IapServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'iapServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$iapServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<IAPService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  IAPService create(Ref ref) {
+    return iapService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(IAPService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<IAPService>(value),
+    );
+  }
+}
+
+String _$iapServiceHash() => r'bde65258016213d080987ab0e82b92f80a4710a3';
+
 @ProviderFor(ShopNotifier)
 const shopProvider = ShopNotifierProvider._();
 
@@ -78,7 +127,7 @@ final class ShopNotifierProvider
   ShopNotifier create() => ShopNotifier();
 }
 
-String _$shopNotifierHash() => r'2f59a7511b40346a2097ab8d851e31f4f4f43cd8';
+String _$shopNotifierHash() => r'3359a41e6fbb1bb9308a41b7e6bad8ce23284d62';
 
 abstract class _$ShopNotifier extends $AsyncNotifier<ShopState> {
   FutureOr<ShopState> build();

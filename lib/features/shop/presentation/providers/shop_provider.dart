@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../../domain/repositories/shop_repository.dart';
 import '../../data/repositories/shop_repository_impl.dart';
 import '../../data/services/iap_service.dart';
+import '../../domain/entities/shop_event.dart';
 
 import '../../../settings/presentation/providers/settings_providers.dart';
 
@@ -23,6 +25,15 @@ const Set<String> kThemeIds = {'Earthy', 'Pastel', 'Amoled'};
 ShopRepository shopRepository(Ref ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return ShopRepositoryImpl(prefs);
+}
+
+/// Provider for [IAPService].
+/// This allows us to override the service in tests with a mock.
+@riverpod
+IAPService iapService(Ref ref) {
+  final service = IAPService();
+  ref.onDispose(() => service.dispose());
+  return service;
 }
 
 @freezed
@@ -49,18 +60,23 @@ abstract class ShopState with _$ShopState {
 class ShopNotifier extends _$ShopNotifier {
   late final ShopRepository _repository;
   late final IAPService _iapService;
+  StreamSubscription? _eventSubscription;
 
   @override
   Future<ShopState> build() async {
     _repository = ref.watch(shopRepositoryProvider);
-    _iapService = IAPService(
-      onPurchaseCompleted: _onPurchaseCompleted,
-      onError: _onPurchaseError,
-      onValidationComplete: _onValidationComplete,
-    );
+    _iapService = ref.watch(iapServiceProvider);
+
+    // Listen to IAP events
+    _eventSubscription = _iapService.events.listen(_onShopEvent);
+
+    // Ensure subscription is cancelled when notifier is disposed
+    ref.onDispose(() {
+      _eventSubscription?.cancel();
+    });
 
     // Initialize IAP
-    _iapService.initialize();
+    await _iapService.initialize();
 
     // Load initial data
     var ownedIds = await _repository.getPurchasedThemeIds();
@@ -87,7 +103,7 @@ class ShopNotifier extends _$ShopNotifier {
     state = const AsyncValue.loading();
     try {
       await _iapService.buyNonConsumable(product);
-      // State updates via callbacks
+      // State updates via callbacks -> stream listener
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -112,7 +128,18 @@ class ShopNotifier extends _$ShopNotifier {
     }
   }
 
-  void _onPurchaseCompleted(String productId) async {
+  void _onShopEvent(ShopEvent event) {
+    switch (event) {
+      case PurchaseCompleted(:final productId):
+        _handlePurchaseCompleted(productId);
+      case PurchaseError(:final message):
+        _handlePurchaseError(message);
+      case ValidationComplete(:final productId, :final isValid):
+        _handleValidationComplete(productId, isValid);
+    }
+  }
+
+  void _handlePurchaseCompleted(String productId) async {
     // Reload state to reflect changes
     // Reload owned IDs to reflect the new purchase.
     try {
@@ -127,11 +154,11 @@ class ShopNotifier extends _$ShopNotifier {
     }
   }
 
-  void _onPurchaseError(String error) {
+  void _handlePurchaseError(String error) {
     state = AsyncValue.error(error, StackTrace.current);
   }
 
-  void _onValidationComplete(String productId, bool isValid) {
+  void _handleValidationComplete(String productId, bool isValid) {
     if (!isValid) {
       final currentState = state.asData?.value;
       if (currentState != null) {

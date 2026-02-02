@@ -3,48 +3,30 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:flutter/foundation.dart';
 import 'purchase_validation_service.dart';
 import 'purchase_state_manager.dart';
+import '../../domain/entities/shop_event.dart';
 
 /// Service to handle In-App Purchases (IAP).
 class IAPService {
-  final InAppPurchase _iap = InAppPurchase.instance;
+  final InAppPurchase _iap;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
-  late final PurchaseValidationService _validationService;
-  late final PurchaseStateManager _stateManager;
+  final PurchaseValidationService _validationService;
+  final PurchaseStateManager _stateManager;
 
-  // Callback to notify listeners (e.g., ShopNotifier) about successful purchases
-  final Function(String productID) onPurchaseCompleted;
+  final StreamController<ShopEvent> _eventController =
+      StreamController<ShopEvent>.broadcast();
 
-  // Callback for purchase errors
-  final Function(String error)? onError;
-
-  // Callback for purchase validation updates
-  final Function(String productId, bool isValid)? onValidationComplete;
+  Stream<ShopEvent> get events => _eventController.stream;
 
   IAPService({
-    required this.onPurchaseCompleted,
-    this.onError,
-    this.onValidationComplete,
-    String? androidApiKey,
-    String? iosSharedSecret,
-  }) {
-    _initializeServices(androidApiKey, iosSharedSecret);
-  }
-
-  Future<void> _initializeServices(
-    String? androidApiKey,
-    String? iosSharedSecret,
-  ) async {
-    _validationService = PurchaseValidationService(
-      androidApiKey: androidApiKey,
-      iosSharedSecret: iosSharedSecret,
-    );
-    _stateManager = PurchaseStateManager();
-  }
+    InAppPurchase? iap,
+    PurchaseStateManager? stateManager,
+    PurchaseValidationService? validationService,
+  }) : _iap = iap ?? InAppPurchase.instance,
+       _stateManager = stateManager ?? PurchaseStateManager(),
+       _validationService = validationService ?? PurchaseValidationService();
 
   /// Initialize the service and start listening to purchase updates.
   Future<void> initialize() async {
-    await _initializeServices(null, null);
-
     final purchaseUpdated = _iap.purchaseStream;
     _subscription = purchaseUpdated.listen(
       _onPurchaseUpdate,
@@ -55,7 +37,7 @@ class IAPService {
         if (kDebugMode) {
           print('IAP Error: $error');
         }
-        onError?.call(error.toString());
+        _eventController.add(ShopEvent.purchaseError(error.toString()));
       },
     );
 
@@ -65,6 +47,7 @@ class IAPService {
 
   void dispose() {
     _subscription.cancel();
+    _eventController.close();
   }
 
   /// Load products from the store.
@@ -154,7 +137,7 @@ class IAPService {
             validationDate: validation.purchaseDate,
             expiryDate: validation.expiryDate,
           );
-          onValidationComplete?.call(productId, true);
+          _eventController.add(ShopEvent.validationComplete(productId, true));
           break;
         case ValidationResult.invalid:
         case ValidationResult.expired:
@@ -166,7 +149,7 @@ class IAPService {
             _mapValidationResultToPurchaseState(validation.result),
             errorMessage: validation.errorMessage,
           );
-          onValidationComplete?.call(productId, false);
+          _eventController.add(ShopEvent.validationComplete(productId, false));
           break;
         case ValidationResult.pending:
           // Keep as pending
@@ -177,7 +160,7 @@ class IAPService {
             PurchaseState.failed,
             errorMessage: validation.errorMessage,
           );
-          onValidationComplete?.call(productId, false);
+          _eventController.add(ShopEvent.validationComplete(productId, false));
           break;
       }
     } catch (e) {
@@ -235,7 +218,11 @@ class IAPService {
             errorMessage: purchaseDetails.error?.message ?? 'Unknown error',
           );
           await _stateManager.savePurchase(purchaseInfo);
-          onError?.call(purchaseDetails.error?.message ?? 'Unknown error');
+          _eventController.add(
+            ShopEvent.purchaseError(
+              purchaseDetails.error?.message ?? 'Unknown error',
+            ),
+          );
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
           // Create purchased state
@@ -255,7 +242,7 @@ class IAPService {
             transactionId,
           );
           if (updatedPurchase != null && updatedPurchase.isValid) {
-            onPurchaseCompleted(productId);
+            _eventController.add(ShopEvent.purchaseCompleted(productId));
           }
         }
 
