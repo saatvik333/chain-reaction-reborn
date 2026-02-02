@@ -1,7 +1,7 @@
+import 'package:chain_reaction/features/game/domain/entities/cell.dart';
+import 'package:chain_reaction/features/game/domain/entities/flying_atom.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'cell.dart';
-import 'player.dart';
-import 'flying_atom.dart';
 
 part 'game_state.freezed.dart';
 part 'game_state.g.dart';
@@ -11,11 +11,18 @@ part 'game_state.g.dart';
 /// GameState is immutable; use [copyWith] to derive new states.
 @freezed
 abstract class GameState with _$GameState {
-  const GameState._();
-
-  const factory GameState({
+  @Assert('grid.isNotEmpty', 'Grid cannot be empty')
+  @Assert('players.isNotEmpty', 'Players list cannot be empty')
+  @Assert(
+    'currentPlayerIndex >= 0 && currentPlayerIndex < players.length',
+    'Current player index must be valid',
+  )
+  factory GameState({
     required List<List<Cell>> grid,
     required List<Player> players,
+
+    /// When the game started (for duration calculation).
+    required DateTime startTime,
     @Default([]) List<FlyingAtom> flyingAtoms,
     @Default(0) int currentPlayerIndex,
     @Default(false) bool isGameOver,
@@ -30,12 +37,13 @@ abstract class GameState with _$GameState {
     /// Total number of moves made by all players.
     @Default(0) int totalMoves,
 
-    /// When the game started (for duration calculation).
-    required DateTime startTime,
-
     /// When the game ended (for duration calculation).
     DateTime? endTime,
   }) = _GameState;
+
+  factory GameState.fromJson(Map<String, dynamic> json) =>
+      _$GameStateFromJson(json);
+  const GameState._();
 
   /// The player whose turn it currently is.
   Player get currentPlayer => players[currentPlayerIndex];
@@ -51,9 +59,9 @@ abstract class GameState with _$GameState {
 
   /// Get the number of cells owned by a specific player.
   int cellCountForPlayer(String playerId) {
-    int count = 0;
-    for (var row in grid) {
-      for (var cell in row) {
+    var count = 0;
+    for (final row in grid) {
+      for (final cell in row) {
         if (cell.ownerId == playerId) count++;
       }
     }
@@ -75,8 +83,8 @@ abstract class GameState with _$GameState {
   /// Get all unique owner IDs currently on the board.
   Set<String> get activeOwnerIds {
     final owners = <String>{};
-    for (var row in grid) {
-      for (var cell in row) {
+    for (final row in grid) {
+      for (final cell in row) {
         if (cell.ownerId != null) {
           owners.add(cell.ownerId!);
         }
@@ -98,9 +106,6 @@ abstract class GameState with _$GameState {
     final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
   }
-
-  factory GameState.fromJson(Map<String, dynamic> json) =>
-      _$GameStateFromJson(json);
 
   @override
   String toString() =>

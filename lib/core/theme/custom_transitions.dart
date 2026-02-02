@@ -35,8 +35,8 @@ class FluidFadePageTransitionsBuilder extends PageTransitionsBuilder {
             FadeTransition(
               opacity: curve,
               child: ScaleTransition(
-                scale: Tween<double>(begin: 0.95, end: 1.0).animate(curve),
-                child: child!,
+                scale: Tween<double>(begin: 0.95, end: 1).animate(curve),
+                child: child,
               ),
             ),
           ],

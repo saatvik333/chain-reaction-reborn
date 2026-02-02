@@ -1,7 +1,8 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:ui';
+
 import 'package:chain_reaction/core/utils/json_converters.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 // Required for code generation
 part 'flying_atom.freezed.dart';

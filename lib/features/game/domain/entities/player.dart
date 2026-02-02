@@ -1,7 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'dart:ui';
-import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'package:chain_reaction/core/utils/json_converters.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'player.freezed.dart';
 part 'player.g.dart';
@@ -17,9 +18,9 @@ enum AIDifficulty { easy, medium, hard, extreme }
 /// Players are immutable and identified by a unique ID.
 @freezed
 abstract class Player with _$Player {
-  const Player._();
-
-  const factory Player({
+  @Assert('id.isNotEmpty', 'Player ID cannot be empty')
+  @Assert('name.isNotEmpty', 'Player name cannot be empty')
+  factory Player({
     required String id,
     required String name,
     @ColorConverter() required Color color,
@@ -27,7 +28,8 @@ abstract class Player with _$Player {
     AIDifficulty? difficulty,
   }) = _Player;
 
-  bool get isAI => type == PlayerType.ai;
-
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
+  const Player._();
+
+  bool get isAI => type == PlayerType.ai;
 }

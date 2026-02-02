@@ -17,6 +17,7 @@ _GameState _$GameStateFromJson(Map<String, dynamic> json) => _GameState(
   players: (json['players'] as List<dynamic>)
       .map((e) => Player.fromJson(e as Map<String, dynamic>))
       .toList(),
+  startTime: DateTime.parse(json['startTime'] as String),
   flyingAtoms:
       (json['flyingAtoms'] as List<dynamic>?)
           ?.map((e) => FlyingAtom.fromJson(e as Map<String, dynamic>))
@@ -30,7 +31,6 @@ _GameState _$GameStateFromJson(Map<String, dynamic> json) => _GameState(
   isProcessing: json['isProcessing'] as bool? ?? false,
   turnCount: (json['turnCount'] as num?)?.toInt() ?? 0,
   totalMoves: (json['totalMoves'] as num?)?.toInt() ?? 0,
-  startTime: DateTime.parse(json['startTime'] as String),
   endTime: json['endTime'] == null
       ? null
       : DateTime.parse(json['endTime'] as String),
@@ -40,6 +40,7 @@ Map<String, dynamic> _$GameStateToJson(_GameState instance) =>
     <String, dynamic>{
       'grid': instance.grid,
       'players': instance.players,
+      'startTime': instance.startTime.toIso8601String(),
       'flyingAtoms': instance.flyingAtoms,
       'currentPlayerIndex': instance.currentPlayerIndex,
       'isGameOver': instance.isGameOver,
@@ -47,6 +48,5 @@ Map<String, dynamic> _$GameStateToJson(_GameState instance) =>
       'isProcessing': instance.isProcessing,
       'turnCount': instance.turnCount,
       'totalMoves': instance.totalMoves,
-      'startTime': instance.startTime.toIso8601String(),
       'endTime': instance.endTime?.toIso8601String(),
     };

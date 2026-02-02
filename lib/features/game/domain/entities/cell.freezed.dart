@@ -222,7 +222,7 @@ return $default(_that.x,_that.y,_that.capacity,_that.atomCount,_that.ownerId);ca
 @JsonSerializable()
 
 class _Cell extends Cell with DiagnosticableTreeMixin {
-  const _Cell({required this.x, required this.y, required this.capacity, this.atomCount = 0, this.ownerId}): super._();
+  const _Cell({required this.x, required this.y, required this.capacity, this.atomCount = 0, this.ownerId}): assert(capacity > 0, 'Capacity must be positive'),assert(atomCount >= 0, 'Atom count cannot be negative'),super._();
   factory _Cell.fromJson(Map<String, dynamic> json) => _$CellFromJson(json);
 
 @override final  int x;

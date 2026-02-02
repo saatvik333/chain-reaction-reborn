@@ -1,13 +1,12 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/presentation/widgets/game_selector.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
+import 'package:chain_reaction/features/home/presentation/providers/home_provider.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
+import 'package:chain_reaction/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/app_dimensions.dart';
 import 'package:go_router/go_router.dart';
-import 'package:chain_reaction/routing/routes.dart';
-
-import '../../../../core/presentation/widgets/game_selector.dart';
-import '../../../../core/presentation/widgets/pill_button.dart';
-import 'package:chain_reaction/l10n/generated/app_localizations.dart';
-import '../providers/home_provider.dart';
 
 class HomeConfiguration extends ConsumerWidget {
   const HomeConfiguration({super.key});
@@ -34,8 +33,8 @@ class HomeConfiguration extends ConsumerWidget {
           GameSelector(
             label: l10n.playersLabel,
             value: state.playerCount.toString(),
-            onPrevious: () => notifier.decrementPlayers(),
-            onNext: () => notifier.incrementPlayers(),
+            onPrevious: notifier.decrementPlayers,
+            onNext: notifier.incrementPlayers,
           ),
         const SizedBox(height: AppDimensions.paddingXL),
         GameSelector(
@@ -49,7 +48,7 @@ class HomeConfiguration extends ConsumerWidget {
         PillButton(
           text: l10n.startGame,
           onTap: () {
-            final int players = isVsComputer ? 2 : state.playerCount;
+            final players = isVsComputer ? 2 : state.playerCount;
             context.pushNamed(
               AppRouteNames.game,
               extra: {

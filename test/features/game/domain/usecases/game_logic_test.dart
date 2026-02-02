@@ -1,26 +1,27 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:chain_reaction/features/game/domain/entities/cell.dart';
-import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/domain/usecases/check_winner.dart';
 import 'package:chain_reaction/features/game/domain/usecases/next_turn.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final players = [
-    const Player(id: 'p1', name: 'Player 1', color: Colors.blue),
-    const Player(id: 'p2', name: 'Player 2', color: Colors.red),
+    Player(id: 'p1', name: 'Player 1', color: Colors.blue),
+    Player(id: 'p2', name: 'Player 2', color: Colors.red),
   ];
 
   group('NextTurnUseCase', () {
     test('should rotate through players correctly', () {
-      final nextTurn = const NextTurnUseCase();
+      const nextTurn = NextTurnUseCase();
       // Mock state: p1 active
+      // Fix: Grid cannot be empty
       var state = GameState(
-        grid: [],
+        grid: [
+          [const Cell(x: 0, y: 0, capacity: 1)],
+        ],
         players: players,
-        currentPlayerIndex: 0,
-        turnCount: 0,
         startTime: DateTime.now(),
       );
 
@@ -36,8 +37,8 @@ void main() {
     });
 
     test('should skip eliminated players', () {
-      final nextTurn = const NextTurnUseCase();
-      final p3 = const Player(id: 'p3', name: 'P3', color: Colors.green);
+      const nextTurn = NextTurnUseCase();
+      final p3 = Player(id: 'p3', name: 'P3', color: Colors.green);
       final activePlayers = [...players, p3]; // p1, p2, p3
 
       // Create grid where p1 and p2 have cells, but p3 does not
@@ -64,7 +65,7 @@ void main() {
 
   group('CheckWinnerUseCase', () {
     test('should return null if multiple players have atoms', () {
-      final checkWinner = const CheckWinnerUseCase();
+      const checkWinner = CheckWinnerUseCase();
 
       final grid = [
         [
@@ -73,10 +74,9 @@ void main() {
         ],
       ];
 
-      var state = GameState(
+      final state = GameState(
         grid: grid,
         players: players,
-        currentPlayerIndex: 0,
         turnCount: 10,
         startTime: DateTime.now(),
       );

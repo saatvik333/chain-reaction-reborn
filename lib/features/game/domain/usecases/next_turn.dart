@@ -1,4 +1,4 @@
-import '../entities/entities.dart';
+import 'package:chain_reaction/features/game/domain/entities/entities.dart';
 
 /// Use case for advancing to the next player's turn.
 class NextTurnUseCase {

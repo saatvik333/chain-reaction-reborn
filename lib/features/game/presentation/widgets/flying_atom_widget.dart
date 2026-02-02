@@ -1,18 +1,16 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/domain/entities/flying_atom.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../../domain/entities/flying_atom.dart';
 
 class FlyingAtomWidget extends StatefulWidget {
+
+  const FlyingAtomWidget({
+    required this.atom, required this.cellSize, super.key,
+    this.duration = const Duration(milliseconds: 250),
+  });
   final FlyingAtom atom;
   final Size cellSize;
   final Duration duration;
-
-  const FlyingAtomWidget({
-    super.key,
-    required this.atom,
-    required this.cellSize,
-    this.duration = const Duration(milliseconds: 250),
-  });
 
   @override
   State<FlyingAtomWidget> createState() => _FlyingAtomWidgetState();

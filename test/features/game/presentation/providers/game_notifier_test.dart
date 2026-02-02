@@ -1,13 +1,14 @@
 import 'dart:math';
-import 'package:flutter/painting.dart'; // For Color
+
+import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
 import 'package:chain_reaction/features/game/presentation/providers/game_providers.dart';
 import 'package:chain_reaction/features/game/presentation/providers/game_state_provider.dart';
-import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
 import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
-import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
+import 'package:flutter/painting.dart'; // For Color
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -146,8 +147,8 @@ void main() {
     test('initGame creates a valid GameState', () {
       final notifier = container.read(gameProvider.notifier);
       final players = [
-        const Player(id: '1', name: 'P1', color: Color(0xFF000000)),
-        const Player(id: '2', name: 'P2', color: Color(0xFFFFFFFF)),
+        Player(id: '1', name: 'P1', color: const Color(0xFF000000)),
+        Player(id: '2', name: 'P2', color: const Color(0xFFFFFFFF)),
       ];
 
       notifier.initGame(players, gridSize: 'small');
@@ -166,8 +167,8 @@ void main() {
     test('placeAtom updates state', () async {
       final notifier = container.read(gameProvider.notifier);
       final players = [
-        const Player(id: '1', name: 'P1', color: Color(0xFF000000)),
-        const Player(id: '2', name: 'P2', color: Color(0xFFFFFFFF)),
+        Player(id: '1', name: 'P1', color: const Color(0xFF000000)),
+        Player(id: '2', name: 'P2', color: const Color(0xFFFFFFFF)),
       ];
 
       notifier.initGame(players);
@@ -176,7 +177,7 @@ void main() {
       notifier.placeAtom(0, 0);
 
       // Wait for logic
-      await Future.delayed(logicDelay);
+      await Future<void>.delayed(logicDelay);
 
       final state = container.read(gameProvider);
       expect(state!.grid[0][0].atomCount, 1);
@@ -186,8 +187,8 @@ void main() {
     test('Undo reverts state in PvP', () async {
       final notifier = container.read(gameProvider.notifier);
       final players = [
-        const Player(id: '1', name: 'P1', color: Color(0xFF000000)),
-        const Player(id: '2', name: 'P2', color: Color(0xFFFFFFFF)),
+        Player(id: '1', name: 'P1', color: const Color(0xFF000000)),
+        Player(id: '2', name: 'P2', color: const Color(0xFFFFFFFF)),
       ];
 
       notifier.initGame(players);
@@ -198,7 +199,7 @@ void main() {
 
       // P1 moves
       notifier.placeAtom(0, 0);
-      await Future.delayed(logicDelay); // Wait for P1 logic
+      await Future<void>.delayed(logicDelay); // Wait for P1 logic
 
       final state2 = container.read(gameProvider);
       // P1 move applied, turn advanced to P2
@@ -218,11 +219,11 @@ void main() {
     test('Undo reverts state in PvAI (reverts 2 turns)', () async {
       final notifier = container.read(gameProvider.notifier);
       final players = [
-        const Player(id: '1', name: 'P1', color: Color(0xFF000000)),
-        const Player(
+        Player(id: '1', name: 'P1', color: const Color(0xFF000000)),
+        Player(
           id: '2',
           name: 'Computer',
-          color: Color(0xFFFFFFFF),
+          color: const Color(0xFFFFFFFF),
           type: PlayerType.ai,
           difficulty: AIDifficulty.easy,
         ),
@@ -234,7 +235,7 @@ void main() {
       notifier.placeAtom(0, 0);
 
       // Wait for P1 move AND FakeAI move
-      await Future.delayed(aiDelay);
+      await Future<void>.delayed(aiDelay);
 
       final stateAfterAIMove = container.read(gameProvider);
 

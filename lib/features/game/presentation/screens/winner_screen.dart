@@ -1,16 +1,25 @@
-import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:chain_reaction/routing/routes.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
-import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
+import 'package:chain_reaction/routing/routes.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class WinnerScreen extends ConsumerWidget {
+
+  const WinnerScreen({
+    required this.playerCount, required this.gridSize, super.key,
+    this.winnerPlayerIndex = 1,
+    this.totalMoves = 0,
+    this.gameDuration = '00:00',
+    this.territoryPercentage = 100,
+    this.aiDifficulty,
+  });
   final int winnerPlayerIndex;
   final int totalMoves;
   final String gameDuration;
@@ -18,17 +27,6 @@ class WinnerScreen extends ConsumerWidget {
   final int playerCount;
   final String gridSize;
   final AIDifficulty? aiDifficulty;
-
-  const WinnerScreen({
-    super.key,
-    this.winnerPlayerIndex = 1,
-    this.totalMoves = 0,
-    this.gameDuration = '00:00',
-    this.territoryPercentage = 100,
-    required this.playerCount,
-    required this.gridSize,
-    this.aiDifficulty,
-  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -116,7 +114,6 @@ class WinnerScreen extends ConsumerWidget {
                     context.goNamed(AppRouteNames.home);
                   },
                   width: double.infinity,
-                  type: PillButtonType.secondary,
                 ),
                 const SizedBox(height: 48),
               ],

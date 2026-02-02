@@ -1,12 +1,12 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/theme/app_theme.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/providers/theme_provider.dart';
-import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
-import 'package:chain_reaction/core/constants/app_dimensions.dart';
-import 'package:chain_reaction/core/theme/app_theme.dart';
-import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
-import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
-import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PurchaseScreen extends ConsumerWidget {
@@ -20,7 +20,7 @@ class PurchaseScreen extends ConsumerWidget {
 
     final paidThemes = AppThemes.all.where((t) => t.isPremium).toList();
 
-    return Container(
+    return ColoredBox(
       color: theme.bg,
       child: ResponsiveContainer(
         child: Scaffold(
@@ -116,9 +116,9 @@ class PurchaseScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: AppDimensions.paddingM),
                     _buildShopItem(
-                      title: "Buy me a coffee",
-                      subtitle: "Support the developer",
-                      price: "OPEN",
+                      title: 'Buy me a coffee',
+                      subtitle: 'Support the developer',
+                      price: 'OPEN',
                       theme: theme,
                       onTap: () async {
                         final url = Uri.parse(
@@ -126,7 +126,7 @@ class PurchaseScreen extends ConsumerWidget {
                         );
                         try {
                           await launchUrl(url);
-                        } catch (e) {
+                        } on Object {
                           // Fail silently
                         }
                       },
@@ -207,8 +207,8 @@ class PurchaseScreen extends ConsumerWidget {
     required String title,
     required String subtitle,
     required String price,
-    VoidCallback? onTap,
     required ThemeState theme,
+    VoidCallback? onTap,
   }) {
     final isUnavailable = price == 'N/A';
 
@@ -229,7 +229,6 @@ class PurchaseScreen extends ConsumerWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

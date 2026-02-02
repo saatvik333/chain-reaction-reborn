@@ -1,20 +1,20 @@
 import 'dart:convert';
+
+import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../domain/entities/game_state.dart';
-import '../../domain/repositories/game_repository.dart';
 
 class GameRepositoryImpl implements GameRepository {
+  GameRepositoryImpl(this._prefs);
   final SharedPreferences _prefs;
   static const String _keyGameState = 'active_game_state';
-
-  GameRepositoryImpl(this._prefs);
 
   @override
   Future<void> saveGame(GameState state) async {
     try {
       final jsonString = jsonEncode(state.toJson());
       await _prefs.setString(_keyGameState, jsonString);
-    } catch (e) {
+    } on Object {
       // Silently fail on serialization error to prevent game flow interruption.
     }
   }
@@ -27,7 +27,7 @@ class GameRepositoryImpl implements GameRepository {
     try {
       final map = jsonDecode(jsonString) as Map<String, dynamic>;
       return GameState.fromJson(map);
-    } catch (e) {
+    } on Object {
       // Return null on deserialization corruption or schema mismatch.
       return null;
     }

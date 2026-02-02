@@ -1,5 +1,5 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'cell.freezed.dart';
 part 'cell.g.dart';
@@ -9,8 +9,10 @@ part 'cell.g.dart';
 /// Cells are immutable and contain position, capacity, atom count, and owner.
 @freezed
 abstract class Cell with _$Cell {
-  const Cell._(); // Added for custom getters
+  // Added for custom getters
 
+  @Assert('capacity > 0', 'Capacity must be positive')
+  @Assert('atomCount >= 0', 'Atom count cannot be negative')
   const factory Cell({
     required int x,
     required int y,
@@ -25,11 +27,12 @@ abstract class Cell with _$Cell {
     String? ownerId,
   }) = _Cell;
 
+  factory Cell.fromJson(Map<String, dynamic> json) => _$CellFromJson(json);
+  const Cell._();
+
   /// Whether the cell is empty (no atoms).
   bool get isEmpty => atomCount == 0;
 
   /// Whether the cell is about to explode.
   bool get isAtCriticalMass => atomCount > capacity;
-
-  factory Cell.fromJson(Map<String, dynamic> json) => _$CellFromJson(json);
 }

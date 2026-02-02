@@ -1,17 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'routes.dart';
-
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/presentation/screens/game_screen.dart';
+import 'package:chain_reaction/features/game/presentation/screens/winner_screen.dart';
 // Screen imports
-import '../../features/home/presentation/screens/home_screen.dart';
-import '../../features/game/presentation/screens/game_screen.dart';
-import '../../features/game/presentation/screens/winner_screen.dart';
-import '../../features/settings/presentation/screens/settings_screen.dart';
-import '../../features/shop/presentation/screens/purchase_screen.dart';
-import '../../features/shop/presentation/screens/palette_screen.dart';
-import '../../features/home/presentation/screens/info_screen.dart';
-import '../../features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/home/presentation/screens/home_screen.dart';
+import 'package:chain_reaction/features/home/presentation/screens/info_screen.dart';
+import 'package:chain_reaction/features/settings/presentation/screens/settings_screen.dart';
+import 'package:chain_reaction/features/shop/presentation/screens/palette_screen.dart';
+import 'package:chain_reaction/features/shop/presentation/screens/purchase_screen.dart';
+import 'package:chain_reaction/routing/routes.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Provider for the GoRouter instance.
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -108,7 +107,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-CustomTransitionPage _fadeTransition(
+CustomTransitionPage<void> _fadeTransition(
   BuildContext context,
   GoRouterState state,
   Widget child,

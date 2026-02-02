@@ -1,17 +1,16 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
+import 'package:chain_reaction/features/game/presentation/widgets/cell_widget.dart';
+import 'package:chain_reaction/features/game/presentation/widgets/flying_atom_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/providers.dart';
-import 'cell_widget.dart';
-import 'flying_atom_widget.dart';
-import '../../../../core/constants/app_dimensions.dart';
 
 /// Renders the game grid with cells and flying atoms.
 /// Renders the game grid with cells and flying atoms.
 class GameGrid extends ConsumerStatefulWidget {
-  final Function(int x, int y) onCellTap;
-
-  const GameGrid({super.key, required this.onCellTap});
+  const GameGrid({required this.onCellTap, super.key});
+  final void Function(int x, int y) onCellTap;
 
   @override
   ConsumerState<GameGrid> createState() => _GameGridState();
@@ -79,7 +78,7 @@ class _GameGridState extends ConsumerState<GameGrid>
                         child: Row(
                           children: List.generate(cols, (col) {
                             final cell = grid[row][col];
-                            Color cellColor = Colors.transparent;
+                            var cellColor = Colors.transparent;
 
                             if (cell.ownerId != null) {
                               final owner = players.firstWhere(
@@ -92,10 +91,10 @@ class _GameGridState extends ConsumerState<GameGrid>
                             // Calculate a deterministic phase offset (0.0 to 1.0)
                             // This ensures atoms don't rotate in perfect unison.
                             // We use prime number multipliers to avoid noticeable patterns.
-                            const int phasePrime1 = 13;
-                            const int phasePrime2 = 23;
-                            const int phaseMod = 100;
-                            final double angleOffset =
+                            const phasePrime1 = 13;
+                            const phasePrime2 = 23;
+                            const phaseMod = 100;
+                            final angleOffset =
                                 ((col * phasePrime1 + row * phasePrime2) %
                                     phaseMod) /
                                 phaseMod.toDouble();

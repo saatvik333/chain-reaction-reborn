@@ -1,16 +1,16 @@
+import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../domain/repositories/settings_repository.dart';
 
 /// Implementation of [SettingsRepository] using [SharedPreferences].
 class SettingsRepositoryImpl implements SettingsRepository {
+
+  SettingsRepositoryImpl(this._prefs);
   final SharedPreferences _prefs;
 
   static const String _keyDarkMode = 'isDarkMode';
 
   static const String _keyHapticOn = 'isHapticOn';
   static const String _keyThemeName = 'themeName';
-
-  SettingsRepositoryImpl(this._prefs);
 
   @override
   Future<bool?> getDarkMode() async {

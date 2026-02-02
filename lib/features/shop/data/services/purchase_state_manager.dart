@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Purchase state for tracking individual purchases
 enum PurchaseState {
@@ -15,15 +15,6 @@ enum PurchaseState {
 
 /// Purchase information with state tracking
 class PurchaseInfo {
-  final String productId;
-  final String transactionId;
-  final PurchaseState state;
-  final DateTime purchaseDate;
-  final DateTime? validationDate;
-  final DateTime? expiryDate;
-  final String? errorMessage;
-  final Map<String, dynamic>? metadata;
-
   PurchaseInfo({
     required this.productId,
     required this.transactionId,
@@ -34,20 +25,6 @@ class PurchaseInfo {
     this.errorMessage,
     this.metadata,
   });
-
-  /// Convert to JSON for storage
-  Map<String, dynamic> toJson() {
-    return {
-      'productId': productId,
-      'transactionId': transactionId,
-      'state': state.toString(),
-      'purchaseDate': purchaseDate.toIso8601String(),
-      'validationDate': validationDate?.toIso8601String(),
-      'expiryDate': expiryDate?.toIso8601String(),
-      'errorMessage': errorMessage,
-      'metadata': metadata,
-    };
-  }
 
   /// Create from JSON
   factory PurchaseInfo.fromJson(Map<String, dynamic> json) {
@@ -66,9 +43,31 @@ class PurchaseInfo {
       metadata: json['metadata'] as Map<String, dynamic>?,
     );
   }
+  final String productId;
+  final String transactionId;
+  final PurchaseState state;
+  final DateTime purchaseDate;
+  final DateTime? validationDate;
+  final DateTime? expiryDate;
+  final String? errorMessage;
+  final Map<String, dynamic>? metadata;
+
+  /// Convert to JSON for storage
+  Map<String, dynamic> toJson() {
+    return {
+      'productId': productId,
+      'transactionId': transactionId,
+      'state': state.toString(),
+      'purchaseDate': purchaseDate.toIso8601String(),
+      'validationDate': validationDate?.toIso8601String(),
+      'expiryDate': expiryDate?.toIso8601String(),
+      'errorMessage': errorMessage,
+      'metadata': metadata,
+    };
+  }
 
   static PurchaseState _parsePurchaseState(String stateString) {
-    for (PurchaseState state in PurchaseState.values) {
+    for (final state in PurchaseState.values) {
       if (state.toString() == stateString) {
         return state;
       }
@@ -123,13 +122,12 @@ class PurchaseInfo {
 
 /// Service for managing purchase state persistence
 class PurchaseStateManager {
+  PurchaseStateManager({FlutterSecureStorage? storage})
+    : _storage = storage ?? const FlutterSecureStorage();
   static const String _keyPurchases = 'purchase_states';
   static const String _keyLastValidation = 'last_validation_check';
 
   final FlutterSecureStorage _storage;
-
-  PurchaseStateManager({FlutterSecureStorage? storage})
-    : _storage = storage ?? const FlutterSecureStorage();
 
   /// Save purchase information
   Future<void> savePurchase(PurchaseInfo purchase) async {
@@ -155,15 +153,17 @@ class PurchaseStateManager {
     }
 
     try {
-      final Map<String, dynamic> data = jsonDecode(purchasesJson);
+      final data = jsonDecode(purchasesJson) as Map<String, dynamic>;
       final purchases = <String, PurchaseInfo>{};
 
       for (final entry in data.entries) {
-        purchases[entry.key] = PurchaseInfo.fromJson(entry.value);
+        purchases[entry.key] = PurchaseInfo.fromJson(
+          entry.value as Map<String, dynamic>,
+        );
       }
 
       return purchases;
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         print('Error loading purchases: $e');
       }
@@ -251,7 +251,8 @@ class PurchaseStateManager {
 
     if (kDebugMode) {
       print(
-        'Cleaned up ${purchases.length - validPurchases.length} invalid purchases',
+        'Cleaned up '
+        '${purchases.length - validPurchases.length} invalid purchases',
       );
     }
   }

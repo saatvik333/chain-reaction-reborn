@@ -1,7 +1,7 @@
 import 'dart:math';
-import '../ai_strategy.dart';
-import '../../entities/game_state.dart';
-import '../../entities/player.dart';
+import 'package:chain_reaction/features/game/domain/ai/ai_strategy.dart';
+import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 
 class GreedyStrategy extends AIStrategy {
   final Random _random = Random();
@@ -10,7 +10,7 @@ class GreedyStrategy extends AIStrategy {
   Future<Point<int>> getMove(GameState state, Player player) async {
     // Variable thinking time to feel more natural
     final thinkingTime = 300 + _random.nextInt(401); // 300 to 700ms
-    await Future.delayed(Duration(milliseconds: thinkingTime));
+    await Future<void>.delayed(Duration(milliseconds: thinkingTime));
     final validMoves = getValidMoves(state, player);
     if (validMoves.isEmpty) throw Exception('No valid moves');
 

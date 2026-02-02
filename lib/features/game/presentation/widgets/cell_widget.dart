@@ -1,11 +1,20 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/domain/entities/cell.dart';
+import 'package:chain_reaction/features/game/presentation/widgets/atom_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../domain/entities/cell.dart';
-import 'atom_widget.dart';
-import '../../../../core/constants/app_dimensions.dart';
 
 /// Renders a single cell in the game grid.
 class CellWidget extends StatelessWidget {
+
+  const CellWidget({
+    required this.cell, required this.borderColor, required this.cellColor, required this.onTap, required this.animation, super.key,
+    this.angleOffset = 0.0,
+    this.isAtomRotationOn = true,
+    this.isAtomVibrationOn = true,
+    this.isAtomBreathingOn = true,
+    this.isCellHighlightOn = true,
+  });
   final Cell cell;
   final Color borderColor;
   final Color cellColor;
@@ -16,20 +25,6 @@ class CellWidget extends StatelessWidget {
   final bool isCellHighlightOn;
   final Animation<double> animation;
   final double angleOffset;
-
-  const CellWidget({
-    super.key,
-    required this.cell,
-    required this.borderColor,
-    required this.cellColor,
-    required this.onTap,
-    required this.animation,
-    this.angleOffset = 0.0,
-    this.isAtomRotationOn = true,
-    this.isAtomVibrationOn = true,
-    this.isAtomBreathingOn = true,
-    this.isCellHighlightOn = true,
-  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,17 +1,17 @@
+import 'package:chain_reaction/core/presentation/widgets/desktop_integration_wrapper.dart';
+import 'package:chain_reaction/core/theme/custom_transitions.dart';
 import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
+import 'package:chain_reaction/routing/app_router.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:chain_reaction/routing/app_router.dart';
-import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
-import 'package:chain_reaction/core/presentation/widgets/desktop_integration_wrapper.dart';
-import 'package:chain_reaction/core/theme/custom_transitions.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,7 +79,7 @@ class _MainAppState extends ConsumerState<MainApp> {
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       try {
         await FlutterDisplayMode.setHighRefreshRate();
-      } catch (e) {
+      } on Object {
         // Fail silently, platform might not support it
       }
     }

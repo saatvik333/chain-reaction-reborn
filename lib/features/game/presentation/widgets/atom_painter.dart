@@ -1,21 +1,10 @@
 import 'dart:math' as math;
+
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_dimensions.dart';
 
 /// efficiently draws atoms on a canvas
 class AtomPainter extends CustomPainter {
-  final Color color;
-  final int count;
-  final bool isUnstable; // Exploding
-  final bool isCritical; // Full
-  final bool isRotationOn;
-  final bool isVibrationOn;
-  final bool isBreathingOn;
-  final double animationValue; // 0.0 to 1.0 from master controller
-  final double angleOffset; // 0.0 to 1.0 phase shift
-
-  static const double _orbSize = AppDimensions.orbSizeSmall;
-  static const double _orbRadius = _orbSize / 2;
 
   AtomPainter({
     required this.color,
@@ -29,7 +18,19 @@ class AtomPainter extends CustomPainter {
     required this.angleOffset,
   }) : super(
          repaint: null,
-       ); // Repaint is handled by the parent widget passing a Listenable
+       );
+  final Color color;
+  final int count;
+  final bool isUnstable; // Exploding
+  final bool isCritical; // Full
+  final bool isRotationOn;
+  final bool isVibrationOn;
+  final bool isBreathingOn;
+  final double animationValue; // 0.0 to 1.0 from master controller
+  final double angleOffset; // 0.0 to 1.0 phase shift
+
+  static const double _orbSize = AppDimensions.orbSizeSmall;
+  static const double _orbRadius = _orbSize / 2; // Repaint is handled by the parent widget passing a Listenable
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -99,13 +100,11 @@ class AtomPainter extends CustomPainter {
         // Single atom stays centered.
         // Breathing size effect was tested but deemed visually distracting.
         _drawAtom(canvas, Offset.zero, paint, shadowPaint);
-        break;
       case 2:
         // spacing 6.0 becomes dynamic
         final d = AppDimensions.atomSpacing2 * breathingFactor;
         _drawAtom(canvas, Offset(-d, -d), paint, shadowPaint);
         _drawAtom(canvas, Offset(d, d), paint, shadowPaint);
-        break;
       case 3:
         // Triangle layout
         //  0, -8
@@ -137,7 +136,6 @@ class AtomPainter extends CustomPainter {
           paint,
           shadowPaint,
         );
-        break;
       case 4:
         // Square layout (12.0)
         final d4 = AppDimensions.atomSpacing4 * breathingFactor;
@@ -145,7 +143,6 @@ class AtomPainter extends CustomPainter {
         _drawAtom(canvas, Offset(-d4, 0), paint, shadowPaint);
         _drawAtom(canvas, Offset(d4, 0), paint, shadowPaint);
         _drawAtom(canvas, Offset(0, d4), paint, shadowPaint);
-        break;
       default:
         if (count > 4) {
           final d4 = AppDimensions.atomSpacing4 * breathingFactor;

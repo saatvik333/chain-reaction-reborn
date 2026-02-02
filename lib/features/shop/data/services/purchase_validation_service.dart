@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:in_app_purchase/in_app_purchase.dart';
+
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 /// Purchase validation result
 enum ValidationResult {
@@ -16,13 +17,6 @@ enum ValidationResult {
 
 /// Validated purchase information
 class ValidatedPurchase {
-  final String productId;
-  final String transactionId;
-  final ValidationResult result;
-  final DateTime? purchaseDate;
-  final DateTime? expiryDate;
-  final String? errorMessage;
-
   ValidatedPurchase({
     required this.productId,
     required this.transactionId,
@@ -31,17 +25,22 @@ class ValidatedPurchase {
     this.expiryDate,
     this.errorMessage,
   });
+  final String productId;
+  final String transactionId;
+  final ValidationResult result;
+  final DateTime? purchaseDate;
+  final DateTime? expiryDate;
+  final String? errorMessage;
 }
 
 /// Service for validating purchase receipts with app stores
 class PurchaseValidationService {
-  // In production, these should be stored securely (environment variables, key management)
-  final String? _androidApiKey;
-  final String? _iosSharedSecret;
-
   PurchaseValidationService({String? androidApiKey, String? iosSharedSecret})
     : _androidApiKey = androidApiKey,
       _iosSharedSecret = iosSharedSecret;
+  // In production, these should be stored securely (environment variables, key management)
+  final String? _androidApiKey;
+  final String? _iosSharedSecret;
 
   /// Validate a purchase receipt
   Future<ValidatedPurchase> validatePurchase(PurchaseDetails purchase) async {
@@ -58,7 +57,7 @@ class PurchaseValidationService {
           errorMessage: 'Unsupported platform',
         );
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         print('Purchase validation error: $e');
       }

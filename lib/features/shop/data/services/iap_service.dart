@@ -1,12 +1,20 @@
 import 'dart:async';
-import 'package:in_app_purchase/in_app_purchase.dart';
+
+import 'package:chain_reaction/features/shop/data/services/purchase_state_manager.dart';
+import 'package:chain_reaction/features/shop/data/services/purchase_validation_service.dart';
+import 'package:chain_reaction/features/shop/domain/entities/shop_event.dart';
 import 'package:flutter/foundation.dart';
-import 'purchase_validation_service.dart';
-import 'purchase_state_manager.dart';
-import '../../domain/entities/shop_event.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 /// Service to handle In-App Purchases (IAP).
 class IAPService {
+  IAPService({
+    InAppPurchase? iap,
+    PurchaseStateManager? stateManager,
+    PurchaseValidationService? validationService,
+  }) : _iap = iap ?? InAppPurchase.instance,
+       _stateManager = stateManager ?? PurchaseStateManager(),
+       _validationService = validationService ?? PurchaseValidationService();
   final InAppPurchase _iap;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   final PurchaseValidationService _validationService;
@@ -17,14 +25,6 @@ class IAPService {
 
   Stream<ShopEvent> get events => _eventController.stream;
 
-  IAPService({
-    InAppPurchase? iap,
-    PurchaseStateManager? stateManager,
-    PurchaseValidationService? validationService,
-  }) : _iap = iap ?? InAppPurchase.instance,
-       _stateManager = stateManager ?? PurchaseStateManager(),
-       _validationService = validationService ?? PurchaseValidationService();
-
   /// Initialize the service and start listening to purchase updates.
   Future<void> initialize() async {
     final purchaseUpdated = _iap.purchaseStream;
@@ -33,7 +33,7 @@ class IAPService {
       onDone: () {
         _subscription.cancel();
       },
-      onError: (error) {
+      onError: (Object error) {
         if (kDebugMode) {
           print('IAP Error: $error');
         }
@@ -52,7 +52,7 @@ class IAPService {
 
   /// Load products from the store.
   Future<List<ProductDetails>> loadProducts(Set<String> ids) async {
-    final bool available = await _iap.isAvailable();
+    final available = await _iap.isAvailable();
     if (!available) {
       if (kDebugMode) {
         print('IAP Store not available');
@@ -60,7 +60,7 @@ class IAPService {
       return [];
     }
 
-    final ProductDetailsResponse response = await _iap.queryProductDetails(ids);
+    final response = await _iap.queryProductDetails(ids);
     if (response.notFoundIDs.isNotEmpty) {
       if (kDebugMode) {
         print('IAP Products not found: ${response.notFoundIDs}');
@@ -73,14 +73,14 @@ class IAPService {
 
   /// Purchase a non-consumable product (e.g., Theme).
   Future<void> buyNonConsumable(ProductDetails product) async {
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+    final purchaseParam = PurchaseParam(productDetails: product);
     await _iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   /// Purchase a consumable product (e.g., "Buy me a coffee").
   Future<void> buyConsumable(ProductDetails product) async {
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-    await _iap.buyConsumable(purchaseParam: purchaseParam, autoConsume: true);
+    final purchaseParam = PurchaseParam(productDetails: product);
+    await _iap.buyConsumable(purchaseParam: purchaseParam);
   }
 
   /// Restore purchases (for non-consumables).
@@ -138,7 +138,6 @@ class IAPService {
             expiryDate: validation.expiryDate,
           );
           _eventController.add(ShopEvent.validationComplete(productId, true));
-          break;
         case ValidationResult.invalid:
         case ValidationResult.expired:
         case ValidationResult.refunded:
@@ -150,7 +149,6 @@ class IAPService {
             errorMessage: validation.errorMessage,
           );
           _eventController.add(ShopEvent.validationComplete(productId, false));
-          break;
         case ValidationResult.pending:
           // Keep as pending
           break;
@@ -161,9 +159,8 @@ class IAPService {
             errorMessage: validation.errorMessage,
           );
           _eventController.add(ShopEvent.validationComplete(productId, false));
-          break;
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         print('Error validating purchase $transactionId: $e');
       }

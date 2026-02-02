@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import '../entities/cell.dart';
-import '../entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/cell.dart';
+import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 
 /// Encapsulates the core rules and mechanics of Chain Reaction.
 /// This logic is shared between the Game Engine (for UI) and the AI (for simulation).
@@ -20,8 +20,8 @@ class GameRules {
   /// The entity `Cell` defines `capacity` as the max stable count.
   /// `isAtCriticalMass` is `atomCount > capacity`.
   int calculateCapacity(int x, int y, int rows, int cols) {
-    final isCornerX = (x == 0 || x == cols - 1);
-    final isCornerY = (y == 0 || y == rows - 1);
+    final isCornerX = x == 0 || x == cols - 1;
+    final isCornerY = y == 0 || y == rows - 1;
 
     if (isCornerX && isCornerY) return 1; // Corner
     if (isCornerX || isCornerY) return 2; // Edge
@@ -106,13 +106,13 @@ class GameRules {
 }
 
 class ExplosionResult {
-  final List<List<Cell>> grid;
-  final List<Cell> newlyCriticalCells;
-  final List<Point<int>> neighbors;
 
   ExplosionResult({
     required this.grid,
     required this.newlyCriticalCells,
     required this.neighbors,
   });
+  final List<List<Cell>> grid;
+  final List<Cell> newlyCriticalCells;
+  final List<Point<int>> neighbors;
 }

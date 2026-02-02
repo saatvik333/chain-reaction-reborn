@@ -1,23 +1,23 @@
 import 'dart:math';
-import '../ai_strategy.dart';
-import '../../logic/game_rules.dart';
-import '../../entities/game_state.dart';
-import '../../entities/player.dart';
-import '../../entities/cell.dart';
+
+import 'package:chain_reaction/features/game/domain/ai/ai_strategy.dart';
+import 'package:chain_reaction/features/game/domain/entities/cell.dart';
+import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
 
 /// An "Extreme" AI that uses Minimax (Depth 2) to look ahead.
 /// It simulates its own move, and then anticipates the opponent's best counter-move.
 class ExtremeStrategy extends AIStrategy {
+  ExtremeStrategy(this._rules);
   final Random _random = Random();
   final GameRules _rules;
-
-  ExtremeStrategy(this._rules);
 
   @override
   Future<Point<int>> getMove(GameState state, Player player) async {
     // Variable thinking time to feel more natural
     final thinkingTime = 300 + _random.nextInt(401); // 300 to 700ms
-    await Future.delayed(Duration(milliseconds: thinkingTime));
+    await Future<void>.delayed(Duration(milliseconds: thinkingTime));
 
     final validMoves = getValidMoves(state, player);
     if (validMoves.isEmpty) throw Exception('No valid moves');
@@ -26,11 +26,11 @@ class ExtremeStrategy extends AIStrategy {
     if (validMoves.length == 1) return validMoves.first;
 
     Point<int>? bestMove;
-    double maxScore = double.negativeInfinity;
+    var maxScore = double.negativeInfinity;
 
     // 22% chance to have a "lapse" and fail to look ahead (Depth 1 only)
     // This simulates human error and allows players to win more often
-    final bool isLapse = _random.nextDouble() < 0.22;
+    final isLapse = _random.nextDouble() < 0.22;
 
     for (final move in validMoves) {
       // 1. Simulate AI Move
@@ -48,7 +48,7 @@ class ExtremeStrategy extends AIStrategy {
         moveScore = _evaluateState(stateAfterAi, player);
       } else {
         // 2. Minimax Step: Anticipate Opponent's Best Response
-        double minOpponentScore = double.infinity;
+        var minOpponentScore = double.infinity;
         final opponent = _getNextPlayer(stateAfterAi, player);
 
         if (opponent != null) {
@@ -105,7 +105,7 @@ class ExtremeStrategy extends AIStrategy {
     if (startIdx == -1) return null;
 
     final count = state.players.length;
-    for (int i = 1; i < count; i++) {
+    for (var i = 1; i < count; i++) {
       final nextIdx = (startIdx + i) % count;
       final p = state.players[nextIdx];
       if (state.cellCountForPlayer(p.id) > 0) {
@@ -116,20 +116,20 @@ class ExtremeStrategy extends AIStrategy {
   }
 
   double _evaluateState(GameState state, Player player) {
-    if (_isWin(state, player)) return 10000.0;
+    if (_isWin(state, player)) return 10000;
 
     final myCount = state.cellCountForPlayer(player.id);
     if (myCount == 0) return double.negativeInfinity;
 
     double score = 0;
-    int myAtoms = 0;
-    int enemyAtoms = 0;
-    int myCells = 0;
-    int enemyCells = 0;
-    int myThreats = 0;
+    var myAtoms = 0;
+    var enemyAtoms = 0;
+    var myCells = 0;
+    var enemyCells = 0;
+    var myThreats = 0;
 
-    for (var row in state.grid) {
-      for (var cell in row) {
+    for (final row in state.grid) {
+      for (final cell in row) {
         if (cell.ownerId == player.id) {
           myAtoms += cell.atomCount;
           myCells++;
@@ -151,11 +151,11 @@ class ExtremeStrategy extends AIStrategy {
   /// Simulates a move using GameRules.
   /// This logic is now consistent with the UI game engine.
   GameState _simulateMove(GameState state, Point<int> move, Player player) {
-    var grid = state.grid.map((row) => List<Cell>.from(row)).toList();
+    final grid = state.grid.map(List<Cell>.from).toList();
     final queue = <Cell>[];
 
     // Apply initial move
-    var cell = grid[move.y][move.x];
+    final cell = grid[move.y][move.x];
     grid[move.y][move.x] = cell.copyWith(
       atomCount: cell.atomCount + 1,
       ownerId: player.id,
@@ -165,7 +165,7 @@ class ExtremeStrategy extends AIStrategy {
       queue.add(grid[move.y][move.x]);
     }
 
-    int safetyCounter = 0;
+    var safetyCounter = 0;
     // Process entire chain reaction synchronously
     while (queue.isNotEmpty && safetyCounter < 2000) {
       safetyCounter++;

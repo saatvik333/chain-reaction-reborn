@@ -1,12 +1,11 @@
+import 'package:chain_reaction/core/services/haptic/haptic_service.dart';
+import 'package:chain_reaction/features/game/data/repositories/game_repository_impl.dart';
+import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
+import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
+import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
+import 'package:chain_reaction/features/game/domain/usecases/usecases.dart';
+import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../data/repositories/game_repository_impl.dart';
-import '../../domain/logic/game_rules.dart';
-import '../../domain/repositories/game_repository.dart';
-import '../../domain/ai/ai_service.dart';
-import '../../../../core/services/haptic/haptic_service.dart';
-import '../../domain/usecases/usecases.dart';
-import '../../../settings/presentation/providers/settings_providers.dart';
 
 // --- Logic Providers ---
 

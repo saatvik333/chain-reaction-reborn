@@ -1,9 +1,9 @@
+import 'package:chain_reaction/core/constants/constants.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:chain_reaction/l10n/generated/app_localizations.dart';
-import 'package:chain_reaction/core/constants/constants.dart';
 
 class QuitIntent extends Intent {
   const QuitIntent();
@@ -22,14 +22,12 @@ class ToggleFullscreenIntent extends Intent {
 /// - Native Menu Bar
 /// - Mouse Back/Forward button support
 class DesktopIntegrationWrapper extends StatelessWidget {
-  final Widget child;
-  final GlobalKey<NavigatorState> navigatorKey;
 
   const DesktopIntegrationWrapper({
-    super.key,
-    required this.child,
-    required this.navigatorKey,
+    required this.child, required this.navigatorKey, super.key,
   });
+  final Widget child;
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   Widget build(BuildContext context) {
@@ -82,13 +80,13 @@ class DesktopIntegrationWrapper extends StatelessWidget {
         ),
       ],
       child: Shortcuts(
-        shortcuts: <ShortcutActivator, Intent>{
-          const SingleActivator(LogicalKeyboardKey.escape):
-              const GoBackIntent(),
-          const SingleActivator(LogicalKeyboardKey.keyQ, control: true):
-              const QuitIntent(),
-          const SingleActivator(LogicalKeyboardKey.f11):
-              const ToggleFullscreenIntent(),
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.escape):
+              GoBackIntent(),
+          SingleActivator(LogicalKeyboardKey.keyQ, control: true):
+              QuitIntent(),
+          SingleActivator(LogicalKeyboardKey.f11):
+              ToggleFullscreenIntent(),
         },
         child: Actions(
           actions: <Type, Action<Intent>>{
@@ -123,7 +121,7 @@ class DesktopIntegrationWrapper extends StatelessWidget {
 
   Future<void> _toggleFullscreen() async {
     if (kIsWeb) return; // WindowManager not supported on Web
-    bool isFullScreen = await windowManager.isFullScreen();
+    final isFullScreen = await windowManager.isFullScreen();
     if (isFullScreen) {
       await windowManager.setFullScreen(false);
     } else {

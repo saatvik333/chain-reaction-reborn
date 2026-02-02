@@ -1,17 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
-import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
+import 'dart:math';
+
+import 'package:chain_reaction/core/services/haptic/haptic_service.dart';
+import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
+import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
+import 'package:chain_reaction/features/game/presentation/providers/game_providers.dart';
 import 'package:chain_reaction/features/game/presentation/screens/game_screen.dart';
 import 'package:chain_reaction/features/game/presentation/widgets/game_grid.dart';
-import 'package:chain_reaction/features/game/presentation/providers/game_providers.dart';
-import 'package:chain_reaction/core/services/haptic/haptic_service.dart';
-import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
-import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
-import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
-
-import 'dart:math';
+import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
+import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 class MockSettingsRepository implements SettingsRepository {
   @override

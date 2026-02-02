@@ -1,11 +1,11 @@
+import 'package:chain_reaction/core/constants/constants.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/l10n/generated/app_localizations.dart';
-import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
-import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:chain_reaction/core/constants/constants.dart';
-import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
 
 class InfoScreen extends ConsumerWidget {
   const InfoScreen({super.key});
@@ -15,7 +15,7 @@ class InfoScreen extends ConsumerWidget {
     final theme = ref.watch(themeProvider);
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
+    return ColoredBox(
       color: theme.bg,
       child: ResponsiveContainer(
         child: Scaffold(
@@ -75,10 +75,10 @@ class InfoScreen extends ConsumerWidget {
                     l10n.developerName,
                     theme,
                     onTap: () async {
-                      final Uri url = Uri.parse('https://saatvik.xyz');
+                      final url = Uri.parse('https://saatvik.xyz');
                       try {
                         await launchUrl(url);
-                      } catch (e) {
+                      } on Object {
                         // Fail silently
                       }
                     },
@@ -89,12 +89,12 @@ class InfoScreen extends ConsumerWidget {
                     Icons.arrow_outward,
                     () async {
                       // Placeholder privacy policy Gist - Replace with your own hosted URL before release
-                      final Uri url = Uri.parse(
+                      final url = Uri.parse(
                         'https://gist.github.com/saatvik333/c864ffe4ed126430d719643c8ea068ad',
                       );
                       try {
                         await launchUrl(url);
-                      } catch (e) {
+                      } on Object {
                         // Fail silently or show toast
                       }
                     },
@@ -119,13 +119,13 @@ class InfoScreen extends ConsumerWidget {
                   PillButton(
                     text: l10n.contactMe,
                     onTap: () async {
-                      final Uri emailLaunchUri = Uri(
+                      final emailLaunchUri = Uri(
                         scheme: 'mailto',
                         path: l10n.supportEmail,
                       );
                       try {
                         await launchUrl(emailLaunchUri);
-                      } catch (e) {
+                      } on Object {
                         // Handle error silently or show toast
                       }
                     },
@@ -158,7 +158,7 @@ class InfoScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 6.0),
+          padding: const EdgeInsets.only(top: 6),
           child: Container(
             width: 4,
             height: 4,

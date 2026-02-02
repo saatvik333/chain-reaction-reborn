@@ -1,7 +1,6 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../../../game/domain/entities/player.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_provider.freezed.dart';
 part 'home_provider.g.dart';
@@ -12,7 +11,6 @@ enum GameMode { localMultiplayer, vsComputer }
 
 @freezed
 abstract class HomeState with _$HomeState {
-  const HomeState._();
 
   const factory HomeState({
     required HomeStep currentStep,
@@ -22,6 +20,7 @@ abstract class HomeState with _$HomeState {
     required int gridSizeIndex,
     required List<String> gridSizes,
   }) = _HomeState;
+  const HomeState._();
 
   factory HomeState.initial() {
     return const HomeState(
@@ -85,7 +84,7 @@ class HomeNotifier extends _$HomeNotifier {
   }
 
   void cycleDifficulty(bool forward) {
-    final values = AIDifficulty.values;
+    const values = AIDifficulty.values;
     final currentIndex = values.indexOf(state.aiDifficulty);
     final nextIndex = forward
         ? (currentIndex + 1) % values.length

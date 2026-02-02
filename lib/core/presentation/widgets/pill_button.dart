@@ -1,25 +1,24 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
-import '../../constants/app_dimensions.dart';
 
 enum PillButtonType { primary, secondary, destructive }
 
 class PillButton extends ConsumerStatefulWidget {
-  final String text;
-  final VoidCallback? onTap; // Nullable for disabled state
-  final double? width;
-  final double height;
-  final PillButtonType type;
 
   const PillButton({
-    super.key,
-    required this.text,
+    required this.text, super.key,
     this.onTap,
     this.width,
     this.height = AppDimensions.pillButtonHeight,
     this.type = PillButtonType.secondary,
   });
+  final String text;
+  final VoidCallback? onTap; // Nullable for disabled state
+  final double? width;
+  final double height;
+  final PillButtonType type;
 
   @override
   ConsumerState<PillButton> createState() => _PillButtonState();
@@ -63,7 +62,6 @@ class _PillButtonState extends ConsumerState<PillButton> {
         );
         textColor = theme.bg.withValues(alpha: isDisabled ? 0.5 : 1.0);
         border = null;
-        break;
 
       case PillButtonType.secondary:
         // Outline: Transparent BG, FG text, dimmed border
@@ -76,14 +74,13 @@ class _PillButtonState extends ConsumerState<PillButton> {
               : AppDimensions.activeOpacity,
         );
         border = Border.all(
-          color: (theme.border).withValues(
+          color: theme.border.withValues(
             alpha: isDisabled
                 ? AppDimensions.surfaceOpacity
                 : AppDimensions.outlineOpacity,
           ), // Very faint outline
           width: AppDimensions.pillButtonBorderWidth,
         );
-        break;
 
       case PillButtonType.destructive:
         // Outline: Transparent BG, Red text, subtle red outline
@@ -97,7 +94,6 @@ class _PillButtonState extends ConsumerState<PillButton> {
           ), // Subtle red outline
           width: AppDimensions.pillButtonBorderWidth,
         );
-        break;
     }
 
     return AnimatedScale(

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/domain/entities/cell.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
 import 'package:chain_reaction/features/game/domain/usecases/initialize_game.dart';
 import 'package:chain_reaction/features/game/domain/usecases/place_atom.dart';
-import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late InitializeGameUseCase initializeGame;
@@ -17,9 +17,9 @@ void main() {
     rules = const GameRules();
     initializeGame = InitializeGameUseCase(rules);
     placeAtom = PlaceAtomUseCase(rules);
-    players = const [
-      Player(id: 'p1', name: 'Player 1', color: Colors.blue),
-      Player(id: 'p2', name: 'Player 2', color: Colors.red),
+    players = [
+      Player(id: 'p1', name: 'Player 1', color: const Color(0xFF000000)),
+      Player(id: 'p2', name: 'Player 2', color: const Color(0xFFFFFFFF)),
     ];
   });
 
@@ -58,7 +58,7 @@ void main() {
 
       // Seed P2 atom to prevent instant win
       final grid = List<List<Cell>>.from(
-        state.grid.map((row) => List<Cell>.from(row)),
+        state.grid.map(List<Cell>.from),
       );
       grid[3][0] = grid[3][0].copyWith(atomCount: 1, ownerId: 'p2');
       state = state.copyWith(grid: grid);
@@ -85,7 +85,7 @@ void main() {
 
       // Seed P2 atom to prevent instant win
       final grid = List<List<Cell>>.from(
-        state.grid.map((row) => List<Cell>.from(row)),
+        state.grid.map(List<Cell>.from),
       );
       grid[3][0] = grid[3][0].copyWith(atomCount: 1, ownerId: 'p2');
       state = state.copyWith(grid: grid);

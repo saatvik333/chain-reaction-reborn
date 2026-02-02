@@ -1,21 +1,14 @@
 import 'dart:ui';
+
+import 'package:chain_reaction/core/theme/app_theme.dart';
+import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
+import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../../features/settings/domain/repositories/settings_repository.dart';
-import '../../../../features/settings/presentation/providers/settings_providers.dart';
 
 /// Immutable state for theme settings.
 @immutable
 class ThemeState {
-  final AppTheme currentTheme;
-  final bool isDarkMode;
-
-  final bool isHapticOn;
-  final bool isAtomRotationOn;
-  final bool isAtomVibrationOn;
-  final bool isAtomBreathingOn;
-  final bool isCellHighlightOn;
 
   const ThemeState({
     required this.currentTheme,
@@ -27,6 +20,14 @@ class ThemeState {
     this.isAtomBreathingOn = true,
     this.isCellHighlightOn = true,
   });
+  final AppTheme currentTheme;
+  final bool isDarkMode;
+
+  final bool isHapticOn;
+  final bool isAtomRotationOn;
+  final bool isAtomVibrationOn;
+  final bool isAtomBreathingOn;
+  final bool isCellHighlightOn;
 
   // Resolved colors for convenience
   Color get bg => currentTheme.bg(isDarkMode);

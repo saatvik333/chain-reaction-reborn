@@ -1,16 +1,16 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/presentation/widgets/custom_popup.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/features/game/presentation/providers/player_names_provider.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/features/game/presentation/providers/player_names_provider.dart';
-import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
-import '../../constants/app_dimensions.dart';
-import 'package:chain_reaction/l10n/generated/app_localizations.dart';
-import 'custom_popup.dart';
-import 'pill_button.dart';
 
 class EditPlayerDialog extends ConsumerStatefulWidget {
-  final int playerIndex;
 
-  const EditPlayerDialog({super.key, required this.playerIndex});
+  const EditPlayerDialog({required this.playerIndex, super.key});
+  final int playerIndex;
 
   @override
   ConsumerState<EditPlayerDialog> createState() => _EditPlayerDialogState();
@@ -97,7 +97,6 @@ class _EditPlayerDialogState extends ConsumerState<EditPlayerDialog> {
                   text: l10n.cancel,
                   onTap: () => Navigator.of(context).pop(),
                   height: 48,
-                  type: PillButtonType.secondary,
                 ),
               ),
               const SizedBox(width: AppDimensions.paddingM),

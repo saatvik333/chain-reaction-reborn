@@ -1,24 +1,19 @@
-import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:chain_reaction/routing/routes.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
-import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/core/presentation/widgets/game_menu_dialog.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/game/presentation/widgets/widgets.dart';
-import 'package:chain_reaction/core/presentation/widgets/game_menu_dialog.dart';
-import 'package:chain_reaction/core/utils/fluid_dialog.dart';
-import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
+import 'package:chain_reaction/routing/routes.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
-  final int? playerCount;
-  final String? gridSize;
-  final AIDifficulty? aiDifficulty;
-  final bool isResuming;
-
   const GameScreen({
     super.key,
     this.playerCount,
@@ -26,6 +21,10 @@ class GameScreen extends ConsumerStatefulWidget {
     this.aiDifficulty,
     this.isResuming = false,
   });
+  final int? playerCount;
+  final String? gridSize;
+  final AIDifficulty? aiDifficulty;
+  final bool isResuming;
 
   @override
   ConsumerState<GameScreen> createState() => _GameScreenState();
@@ -107,7 +106,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         if (didPop) return;
         _showMenuDialog(context, gameState);
       },
-      child: Container(
+      child: ColoredBox(
         color: themeState.bg,
         child: ResponsiveContainer(
           child: Scaffold(
@@ -223,7 +222,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         ? gameState.players.firstWhere((p) => p.isAI)
         : null;
 
-    showFluidDialog(
+    showFluidDialog<void>(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.8),
       builder: (context) => GameMenuDialog(

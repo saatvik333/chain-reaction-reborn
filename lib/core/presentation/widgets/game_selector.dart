@@ -1,21 +1,17 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
-import '../../constants/app_dimensions.dart';
 
 class GameSelector extends ConsumerWidget {
+
+  const GameSelector({
+    required this.label, required this.value, required this.onPrevious, required this.onNext, super.key,
+  });
   final String label;
   final String value;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
-
-  const GameSelector({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.onPrevious,
-    required this.onNext,
-  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,15 +63,15 @@ class GameSelector extends ConsumerWidget {
 }
 
 class _ArrowButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  final Color color;
 
   const _ArrowButton({
     required this.icon,
     required this.onTap,
     required this.color,
   });
+  final IconData icon;
+  final VoidCallback onTap;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {

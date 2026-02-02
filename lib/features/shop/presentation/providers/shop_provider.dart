@@ -1,15 +1,14 @@
 import 'dart:async';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
+import 'package:chain_reaction/features/shop/data/repositories/shop_repository_impl.dart';
+import 'package:chain_reaction/features/shop/data/services/iap_service.dart';
+import 'package:chain_reaction/features/shop/domain/entities/shop_event.dart';
+import 'package:chain_reaction/features/shop/domain/repositories/shop_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:flutter/foundation.dart';
-
-import '../../domain/repositories/shop_repository.dart';
-import '../../data/repositories/shop_repository_impl.dart';
-import '../../data/services/iap_service.dart';
-import '../../domain/entities/shop_event.dart';
-
-import '../../../settings/presentation/providers/settings_providers.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'shop_provider.freezed.dart';
 part 'shop_provider.g.dart';
@@ -32,25 +31,24 @@ ShopRepository shopRepository(Ref ref) {
 @riverpod
 IAPService iapService(Ref ref) {
   final service = IAPService();
-  ref.onDispose(() => service.dispose());
+  ref.onDispose(service.dispose);
   return service;
 }
 
 @freezed
 abstract class ShopState with _$ShopState {
-  const ShopState._();
-
   const factory ShopState({
     @Default([]) List<String> ownedThemeIds,
     @Default([]) List<ProductDetails> products,
   }) = _ShopState;
+  const ShopState._();
 
   bool isOwned(String themeId) => ownedThemeIds.contains(themeId);
 
   ProductDetails? getProduct(String id) {
     try {
       return products.firstWhere((p) => p.id == id);
-    } catch (e) {
+    } on Object {
       return null;
     }
   }
@@ -60,7 +58,7 @@ abstract class ShopState with _$ShopState {
 class ShopNotifier extends _$ShopNotifier {
   late final ShopRepository _repository;
   late final IAPService _iapService;
-  StreamSubscription? _eventSubscription;
+  StreamSubscription<ShopEvent>? _eventSubscription;
 
   @override
   Future<ShopState> build() async {
@@ -86,11 +84,11 @@ class ShopNotifier extends _$ShopNotifier {
       ownedIds = kThemeIds.toList();
     }
 
-    List<ProductDetails> products = [];
+    var products = <ProductDetails>[];
     try {
       final allIds = {...kThemeIds, kCoffeeId};
       products = await _iapService.loadProducts(allIds);
-    } catch (e) {
+    } on Object {
       // Products failed to load, but we can still show owned themes
       // We could also throw here to show error state in UI
       // but partial state is often better for UX (can still see owned stuff)
@@ -104,7 +102,7 @@ class ShopNotifier extends _$ShopNotifier {
     try {
       await _iapService.buyNonConsumable(product);
       // State updates via callbacks -> stream listener
-    } catch (e, st) {
+    } on Object catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
@@ -113,7 +111,7 @@ class ShopNotifier extends _$ShopNotifier {
     state = const AsyncValue.loading();
     try {
       await _iapService.buyConsumable(product);
-    } catch (e, st) {
+    } on Object catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
@@ -123,7 +121,7 @@ class ShopNotifier extends _$ShopNotifier {
     try {
       await _iapService.restorePurchases();
       // Completion is handled via the purchase updates stream.
-    } catch (e, st) {
+    } on Object catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
@@ -139,7 +137,7 @@ class ShopNotifier extends _$ShopNotifier {
     }
   }
 
-  void _handlePurchaseCompleted(String productId) async {
+  Future<void> _handlePurchaseCompleted(String productId) async {
     // Reload state to reflect changes
     // Reload owned IDs to reflect the new purchase.
     try {
@@ -149,7 +147,7 @@ class ShopNotifier extends _$ShopNotifier {
       state = AsyncValue.data(
         ShopState(ownedThemeIds: ids, products: currentProducts),
       );
-    } catch (e, st) {
+    } on Object catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }

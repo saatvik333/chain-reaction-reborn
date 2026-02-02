@@ -1,8 +1,8 @@
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
+import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
+import 'package:chain_reaction/features/game/domain/usecases/initialize_game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:chain_reaction/features/game/domain/entities/player.dart';
-import 'package:chain_reaction/features/game/domain/usecases/initialize_game.dart';
-import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
 
 void main() {
   late InitializeGameUseCase initializeGame;
@@ -13,9 +13,9 @@ void main() {
     initializeGame = InitializeGameUseCase(rules);
   });
 
-  const players = [
-    Player(id: 'p1', name: 'Player 1', color: Colors.blue),
-    Player(id: 'p2', name: 'Player 2', color: Colors.red),
+  final players = [
+    Player(id: 'p1', name: 'Player 1', color: const Color(0xFF000000)),
+    Player(id: 'p2', name: 'Player 2', color: const Color(0xFFFFFFFF)),
   ];
 
   group('InitializeGameUseCase', () {
@@ -53,8 +53,8 @@ void main() {
     test('should return all cells empty initially', () {
       final state = initializeGame(players, gridSize: 'small');
 
-      for (var row in state.grid) {
-        for (var cell in row) {
+      for (final row in state.grid) {
+        for (final cell in row) {
           expect(cell.atomCount, 0);
           expect(cell.ownerId, null);
         }

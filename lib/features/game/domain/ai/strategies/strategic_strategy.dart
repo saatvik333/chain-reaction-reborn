@@ -1,8 +1,9 @@
 import 'dart:math';
-import '../ai_strategy.dart';
-import '../../entities/game_state.dart';
-import '../../entities/player.dart';
-import '../../entities/cell.dart';
+
+import 'package:chain_reaction/features/game/domain/ai/ai_strategy.dart';
+import 'package:chain_reaction/features/game/domain/entities/cell.dart';
+import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 
 /// A strategic AI that evaluates board position.
 /// Uses a simplified heuristic approach rather than full Minimax
@@ -18,7 +19,7 @@ class StrategicStrategy extends AIStrategy {
   Future<Point<int>> getMove(GameState state, Player player) async {
     // Variable thinking time to feel more natural
     final thinkingTime = 300 + _random.nextInt(401); // 300 to 700ms
-    await Future.delayed(Duration(milliseconds: thinkingTime));
+    await Future<void>.delayed(Duration(milliseconds: thinkingTime));
     final validMoves = getValidMoves(state, player);
     if (validMoves.isEmpty) throw Exception('No valid moves');
 
@@ -28,7 +29,7 @@ class StrategicStrategy extends AIStrategy {
     }
 
     Point<int>? bestMove;
-    double bestScore = double.negativeInfinity;
+    var bestScore = double.negativeInfinity;
 
     // Evaluate each candidate move
     for (final move in validMoves) {
@@ -56,17 +57,17 @@ class StrategicStrategy extends AIStrategy {
     // A. Win Condition (Highest Priority)
     if (simulatedState.activeOwnerIds.length == 1 &&
         simulatedState.activeOwnerIds.first == player.id) {
-      return 10000.0; // Instant win!
+      return 10000; // Instant win!
     }
 
     // B. Material Difference (My Atoms - Enemy Atoms)
-    int myAtoms = 0;
-    int enemyAtoms = 0;
-    int myCells = 0;
-    int enemyCells = 0;
+    var myAtoms = 0;
+    var enemyAtoms = 0;
+    var myCells = 0;
+    var enemyCells = 0;
 
-    for (var row in simulatedState.grid) {
-      for (var cell in row) {
+    for (final row in simulatedState.grid) {
+      for (final cell in row) {
         if (cell.ownerId == player.id) {
           myAtoms += cell.atomCount;
           myCells++;
@@ -91,8 +92,8 @@ class StrategicStrategy extends AIStrategy {
     // D. Vulnerability Penalty
     // Check if we left ourselves open next to a critical enemy
     // Note: This is computationally expensive to check perfectly, so we do a quick scan.
-    for (int y = 0; y < simulatedState.rows; y++) {
-      for (int x = 0; x < simulatedState.cols; x++) {
+    for (var y = 0; y < simulatedState.rows; y++) {
+      for (var x = 0; x < simulatedState.cols; x++) {
         final cell = simulatedState.grid[y][x];
         if (cell.ownerId == player.id) {
           // Check neighbors for critical enemies
@@ -131,11 +132,11 @@ class StrategicStrategy extends AIStrategy {
   /// Ignores animation phases and flying atoms, processes logic instantly.
   GameState _simulateMove(GameState state, Point<int> move, Player player) {
     // Deep copy grid
-    var grid = state.grid.map((row) => List<Cell>.from(row)).toList();
+    final grid = state.grid.map(List<Cell>.from).toList();
     final queue = <Point<int>>[];
 
     // Apply initial move
-    var cell = grid[move.y][move.x];
+    final cell = grid[move.y][move.x];
     grid[move.y][move.x] = cell.copyWith(
       atomCount: cell.atomCount + 1,
       ownerId: player.id,
@@ -147,7 +148,7 @@ class StrategicStrategy extends AIStrategy {
 
     // Process explosions loop (Synchronous)
     // Safety break to prevent infinite loops in weird edge cases
-    int safetyCounter = 0;
+    var safetyCounter = 0;
     while (queue.isNotEmpty && safetyCounter < 1000) {
       safetyCounter++;
       final p = queue.removeAt(0);

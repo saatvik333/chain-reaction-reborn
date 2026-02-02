@@ -1,12 +1,22 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/presentation/widgets/atom_painter.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import 'atom_painter.dart';
 
 /// Renders the atoms within a cell using CustomPainter for performance.
 ///
 /// This widget is purely stateless and driven by the [animation] passed from above.
 /// All drawing logic is handled by [AtomPainter].
 class AtomWidget extends StatelessWidget {
+
+  const AtomWidget({
+    required this.color, required this.count, required this.animation, super.key,
+    this.angleOffset = 0.0,
+    this.isUnstable = false,
+    this.isCritical = false,
+    this.isAtomRotationOn = true,
+    this.isAtomVibrationOn = true,
+    this.isAtomBreathingOn = true,
+  });
   final Color color;
   final int count;
   final bool isUnstable;
@@ -16,19 +26,6 @@ class AtomWidget extends StatelessWidget {
   final bool isAtomBreathingOn;
   final Animation<double> animation;
   final double angleOffset;
-
-  const AtomWidget({
-    super.key,
-    required this.color,
-    required this.count,
-    required this.animation,
-    this.angleOffset = 0.0,
-    this.isUnstable = false,
-    this.isCritical = false,
-    this.isAtomRotationOn = true,
-    this.isAtomVibrationOn = true,
-    this.isAtomBreathingOn = true,
-  });
 
   @override
   Widget build(BuildContext context) {

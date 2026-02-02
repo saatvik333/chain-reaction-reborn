@@ -1,16 +1,16 @@
+import 'package:chain_reaction/features/shop/data/services/purchase_state_manager.dart';
+import 'package:chain_reaction/features/shop/domain/repositories/shop_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../domain/repositories/shop_repository.dart';
-import '../services/purchase_state_manager.dart';
 
 /// Implementation of [ShopRepository] using [SharedPreferences] and purchase state management.
 class ShopRepositoryImpl implements ShopRepository {
-  final SharedPreferences _prefs;
-  late final PurchaseStateManager _stateManager;
-  static const String _keyPurchasedThemes = 'purchased_themes';
 
   ShopRepositoryImpl(this._prefs) {
     _stateManager = PurchaseStateManager();
   }
+  final SharedPreferences _prefs;
+  late final PurchaseStateManager _stateManager;
+  static const String _keyPurchasedThemes = 'purchased_themes';
 
   @override
   Future<List<String>> getPurchasedThemeIds() async {

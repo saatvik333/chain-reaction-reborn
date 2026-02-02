@@ -1,8 +1,8 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/app_dimensions.dart';
 
 class HomeOrb extends ConsumerStatefulWidget {
   const HomeOrb({super.key});
@@ -32,7 +32,7 @@ class _HomeOrbState extends ConsumerState<HomeOrb>
 
     _orbOpacityAnimation = Tween<double>(
       begin: 0.9,
-      end: 1.0,
+      end: 1,
     ).animate(CurvedAnimation(parent: _orbController, curve: Curves.easeInOut));
   }
 
@@ -53,7 +53,7 @@ class _HomeOrbState extends ConsumerState<HomeOrb>
         defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.windows;
 
-    Widget orbContent = Container(
+    final Widget orbContent = Container(
       width: AppDimensions.orbSizeLarge,
       height: AppDimensions.orbSizeLarge,
       decoration: BoxDecoration(

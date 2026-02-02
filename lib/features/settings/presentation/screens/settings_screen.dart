@@ -1,14 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
-import 'package:chain_reaction/features/game/presentation/providers/player_names_provider.dart';
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/edit_player_dialog.dart';
 import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
-
-import 'package:chain_reaction/core/constants/app_dimensions.dart';
-import 'package:chain_reaction/core/utils/fluid_dialog.dart';
 import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/core/utils/fluid_dialog.dart';
+import 'package:chain_reaction/features/game/presentation/providers/player_names_provider.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -20,7 +19,7 @@ class SettingsScreen extends ConsumerWidget {
     final playerNamesState = ref.watch(playerNamesProvider);
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
+    return ColoredBox(
       color: themeState.bg,
       child: ResponsiveContainer(
         child: Scaffold(
@@ -62,7 +61,7 @@ class SettingsScreen extends ConsumerWidget {
                       l10n.darkMode,
                       l10n.darkModeSubtitle,
                       themeState.isDarkMode,
-                      (val) => themeNotifier.setDarkMode(val),
+                      themeNotifier.setDarkMode,
                       themeState,
                       l10n,
                     ),
@@ -72,7 +71,7 @@ class SettingsScreen extends ConsumerWidget {
                       l10n.hapticFeedback,
                       l10n.hapticFeedbackSubtitle,
                       themeState.isHapticOn,
-                      (val) => themeNotifier.setHapticOn(val),
+                      themeNotifier.setHapticOn,
                       themeState,
                       l10n,
                     ),
@@ -87,7 +86,7 @@ class SettingsScreen extends ConsumerWidget {
                       l10n.atomRotation,
                       l10n.atomRotationSubtitle,
                       themeState.isAtomRotationOn,
-                      (val) => themeNotifier.setAtomRotationOn(val),
+                      themeNotifier.setAtomRotationOn,
                       themeState,
                       l10n,
                     ),
@@ -96,7 +95,7 @@ class SettingsScreen extends ConsumerWidget {
                       l10n.atomVibration,
                       l10n.atomVibrationSubtitle,
                       themeState.isAtomVibrationOn,
-                      (val) => themeNotifier.setAtomVibrationOn(val),
+                      themeNotifier.setAtomVibrationOn,
                       themeState,
                       l10n,
                     ),
@@ -105,7 +104,7 @@ class SettingsScreen extends ConsumerWidget {
                       l10n.atomBreathing,
                       l10n.atomBreathingSubtitle,
                       themeState.isAtomBreathingOn,
-                      (val) => themeNotifier.setAtomBreathingOn(val),
+                      themeNotifier.setAtomBreathingOn,
                       themeState,
                       l10n,
                     ),
@@ -114,7 +113,7 @@ class SettingsScreen extends ConsumerWidget {
                       l10n.cellHighlight,
                       l10n.cellHighlightSubtitle,
                       themeState.isCellHighlightOn,
-                      (val) => themeNotifier.setCellHighlightOn(val),
+                      themeNotifier.setCellHighlightOn,
                       themeState,
                       l10n,
                     ),
@@ -188,7 +187,7 @@ class SettingsScreen extends ConsumerWidget {
     String title,
     String subtitle,
     bool value,
-    Function(bool) onChanged,
+    void Function(bool) onChanged,
     ThemeState theme,
     AppLocalizations l10n,
   ) {
@@ -250,7 +249,7 @@ class SettingsScreen extends ConsumerWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        showFluidDialog(
+        showFluidDialog<void>(
           context: context,
           barrierColor: Colors.black.withValues(alpha: 0.8),
           builder: (context) => EditPlayerDialog(playerIndex: playerIndex),

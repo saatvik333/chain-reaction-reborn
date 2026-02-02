@@ -1,7 +1,7 @@
+import 'package:chain_reaction/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../data/repositories/settings_repository_impl.dart';
-import '../../domain/repositories/settings_repository.dart';
 
 /// Provider for the SharedPreferences instance.
 /// Must be overridden in main.dart with `sharedPreferencesProvider.overrideWithValue(prefs)`.

@@ -219,7 +219,7 @@ return $default(_that.id,_that.name,_that.color,_that.type,_that.difficulty);cas
 @JsonSerializable()
 
 class _Player extends Player with DiagnosticableTreeMixin {
-  const _Player({required this.id, required this.name, @ColorConverter() required this.color, this.type = PlayerType.human, this.difficulty}): super._();
+   _Player({required this.id, required this.name, @ColorConverter() required this.color, this.type = PlayerType.human, this.difficulty}): assert(id.isNotEmpty, 'Player ID cannot be empty'),assert(name.isNotEmpty, 'Player name cannot be empty'),super._();
   factory _Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
 
 @override final  String id;

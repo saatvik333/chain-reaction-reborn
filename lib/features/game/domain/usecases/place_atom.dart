@@ -1,16 +1,16 @@
 import 'dart:collection';
+
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/features/game/domain/entities/entities.dart';
+import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
 import 'package:uuid/uuid.dart';
-import '../entities/entities.dart';
-import '../logic/game_rules.dart';
-import '../../../../core/constants/app_dimensions.dart';
 
 /// Use case for placing an atom on the grid.
 ///
 /// Returns a Stream of GameState updates to animate chain reactions.
 class PlaceAtomUseCase {
-  final GameRules _rules;
-
   const PlaceAtomUseCase(this._rules);
+  final GameRules _rules;
 
   /// Places an atom at the given coordinates.
   ///
@@ -20,7 +20,7 @@ class PlaceAtomUseCase {
     if (!_rules.isValidMove(state, x, y)) return;
 
     final currentPlayer = state.currentPlayer;
-    var grid = _copyGrid(state.grid);
+    final grid = _copyGrid(state.grid);
 
     // Add atom to the cell
     grid[y][x] = grid[y][x].copyWith(
@@ -30,7 +30,7 @@ class PlaceAtomUseCase {
 
     final needsExplosion = grid[y][x].isAtCriticalMass;
 
-    var workingState = state.copyWith(
+    final workingState = state.copyWith(
       grid: grid,
       isProcessing: true,
       totalMoves: state.totalMoves + 1,
@@ -48,7 +48,7 @@ class PlaceAtomUseCase {
     GameState state,
     Queue<Cell> explosionQueue,
   ) async* {
-    var grid = _copyGrid(state.grid);
+    final grid = _copyGrid(state.grid);
     final rows = grid.length;
     final cols = grid[0].length;
     final currentOwnerId = state.currentPlayer.id;
@@ -110,7 +110,7 @@ class PlaceAtomUseCase {
       yield state.copyWith(grid: _copyGrid(grid), flyingAtoms: flyingAtoms);
 
       // Wait for flight
-      await Future.delayed(
+      await Future<void>.delayed(
         const Duration(milliseconds: AppDimensions.flightDurationMs),
       ); // Flight duration
 
@@ -137,7 +137,7 @@ class PlaceAtomUseCase {
 
   /// Creates a deep copy of the grid.
   List<List<Cell>> _copyGrid(List<List<Cell>> grid) {
-    return grid.map((row) => List<Cell>.from(row)).toList();
+    return grid.map(List<Cell>.from).toList();
   }
 
   /// Checks if there's a winner during explosions.
@@ -146,9 +146,9 @@ class PlaceAtomUseCase {
     List<Player> players,
   ) {
     final owners = _getUniqueOwners(grid);
-    int totalAtoms = 0;
-    for (var row in grid) {
-      for (var cell in row) {
+    var totalAtoms = 0;
+    for (final row in grid) {
+      for (final cell in row) {
         if (cell.ownerId != null) {
           totalAtoms += cell.atomCount;
         }
@@ -160,8 +160,8 @@ class PlaceAtomUseCase {
   /// Gets unique owner IDs from the grid.
   Set<String> _getUniqueOwners(List<List<Cell>> grid) {
     final owners = <String>{};
-    for (var row in grid) {
-      for (var cell in row) {
+    for (final row in grid) {
+      for (final cell in row) {
         if (cell.ownerId != null) {
           owners.add(cell.ownerId!);
         }

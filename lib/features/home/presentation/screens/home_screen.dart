@@ -1,13 +1,13 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
 import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/features/home/presentation/providers/home_provider.dart';
+import 'package:chain_reaction/features/home/presentation/widgets/home_bottom_bar.dart';
+import 'package:chain_reaction/features/home/presentation/widgets/home_configuration.dart';
+import 'package:chain_reaction/features/home/presentation/widgets/home_mode_selection.dart';
+import 'package:chain_reaction/features/home/presentation/widgets/home_orb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/presentation/widgets/responsive_container.dart';
-import '../providers/home_provider.dart';
-import '../widgets/home_bottom_bar.dart';
-import '../widgets/home_configuration.dart';
-import '../widgets/home_mode_selection.dart';
-import '../widgets/home_orb.dart';
 
 export '../providers/home_provider.dart' show GameMode, HomeStep;
 

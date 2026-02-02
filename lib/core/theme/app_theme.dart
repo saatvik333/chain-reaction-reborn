@@ -5,6 +5,23 @@ enum AtomShape { circle, square, roundedSquare, diamond }
 /// Represents a complete color theme for the application.
 /// Supports both light and dark modes with a standardized 10-color palette.
 class AppTheme {
+
+  const AppTheme({
+    required this.name,
+    required this.bgDark,
+    required this.bgLight,
+    required this.fgDark,
+    required this.fgLight,
+    required this.red,
+    required this.green,
+    required this.yellow,
+    required this.blue,
+    required this.purple,
+    required this.aqua,
+    required this.orange,
+    this.isPremium = false,
+    this.price,
+  });
   final String name;
 
   // Mode-specific colors
@@ -25,23 +42,6 @@ class AppTheme {
   // Shop properties
   final bool isPremium;
   final String? price;
-
-  const AppTheme({
-    required this.name,
-    required this.bgDark,
-    required this.bgLight,
-    required this.fgDark,
-    required this.fgLight,
-    required this.red,
-    required this.green,
-    required this.yellow,
-    required this.blue,
-    required this.purple,
-    required this.aqua,
-    required this.orange,
-    this.isPremium = false,
-    this.price,
-  });
 
   /// Get background color based on dark mode
   Color bg(bool isDark) => isDark ? bgDark : bgLight;
@@ -112,7 +112,6 @@ class AppThemes {
     purple: Color(0xFF7B1FA2),
     aqua: Color(0xFF00ACC1),
     orange: Color(0xFFF57C00),
-    isPremium: false,
   );
 
   static const AppTheme earthy = AppTheme(
@@ -129,7 +128,7 @@ class AppThemes {
     aqua: Color(0xFF689D6A),
     orange: Color(0xFFD65D0E),
     isPremium: true,
-    price: '\$0.99',
+    price: r'$0.99',
   );
 
   static const AppTheme pastel = AppTheme(
@@ -147,7 +146,7 @@ class AppThemes {
     aqua: Color(0xFF76D7C4), // Pastel Teal/Aqua
     orange: Color(0xFFFFB347), // Pastel Orange
     isPremium: true,
-    price: '\$0.99',
+    price: r'$0.99',
   );
 
   static const AppTheme amoled = AppTheme(
@@ -165,7 +164,7 @@ class AppThemes {
     aqua: Color(0xFF00FFFF), // Aqua
     orange: Color(0xFFFFA500), // Orange
     isPremium: true,
-    price: '\$0.99',
+    price: r'$0.99',
   );
 
   /// List of all available themes.

@@ -101,7 +101,7 @@ final class IapServiceProvider
   }
 }
 
-String _$iapServiceHash() => r'bde65258016213d080987ab0e82b92f80a4710a3';
+String _$iapServiceHash() => r'efa35b923b0e5d991c9220ccaa1d2fa60d68f055';
 
 @ProviderFor(ShopNotifier)
 const shopProvider = ShopNotifierProvider._();
@@ -127,7 +127,7 @@ final class ShopNotifierProvider
   ShopNotifier create() => ShopNotifier();
 }
 
-String _$shopNotifierHash() => r'3359a41e6fbb1bb9308a41b7e6bad8ce23284d62';
+String _$shopNotifierHash() => r'f456c904192fbcb06d64d1566ea0fbbf51c417c8';
 
 abstract class _$ShopNotifier extends $AsyncNotifier<ShopState> {
   FutureOr<ShopState> build();

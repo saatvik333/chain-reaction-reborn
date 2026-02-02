@@ -1,4 +1,4 @@
-import '../entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 
 abstract class GameRepository {
   Future<void> saveGame(GameState state);

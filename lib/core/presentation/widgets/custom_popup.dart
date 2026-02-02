@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CustomPopup extends ConsumerWidget {
+
+  const CustomPopup({required this.child, super.key, this.width, this.padding});
   final Widget child;
   final double? width;
   final EdgeInsetsGeometry? padding;
-
-  const CustomPopup({super.key, required this.child, this.width, this.padding});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +23,7 @@ class CustomPopup extends ConsumerWidget {
         decoration: BoxDecoration(
           color: theme.surface,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.border, width: 1),
+          border: Border.all(color: theme.border),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.5),

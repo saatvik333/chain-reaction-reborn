@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 class FadeEntryWidget extends StatefulWidget {
-  final Widget child;
-  final Duration delay;
-  final Duration duration;
-  final double verticalOffset;
 
   const FadeEntryWidget({
-    super.key,
-    required this.child,
+    required this.child, super.key,
     this.delay = Duration.zero,
     this.duration = const Duration(milliseconds: 400),
     this.verticalOffset = 20.0,
   });
+  final Widget child;
+  final Duration delay;
+  final Duration duration;
+  final double verticalOffset;
 
   @override
   State<FadeEntryWidget> createState() => _FadeEntryWidgetState();

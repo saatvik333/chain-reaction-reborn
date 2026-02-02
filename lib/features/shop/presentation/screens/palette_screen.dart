@@ -1,16 +1,16 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/presentation/widgets/fade_entry_widget.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
+import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
+import 'package:chain_reaction/core/theme/app_theme.dart';
 import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/core/utils/fluid_dialog.dart';
+import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
+import 'package:chain_reaction/features/shop/presentation/screens/purchase_screen.dart';
+import 'package:chain_reaction/features/shop/presentation/widgets/theme_preview_dialog.dart';
+import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chain_reaction/core/theme/app_theme.dart';
-import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
-import 'package:chain_reaction/features/shop/presentation/screens/purchase_screen.dart';
-import 'package:chain_reaction/core/presentation/widgets/fade_entry_widget.dart';
-import 'package:chain_reaction/core/constants/app_dimensions.dart';
-import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
-import 'package:chain_reaction/features/shop/presentation/widgets/theme_preview_dialog.dart';
-import 'package:chain_reaction/core/utils/fluid_dialog.dart';
-import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
-import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 
 class PaletteScreen extends ConsumerWidget {
   const PaletteScreen({super.key});
@@ -21,7 +21,7 @@ class PaletteScreen extends ConsumerWidget {
     final shopAsync = ref.watch(shopProvider);
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
+    return ColoredBox(
       color: themeState.bg,
       child: ResponsiveContainer(
         child: Scaffold(
@@ -106,7 +106,7 @@ class PaletteScreen extends ConsumerWidget {
                                       .setTheme(theme);
                                 } else {
                                   // Show Preview Dialog
-                                  showFluidDialog(
+                                  showFluidDialog<void>(
                                     context: context,
                                     builder: (_) => ThemePreviewDialog(
                                       themeToPreview: theme,
@@ -126,7 +126,7 @@ class PaletteScreen extends ConsumerWidget {
                       text: l10n.getMoreThemes,
                       onTap: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(
+                          MaterialPageRoute<void>(
                             builder: (context) => const PurchaseScreen(),
                           ),
                         );
@@ -147,14 +147,6 @@ class PaletteScreen extends ConsumerWidget {
 }
 
 class _ThemeRow extends StatelessWidget {
-  final AppTheme theme;
-  final bool isSelected;
-  final bool isLocked;
-  final bool isDarkMode;
-  final VoidCallback onTap;
-  final Color textColor;
-  final Color backgroundColor;
-
   const _ThemeRow({
     required this.theme,
     required this.isSelected,
@@ -164,6 +156,13 @@ class _ThemeRow extends StatelessWidget {
     required this.textColor,
     required this.backgroundColor,
   });
+  final AppTheme theme;
+  final bool isSelected;
+  final bool isLocked;
+  final bool isDarkMode;
+  final VoidCallback onTap;
+  final Color textColor;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +179,7 @@ class _ThemeRow extends StatelessWidget {
             children: [
               if (isSelected)
                 Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
+                  padding: const EdgeInsets.only(right: 12),
                   child: Icon(
                     Icons.check_circle,
                     color: playerColors.isNotEmpty
@@ -191,7 +190,7 @@ class _ThemeRow extends StatelessWidget {
                 )
               else if (isLocked)
                 Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
+                  padding: const EdgeInsets.only(right: 12),
                   child: Icon(
                     Icons.lock,
                     color: textColor.withValues(alpha: 0.5),

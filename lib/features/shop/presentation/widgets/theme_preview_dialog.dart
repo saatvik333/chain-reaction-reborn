@@ -1,14 +1,14 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
+import 'package:chain_reaction/core/theme/app_theme.dart';
+import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../providers/shop_provider.dart';
-import '../../../../core/presentation/widgets/pill_button.dart';
 
 class ThemePreviewDialog extends ConsumerWidget {
-  final AppTheme themeToPreview;
 
-  const ThemePreviewDialog({super.key, required this.themeToPreview});
+  const ThemePreviewDialog({required this.themeToPreview, super.key});
+  final AppTheme themeToPreview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,10 +21,10 @@ class ThemePreviewDialog extends ConsumerWidget {
     final canBuy = product != null;
     final isLoading = shopAsync.isLoading;
 
-    final isDark = true; // Preview in default dark mode
+    const isDark = true; // Preview in default dark mode
 
     return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
+      tween: Tween(begin: 0, end: 1),
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
@@ -113,7 +113,6 @@ class ThemePreviewDialog extends ConsumerWidget {
                     child: PillButton(
                       text: 'Cancel',
                       onTap: () => Navigator.of(context).pop(),
-                      type: PillButtonType.secondary,
                     ),
                   ),
                   const SizedBox(width: AppDimensions.paddingM),

@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../domain/domain.dart';
-import '../../domain/ai/ai_service.dart';
-import 'game_providers.dart';
-import '../../domain/repositories/game_repository.dart';
 
-import '../../../../core/services/haptic/haptic_service.dart';
-import '../../../../core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/core/services/haptic/haptic_service.dart';
+import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
+import 'package:chain_reaction/features/game/domain/domain.dart';
+import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
+import 'package:chain_reaction/features/game/presentation/providers/game_providers.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'game_state_provider.g.dart';
 
@@ -67,7 +67,7 @@ class GameNotifier extends _$GameNotifier {
     if (ref.read(isHapticOnProvider)) _hapticService.lightImpact();
 
     GameState? lastState;
-    bool hasEmitted = false;
+    var hasEmitted = false;
 
     _explosionSubscription = _placeAtom(currentState, x, y).listen(
       (newState) {
@@ -147,7 +147,7 @@ class GameNotifier extends _$GameNotifier {
         // Force turn change to prevent stuck state
         _advanceTurn();
       }
-    } catch (e) {
+    } on Object {
       // On error, skip AI turn to prevent stuck state
       _advanceTurn();
     }

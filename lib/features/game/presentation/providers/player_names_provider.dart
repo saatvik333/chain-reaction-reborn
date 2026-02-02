@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/src/providers/provider.dart';
 
 /// Immutable state for player names.
 @immutable
 class PlayerNamesState {
-  final Map<int, String> _names;
 
   const PlayerNamesState([Map<int, String>? names])
     : _names = names ?? const {};
+  final Map<int, String> _names;
 
   /// Get the name for a player (1-indexed).
   /// Returns "Player X" if no custom name is set.
@@ -68,6 +69,6 @@ final playerNamesProvider =
 
 /// Helper provider to get a specific player's name.
 /// Usage: ref.watch(playerNameProvider(1)) for player 1's name.
-final playerNameProvider = Provider.family<String, int>((ref, index) {
+final ProviderFamily<String, int> playerNameProvider = Provider.family<String, int>((ref, index) {
   return ref.watch(playerNamesProvider.select((s) => s.getName(index)));
 });
