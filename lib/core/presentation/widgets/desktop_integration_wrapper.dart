@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/constants.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
@@ -22,9 +24,10 @@ class ToggleFullscreenIntent extends Intent {
 /// - Native Menu Bar
 /// - Mouse Back/Forward button support
 class DesktopIntegrationWrapper extends StatelessWidget {
-
   const DesktopIntegrationWrapper({
-    required this.child, required this.navigatorKey, super.key,
+    required this.child,
+    required this.navigatorKey,
+    super.key,
   });
   final Widget child;
   final GlobalKey<NavigatorState> navigatorKey;
@@ -81,35 +84,33 @@ class DesktopIntegrationWrapper extends StatelessWidget {
       ],
       child: Shortcuts(
         shortcuts: const <ShortcutActivator, Intent>{
-          SingleActivator(LogicalKeyboardKey.escape):
-              GoBackIntent(),
-          SingleActivator(LogicalKeyboardKey.keyQ, control: true):
-              QuitIntent(),
-          SingleActivator(LogicalKeyboardKey.f11):
-              ToggleFullscreenIntent(),
+          SingleActivator(LogicalKeyboardKey.escape): GoBackIntent(),
+          SingleActivator(LogicalKeyboardKey.keyQ, control: true): QuitIntent(),
+          SingleActivator(LogicalKeyboardKey.f11): ToggleFullscreenIntent(),
         },
         child: Actions(
           actions: <Type, Action<Intent>>{
             GoBackIntent: CallbackAction<GoBackIntent>(
-              onInvoke: (intent) => navigatorKey.currentState?.maybePop(),
+              onInvoke: (intent) =>
+                  unawaited(navigatorKey.currentState?.maybePop()),
             ),
             QuitIntent: CallbackAction<QuitIntent>(
               onInvoke: (intent) {
                 if (!kIsWeb) {
-                  windowManager.close();
+                  unawaited(windowManager.close());
                 }
                 return null;
               },
             ),
             ToggleFullscreenIntent: CallbackAction<ToggleFullscreenIntent>(
-              onInvoke: (intent) => _toggleFullscreen(),
+              onInvoke: (intent) => unawaited(_toggleFullscreen()),
             ),
           },
           child: Listener(
             onPointerDown: (event) {
               // Mouse Back Button (Often button 8, or "Back" on some mice)
               if (event.buttons == 8) {
-                navigatorKey.currentState?.maybePop();
+                unawaited(navigatorKey.currentState?.maybePop());
               }
             },
             child: child,
@@ -123,9 +124,9 @@ class DesktopIntegrationWrapper extends StatelessWidget {
     if (kIsWeb) return; // WindowManager not supported on Web
     final isFullScreen = await windowManager.isFullScreen();
     if (isFullScreen) {
-      await windowManager.setFullScreen(false);
+      unawaited(windowManager.setFullScreen(false));
     } else {
-      await windowManager.setFullScreen(true);
+      unawaited(windowManager.setFullScreen(true));
     }
   }
 }

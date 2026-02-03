@@ -1,6 +1,3 @@
-import 'dart:ui';
-
-import 'package:chain_reaction/core/utils/json_converters.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -23,7 +20,7 @@ abstract class Player with _$Player {
   factory Player({
     required String id,
     required String name,
-    @ColorConverter() required Color color,
+    required int color,
     @Default(PlayerType.human) PlayerType type,
     AIDifficulty? difficulty,
   }) = _Player;

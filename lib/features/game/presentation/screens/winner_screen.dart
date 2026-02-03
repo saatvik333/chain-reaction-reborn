@@ -11,9 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class WinnerScreen extends ConsumerWidget {
-
   const WinnerScreen({
-    required this.playerCount, required this.gridSize, super.key,
+    required this.playerCount,
+    required this.gridSize,
+    super.key,
     this.winnerPlayerIndex = 1,
     this.totalMoves = 0,
     this.gameDuration = '00:00',
@@ -31,10 +32,6 @@ class WinnerScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
-    final winnerColor = theme.currentTheme.getPlayerColor(
-      winnerPlayerIndex,
-      theme.isDarkMode,
-    );
     final winnerName = ref.read(playerNamesProvider).getName(winnerPlayerIndex);
     final l10n = AppLocalizations.of(context)!;
 
@@ -67,8 +64,20 @@ class WinnerScreen extends ConsumerWidget {
                   width: 120, // Specific for winner circle
                   height: 120,
                   decoration: BoxDecoration(
-                    color: winnerColor,
+                    color: theme.currentTheme.getPlayerColor(
+                      winnerPlayerIndex,
+                      isDark: theme.isDarkMode,
+                    ),
                     shape: BoxShape.circle,
+                    border: Border.all(
+                      color: theme.currentTheme
+                          .getPlayerColor(
+                            winnerPlayerIndex,
+                            isDark: theme.isDarkMode,
+                          )
+                          .withValues(alpha: 0.5),
+                      width: 2,
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppDimensions.paddingL),

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 /// efficiently draws atoms on a canvas
 class AtomPainter extends CustomPainter {
-
   AtomPainter({
     required this.color,
     required this.count,
@@ -30,7 +29,9 @@ class AtomPainter extends CustomPainter {
   final double angleOffset; // 0.0 to 1.0 phase shift
 
   static const double _orbSize = AppDimensions.orbSizeSmall;
-  static const double _orbRadius = _orbSize / 2; // Repaint is handled by the parent widget passing a Listenable
+  static const double _orbRadius =
+      _orbSize /
+      2; // Repaint is handled by the parent widget passing a Listenable
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -66,9 +67,10 @@ class AtomPainter extends CustomPainter {
     }
 
     // Apply transformations
-    canvas.save();
-    canvas.translate(center.dx + vibrateX, center.dy + vibrateY);
-    canvas.rotate(rotationAngle);
+    canvas
+      ..save()
+      ..translate(center.dx + vibrateX, center.dy + vibrateY)
+      ..rotate(rotationAngle);
 
     // Draw Shadows (Using MaskFilter.blur as requested)
     final shadowPaint = Paint()
@@ -158,9 +160,10 @@ class AtomPainter extends CustomPainter {
 
   void _drawAtom(Canvas canvas, Offset offset, Paint paint, Paint shadowPaint) {
     // Draw shadow first
-    canvas.drawCircle(offset, _orbRadius, shadowPaint);
-    // Draw orb
-    canvas.drawCircle(offset, _orbRadius, paint);
+    canvas
+      ..drawCircle(offset, _orbRadius, shadowPaint)
+      // Draw orb
+      ..drawCircle(offset, _orbRadius, paint);
   }
 
   @override

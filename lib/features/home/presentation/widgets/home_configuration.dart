@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/game_selector.dart';
 import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
@@ -26,8 +28,8 @@ class HomeConfiguration extends ConsumerWidget {
           GameSelector(
             label: 'DIFFICULTY',
             value: state.difficultyLabel,
-            onPrevious: () => notifier.cycleDifficulty(false),
-            onNext: () => notifier.cycleDifficulty(true),
+            onPrevious: () => notifier.cycleDifficulty(forward: false),
+            onNext: () => notifier.cycleDifficulty(forward: true),
           )
         else
           GameSelector(
@@ -40,8 +42,8 @@ class HomeConfiguration extends ConsumerWidget {
         GameSelector(
           label: l10n.gridSizeLabel,
           value: _getLocalizedGridSize(context, state.currentGridSize),
-          onPrevious: () => notifier.cycleGridSize(false),
-          onNext: () => notifier.cycleGridSize(true),
+          onPrevious: () => notifier.cycleGridSize(forward: false),
+          onNext: () => notifier.cycleGridSize(forward: true),
         ),
         const SizedBox(height: AppDimensions.paddingL),
         const Spacer(),
@@ -49,13 +51,15 @@ class HomeConfiguration extends ConsumerWidget {
           text: l10n.startGame,
           onTap: () {
             final players = isVsComputer ? 2 : state.playerCount;
-            context.pushNamed(
-              AppRouteNames.game,
-              extra: {
-                'playerCount': players,
-                'gridSize': state.currentGridSize,
-                'aiDifficulty': isVsComputer ? state.aiDifficulty : null,
-              },
+            unawaited(
+              context.pushNamed(
+                AppRouteNames.game,
+                extra: {
+                  'playerCount': players,
+                  'gridSize': state.currentGridSize,
+                  'aiDifficulty': isVsComputer ? state.aiDifficulty : null,
+                },
+              ),
             );
           },
           width: double.infinity,

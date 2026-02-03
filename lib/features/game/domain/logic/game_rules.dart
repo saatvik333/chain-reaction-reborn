@@ -1,7 +1,10 @@
 import 'dart:math';
 
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
+
 import 'package:chain_reaction/features/game/domain/entities/cell.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
+import 'package:chain_reaction/features/game/domain/entities/player.dart';
 
 /// Encapsulates the core rules and mechanics of Chain Reaction.
 /// This logic is shared between the Game Engine (for UI) and the AI (for simulation).
@@ -103,10 +106,117 @@ class GameRules {
       neighbors: neighbors,
     );
   }
+
+  /// Checks if there's a winner in the current game state.
+  Player? checkWinner(GameState state) {
+    if (state.isGameOver) return state.winner;
+
+    final ownersOnBoard = state.activeOwnerIds;
+
+    // No winner during early game (first round of moves)
+    if (state.turnCount <= state.players.length) return null;
+
+    // Single owner remaining = winner
+    if (ownersOnBoard.length == 1) {
+      final winnerId = ownersOnBoard.first;
+      return state.players.firstWhere((p) => p.id == winnerId);
+    }
+
+    return null;
+  }
+
+  /// Advances the game to the next player's turn.
+  GameState nextTurn(GameState state, {DateTime? now}) {
+    final nextTurnCount = state.turnCount + 1;
+
+    // Get active owners on the board
+    final ownersOnBoard = state.activeOwnerIds;
+
+    // Winner check: Only one owner remains after initial turns
+    if (ownersOnBoard.length == 1 && nextTurnCount > state.players.length) {
+      final winnerId = ownersOnBoard.first;
+      return state.copyWith(
+        winner: state.players.firstWhere((p) => p.id == winnerId),
+        isGameOver: true,
+        isProcessing: false,
+        turnCount: nextTurnCount,
+        endTime: now ?? DateTime.now(),
+      );
+    }
+
+    // Find next valid player
+    final playersCount = state.players.length;
+    var nextIndex = (state.currentPlayerIndex + 1) % playersCount;
+    var loops = 0;
+
+    while (loops < playersCount) {
+      final candidate = state.players[nextIndex];
+
+      // Player is alive if they have atoms OR it's early game
+      final isAlive =
+          ownersOnBoard.contains(candidate.id) ||
+          (nextTurnCount <= playersCount);
+
+      if (isAlive) {
+        return state.copyWith(
+          currentPlayerIndex: nextIndex,
+          turnCount: nextTurnCount,
+          isProcessing: false,
+        );
+      }
+
+      nextIndex = (nextIndex + 1) % playersCount;
+      loops++;
+    }
+
+    // Fallback: game over
+    return state.copyWith(
+      isGameOver: true,
+      winner: state.players[state.currentPlayerIndex],
+      isProcessing: false,
+      endTime: now ?? DateTime.now(),
+    );
+  }
+
+  /// Creates a new game state with an initialized grid.
+  GameState initializeGame(
+    List<Player> players, {
+    String? gridSize,
+    int? rows,
+    int? cols,
+    DateTime? startTime,
+  }) {
+    var r = rows ?? 10;
+    var c = cols ?? 6;
+
+    // If gridSize string is provided, use the mapping from AppDimensions
+    if (gridSize != null && AppDimensions.gridSizes.containsKey(gridSize)) {
+      final size = AppDimensions.gridSizes[gridSize]!;
+      r = size.$1;
+      c = size.$2;
+    }
+
+    final grid = _createGrid(r, c);
+
+    return GameState(
+      grid: grid,
+      players: players,
+      startTime: startTime ?? DateTime.now(),
+    );
+  }
+
+  /// Creates an empty grid with correct cell capacities.
+  List<List<Cell>> _createGrid(int rows, int cols) {
+    return List.generate(rows, (y) {
+      return List.generate(cols, (x) {
+        final capacity = calculateCapacity(x, y, rows, cols);
+        return Cell(x: x, y: y, capacity: capacity);
+      });
+    });
+  }
 }
 
 class ExplosionResult {
-
   ExplosionResult({
     required this.grid,
     required this.newlyCriticalCells,

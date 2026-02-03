@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:chain_reaction/core/theme/app_theme.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Immutable state for theme settings.
 @immutable
 class ThemeState {
-
   const ThemeState({
     required this.currentTheme,
     this.isDarkMode = true,
@@ -30,12 +30,12 @@ class ThemeState {
   final bool isCellHighlightOn;
 
   // Resolved colors for convenience
-  Color get bg => currentTheme.bg(isDarkMode);
-  Color get fg => currentTheme.fg(isDarkMode);
-  Color get surface => currentTheme.surface(isDarkMode);
-  Color get subtitle => currentTheme.subtitle(isDarkMode);
-  Color get border => currentTheme.border(isDarkMode);
-  List<Color> get playerColors => currentTheme.playerColors(isDarkMode);
+  Color get bg => currentTheme.bg(isDark: isDarkMode);
+  Color get fg => currentTheme.fg(isDark: isDarkMode);
+  Color get surface => currentTheme.surface(isDark: isDarkMode);
+  Color get subtitle => currentTheme.subtitle(isDark: isDarkMode);
+  Color get border => currentTheme.border(isDark: isDarkMode);
+  List<Color> get playerColors => currentTheme.playerColors(isDark: isDarkMode);
 
   /// Get a player color by index (1-indexed).
   Color getPlayerColor(int playerIndex) {
@@ -73,7 +73,7 @@ class ThemeNotifier extends Notifier<ThemeState> {
   @override
   ThemeState build() {
     _settingsRepository = ref.watch(settingsRepositoryProvider);
-    _loadSettings();
+    unawaited(_loadSettings());
     return const ThemeState(currentTheme: AppThemes.defaultTheme);
   }
 
@@ -116,7 +116,7 @@ class ThemeNotifier extends Notifier<ThemeState> {
   void setTheme(AppTheme theme) {
     if (state.currentTheme.name != theme.name) {
       state = state.copyWith(currentTheme: theme);
-      _settingsRepository.setThemeName(theme.name);
+      unawaited(_settingsRepository.setThemeName(theme.name));
     }
   }
 
@@ -137,54 +137,54 @@ class ThemeNotifier extends Notifier<ThemeState> {
   void toggleDarkMode() {
     final newValue = !state.isDarkMode;
     state = state.copyWith(isDarkMode: newValue);
-    _settingsRepository.setDarkMode(newValue);
+    unawaited(_settingsRepository.setDarkMode(value: newValue));
   }
 
   /// Sets dark mode explicitly.
-  void setDarkMode(bool value) {
+  void setDarkMode({required bool value}) {
     if (state.isDarkMode != value) {
       state = state.copyWith(isDarkMode: value);
-      _settingsRepository.setDarkMode(value);
+      unawaited(_settingsRepository.setDarkMode(value: value));
     }
   }
 
   /// Sets haptic feedback on/off.
-  void setHapticOn(bool value) {
+  void setHapticOn({required bool value}) {
     if (state.isHapticOn != value) {
       state = state.copyWith(isHapticOn: value);
-      _settingsRepository.setHapticOn(value);
+      unawaited(_settingsRepository.setHapticOn(value: value));
     }
   }
 
   /// Sets atom rotation on/off.
-  void setAtomRotationOn(bool value) {
+  void setAtomRotationOn({required bool value}) {
     if (state.isAtomRotationOn != value) {
       state = state.copyWith(isAtomRotationOn: value);
-      _settingsRepository.setAtomRotationOn(value);
+      unawaited(_settingsRepository.setAtomRotationOn(value: value));
     }
   }
 
   /// Sets atom vibration on/off.
-  void setAtomVibrationOn(bool value) {
+  void setAtomVibrationOn({required bool value}) {
     if (state.isAtomVibrationOn != value) {
       state = state.copyWith(isAtomVibrationOn: value);
-      _settingsRepository.setAtomVibrationOn(value);
+      unawaited(_settingsRepository.setAtomVibrationOn(value: value));
     }
   }
 
   /// Sets atom breathing on/off.
-  void setAtomBreathingOn(bool value) {
+  void setAtomBreathingOn({required bool value}) {
     if (state.isAtomBreathingOn != value) {
       state = state.copyWith(isAtomBreathingOn: value);
-      _settingsRepository.setAtomBreathingOn(value);
+      unawaited(_settingsRepository.setAtomBreathingOn(value: value));
     }
   }
 
   /// Sets cell highlight on/off.
-  void setCellHighlightOn(bool value) {
+  void setCellHighlightOn({required bool value}) {
     if (state.isCellHighlightOn != value) {
       state = state.copyWith(isCellHighlightOn: value);
-      _settingsRepository.setCellHighlightOn(value);
+      unawaited(_settingsRepository.setCellHighlightOn(value: value));
     }
   }
 

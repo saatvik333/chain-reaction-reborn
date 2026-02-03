@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -141,7 +142,7 @@ class PurchaseStateManager {
     await _storage.write(key: _keyPurchases, value: jsonEncode(purchasesJson));
 
     if (kDebugMode) {
-      print('Saved purchase: ${purchase.productId} - ${purchase.state}');
+      log('Saved purchase: ${purchase.productId} - ${purchase.state}');
     }
   }
 
@@ -165,7 +166,7 @@ class PurchaseStateManager {
       return purchases;
     } on Object catch (e) {
       if (kDebugMode) {
-        print('Error loading purchases: $e');
+        log('Error loading purchases: $e');
       }
       return {};
     }
@@ -250,7 +251,7 @@ class PurchaseStateManager {
     await _storage.write(key: _keyPurchases, value: jsonEncode(purchasesJson));
 
     if (kDebugMode) {
-      print(
+      log(
         'Cleaned up '
         '${purchases.length - validPurchases.length} invalid purchases',
       );

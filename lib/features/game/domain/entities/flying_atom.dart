@@ -1,6 +1,3 @@
-import 'dart:ui';
-
-import 'package:chain_reaction/core/utils/json_converters.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -18,7 +15,7 @@ abstract class FlyingAtom with _$FlyingAtom {
     required int fromY,
     required int toX,
     required int toY,
-    @ColorConverter() required Color color,
+    required int color,
   }) = _FlyingAtom;
 
   factory FlyingAtom.fromJson(Map<String, dynamic> json) =>

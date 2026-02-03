@@ -3,7 +3,6 @@
 /// All failures in the app should extend this class.
 /// This enables pattern matching and exhaustive error handling.
 sealed class Failure {
-
   const Failure(this.message, [this.stackTrace]);
   final String message;
   final StackTrace? stackTrace;

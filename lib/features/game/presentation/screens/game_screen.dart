@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/game_menu_dialog.dart';
 import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
@@ -57,7 +59,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       return Player(
         id: 'player_$playerIndex',
         name: isAI ? 'Computer' : playerNames.getName(playerIndex),
-        color: playerColors[index % playerColors.length],
+        color: playerColors[index % playerColors.length].toARGB32(),
         type: isAI ? PlayerType.ai : PlayerType.human,
         difficulty: isAI ? widget.aiDifficulty : null,
       );
@@ -102,7 +104,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
+      onPopInvokedWithResult: (didPop, dynamic result) {
         if (didPop) return;
         _showMenuDialog(context, gameState);
       },
@@ -125,7 +127,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     width: AppDimensions.playerIndicatorSize,
                     height: AppDimensions.playerIndicatorSize,
                     decoration: BoxDecoration(
-                      color: currentPlayer.color,
+                      color: Color(currentPlayer.color),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -135,7 +137,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                         ? AppLocalizations.of(context)!.computerThinking
                         : currentPlayer.name,
                     style: TextStyle(
-                      color: currentPlayer.color,
+                      color: Color(currentPlayer.color),
                       fontSize: AppDimensions.fontL,
                       fontWeight: FontWeight.w600,
                     ),
@@ -222,13 +224,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         ? gameState.players.firstWhere((p) => p.isAI)
         : null;
 
-    showFluidDialog<void>(
-      context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.8),
-      builder: (context) => GameMenuDialog(
-        playerCount: gameState.players.length,
-        gridSize: widget.gridSize ?? 'medium',
-        aiDifficulty: widget.aiDifficulty ?? aiPlayer?.difficulty,
+    unawaited(
+      showFluidDialog<void>(
+        context: context,
+        barrierColor: Colors.black.withValues(alpha: 0.8),
+        builder: (context) => GameMenuDialog(
+          playerCount: gameState.players.length,
+          gridSize: widget.gridSize ?? 'medium',
+          aiDifficulty: widget.aiDifficulty ?? aiPlayer?.difficulty,
+        ),
       ),
     );
   }

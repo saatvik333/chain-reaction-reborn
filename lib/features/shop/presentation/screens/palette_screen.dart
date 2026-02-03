@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/fade_entry_widget.dart';
 import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
@@ -106,10 +108,12 @@ class PaletteScreen extends ConsumerWidget {
                                       .setTheme(theme);
                                 } else {
                                   // Show Preview Dialog
-                                  showFluidDialog<void>(
-                                    context: context,
-                                    builder: (_) => ThemePreviewDialog(
-                                      themeToPreview: theme,
+                                  unawaited(
+                                    showFluidDialog<void>(
+                                      context: context,
+                                      builder: (_) => ThemePreviewDialog(
+                                        themeToPreview: theme,
+                                      ),
                                     ),
                                   );
                                 }
@@ -125,9 +129,11 @@ class PaletteScreen extends ConsumerWidget {
                     PillButton(
                       text: l10n.getMoreThemes,
                       onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (context) => const PurchaseScreen(),
+                        unawaited(
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (context) => const PurchaseScreen(),
+                            ),
                           ),
                         );
                       },
@@ -166,8 +172,8 @@ class _ThemeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final playerColors = theme.playerColors(isDarkMode);
-    final paletteColors = theme.paletteColors(isDarkMode);
+    final playerColors = theme.playerColors(isDark: isDarkMode);
+    final paletteColors = theme.paletteColors(isDark: isDarkMode);
 
     return GestureDetector(
       onTap: onTap,

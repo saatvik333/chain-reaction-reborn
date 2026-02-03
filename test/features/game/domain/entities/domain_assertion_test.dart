@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:chain_reaction/features/game/domain/entities/cell.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
@@ -36,21 +35,21 @@ void main() {
     group('Player', () {
       test('throws assertions error if id is empty', () {
         expect(
-          () => Player(id: '', name: 'Name', color: const Color(0xFF000000)),
+          () => Player(id: '', name: 'Name', color: 0xFF000000),
           throwsA(isA<AssertionError>()),
         );
       });
 
       test('throws assertions error if name is empty', () {
         expect(
-          () => Player(id: '1', name: '', color: const Color(0xFF000000)),
+          () => Player(id: '1', name: '', color: 0xFF000000),
           throwsA(isA<AssertionError>()),
         );
       });
 
       test('creates valid player', () {
         expect(
-          () => Player(id: '1', name: 'Name', color: const Color(0xFF000000)),
+          () => Player(id: '1', name: 'Name', color: 0xFF000000),
           returnsNormally,
         );
       });
@@ -60,7 +59,7 @@ void main() {
       final validPlayer = Player(
         id: '1',
         name: 'P1',
-        color: const Color(0xFF000000),
+        color: 0xFF000000,
       );
       final validGrid = [
         [const Cell(x: 0, y: 0, capacity: 1)],

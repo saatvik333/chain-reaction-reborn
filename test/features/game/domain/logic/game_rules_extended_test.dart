@@ -1,20 +1,19 @@
 import 'package:chain_reaction/features/game/domain/entities/cell.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
-import 'package:chain_reaction/features/game/domain/usecases/check_winner.dart';
-import 'package:chain_reaction/features/game/domain/usecases/next_turn.dart';
-import 'package:flutter/material.dart';
+import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final players = [
-    Player(id: 'p1', name: 'Player 1', color: Colors.blue),
-    Player(id: 'p2', name: 'Player 2', color: Colors.red),
+    Player(id: 'p1', name: 'Player 1', color: 0xFF2196F3), // Colors.blue
+    Player(id: 'p2', name: 'Player 2', color: 0xFFF44336), // Colors.red
   ];
 
   group('NextTurnUseCase', () {
     test('should rotate through players correctly', () {
-      const nextTurn = NextTurnUseCase();
+      const rules = GameRules();
       // Mock state: p1 active
       // Fix: Grid cannot be empty
       var state = GameState(
@@ -26,19 +25,23 @@ void main() {
       );
 
       // p1 -> p2
-      state = nextTurn(state);
+      state = rules.nextTurn(state);
       expect(state.currentPlayer.id, 'p2');
       expect(state.turnCount, 1);
 
       // p2 -> p1
-      state = nextTurn(state);
+      state = rules.nextTurn(state);
       expect(state.currentPlayer.id, 'p1');
       expect(state.turnCount, 2);
     });
 
     test('should skip eliminated players', () {
-      const nextTurn = NextTurnUseCase();
-      final p3 = Player(id: 'p3', name: 'P3', color: Colors.green);
+      const rules = GameRules();
+      final p3 = Player(
+        id: 'p3',
+        name: 'P3',
+        color: 0xFF4CAF50,
+      ); // Colors.green
       final activePlayers = [...players, p3]; // p1, p2, p3
 
       // Create grid where p1 and p2 have cells, but p3 does not
@@ -58,14 +61,14 @@ void main() {
       );
 
       // p2 -> p3 (no cells, eliminated) -> p1 (has cells)
-      state = nextTurn(state);
+      state = rules.nextTurn(state);
       expect(state.currentPlayer.id, 'p1');
     });
   });
 
   group('CheckWinnerUseCase', () {
     test('should return null if multiple players have atoms', () {
-      const checkWinner = CheckWinnerUseCase();
+      const rules = GameRules();
 
       final grid = [
         [
@@ -81,7 +84,7 @@ void main() {
         startTime: DateTime.now(),
       );
 
-      expect(checkWinner(state), null);
+      expect(rules.checkWinner(state), null);
     });
   });
 }

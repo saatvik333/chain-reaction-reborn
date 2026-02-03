@@ -9,7 +9,7 @@ part of 'player.dart';
 _Player _$PlayerFromJson(Map<String, dynamic> json) => _Player(
   id: json['id'] as String,
   name: json['name'] as String,
-  color: const ColorConverter().fromJson((json['color'] as num).toInt()),
+  color: (json['color'] as num).toInt(),
   type:
       $enumDecodeNullable(_$PlayerTypeEnumMap, json['type']) ??
       PlayerType.human,
@@ -19,7 +19,7 @@ _Player _$PlayerFromJson(Map<String, dynamic> json) => _Player(
 Map<String, dynamic> _$PlayerToJson(_Player instance) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
-  'color': const ColorConverter().toJson(instance.color),
+  'color': instance.color,
   'type': _$PlayerTypeEnumMap[instance.type]!,
   'difficulty': _$AIDifficultyEnumMap[instance.difficulty],
 };

@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:chain_reaction/core/presentation/widgets/desktop_integration_wrapper.dart';
 import 'package:chain_reaction/core/theme/custom_transitions.dart';
 import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+import 'package:chain_reaction/features/game/data/repositories/game_repository_impl.dart';
+import 'package:chain_reaction/features/game/presentation/providers/game_providers.dart';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:chain_reaction/routing/app_router.dart';
@@ -53,7 +56,10 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        gameRepositoryProvider.overrideWithValue(GameRepositoryImpl(prefs)),
+      ],
       child: const MainApp(),
     ),
   );
@@ -70,7 +76,7 @@ class _MainAppState extends ConsumerState<MainApp> {
   @override
   void initState() {
     super.initState();
-    _setHighRefreshRate();
+    unawaited(_setHighRefreshRate());
   }
 
   Future<void> _setHighRefreshRate() async {

@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Implementation of [SettingsRepository] using [SharedPreferences].
 class SettingsRepositoryImpl implements SettingsRepository {
-
   SettingsRepositoryImpl(this._prefs);
   final SharedPreferences _prefs;
 
@@ -18,7 +17,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setDarkMode(bool value) async {
+  Future<void> setDarkMode({required bool value}) async {
     await _prefs.setBool(_keyDarkMode, value);
   }
 
@@ -28,7 +27,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setHapticOn(bool value) async {
+  Future<void> setHapticOn({required bool value}) async {
     await _prefs.setBool(_keyHapticOn, value);
   }
 
@@ -51,7 +50,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setAtomRotationOn(bool value) async {
+  Future<void> setAtomRotationOn({required bool value}) async {
     await _prefs.setBool(_keyAtomRotationOn, value);
   }
 
@@ -61,7 +60,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setAtomVibrationOn(bool value) async {
+  Future<void> setAtomVibrationOn({required bool value}) async {
     await _prefs.setBool(_keyAtomVibrationOn, value);
   }
 
@@ -73,7 +72,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setCellHighlightOn(bool value) async {
+  Future<void> setCellHighlightOn({required bool value}) async {
     await _prefs.setBool(_keyCellHighlightOn, value);
   }
 
@@ -85,7 +84,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setAtomBreathingOn(bool value) async {
+  Future<void> setAtomBreathingOn({required bool value}) async {
     await _prefs.setBool(_keyAtomBreathingOn, value);
   }
 

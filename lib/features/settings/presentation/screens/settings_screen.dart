@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/edit_player_dialog.dart';
 import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
@@ -60,20 +61,20 @@ class SettingsScreen extends ConsumerWidget {
                     _buildToggleRow(
                       l10n.darkMode,
                       l10n.darkModeSubtitle,
-                      themeState.isDarkMode,
-                      themeNotifier.setDarkMode,
-                      themeState,
-                      l10n,
+                      value: themeState.isDarkMode,
+                      onChanged: themeNotifier.setDarkMode,
+                      theme: themeState,
+                      l10n: l10n,
                     ),
 
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
                       l10n.hapticFeedback,
                       l10n.hapticFeedbackSubtitle,
-                      themeState.isHapticOn,
-                      themeNotifier.setHapticOn,
-                      themeState,
-                      l10n,
+                      value: themeState.isHapticOn,
+                      onChanged: themeNotifier.setHapticOn,
+                      theme: themeState,
+                      l10n: l10n,
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -85,37 +86,37 @@ class SettingsScreen extends ConsumerWidget {
                     _buildToggleRow(
                       l10n.atomRotation,
                       l10n.atomRotationSubtitle,
-                      themeState.isAtomRotationOn,
-                      themeNotifier.setAtomRotationOn,
-                      themeState,
-                      l10n,
+                      value: themeState.isAtomRotationOn,
+                      onChanged: themeNotifier.setAtomRotationOn,
+                      theme: themeState,
+                      l10n: l10n,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
                       l10n.atomVibration,
                       l10n.atomVibrationSubtitle,
-                      themeState.isAtomVibrationOn,
-                      themeNotifier.setAtomVibrationOn,
-                      themeState,
-                      l10n,
+                      value: themeState.isAtomVibrationOn,
+                      onChanged: themeNotifier.setAtomVibrationOn,
+                      theme: themeState,
+                      l10n: l10n,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
                       l10n.atomBreathing,
                       l10n.atomBreathingSubtitle,
-                      themeState.isAtomBreathingOn,
-                      themeNotifier.setAtomBreathingOn,
-                      themeState,
-                      l10n,
+                      value: themeState.isAtomBreathingOn,
+                      onChanged: themeNotifier.setAtomBreathingOn,
+                      theme: themeState,
+                      l10n: l10n,
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                     _buildToggleRow(
                       l10n.cellHighlight,
                       l10n.cellHighlightSubtitle,
-                      themeState.isCellHighlightOn,
-                      themeNotifier.setCellHighlightOn,
-                      themeState,
-                      l10n,
+                      value: themeState.isCellHighlightOn,
+                      onChanged: themeNotifier.setCellHighlightOn,
+                      theme: themeState,
+                      l10n: l10n,
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -185,12 +186,12 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget _buildToggleRow(
     String title,
-    String subtitle,
-    bool value,
-    void Function(bool) onChanged,
-    ThemeState theme,
-    AppLocalizations l10n,
-  ) {
+    String subtitle, {
+    required bool value,
+    required void Function({required bool value}) onChanged,
+    required ThemeState theme,
+    required AppLocalizations l10n,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -216,14 +217,14 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
         TextButton(
-          onPressed: () => onChanged(!value),
+          onPressed: () => onChanged(value: !value),
           style: TextButton.styleFrom(
             foregroundColor: theme.fg,
             // Ensure no splash if "mechanical" feel is desired, or keep default
           ),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 120),
-            transitionBuilder: (Widget child, Animation<double> animation) {
+            transitionBuilder: (child, animation) {
               return FadeTransition(opacity: animation, child: child);
             },
             child: Text(
@@ -249,10 +250,12 @@ class SettingsScreen extends ConsumerWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        showFluidDialog<void>(
-          context: context,
-          barrierColor: Colors.black.withValues(alpha: 0.8),
-          builder: (context) => EditPlayerDialog(playerIndex: playerIndex),
+        unawaited(
+          showFluidDialog<void>(
+            context: context,
+            barrierColor: Colors.black.withValues(alpha: 0.8),
+            builder: (context) => EditPlayerDialog(playerIndex: playerIndex),
+          ),
         );
       },
       child: Container(

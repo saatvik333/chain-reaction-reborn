@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CustomPopup extends ConsumerWidget {
-
   const CustomPopup({required this.child, super.key, this.width, this.padding});
   final Widget child;
   final double? width;

@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Implementation of [ShopRepository] using [SharedPreferences] and purchase state management.
 class ShopRepositoryImpl implements ShopRepository {
-
   ShopRepositoryImpl(this._prefs) {
     _stateManager = PurchaseStateManager();
   }

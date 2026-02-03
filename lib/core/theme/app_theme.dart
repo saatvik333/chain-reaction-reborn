@@ -5,7 +5,6 @@ enum AtomShape { circle, square, roundedSquare, diamond }
 /// Represents a complete color theme for the application.
 /// Supports both light and dark modes with a standardized 10-color palette.
 class AppTheme {
-
   const AppTheme({
     required this.name,
     required this.bgDark,
@@ -44,28 +43,31 @@ class AppTheme {
   final String? price;
 
   /// Get background color based on dark mode
-  Color bg(bool isDark) => isDark ? bgDark : bgLight;
+  /// Get background color based on dark mode
+  Color bg({required bool isDark}) => isDark ? bgDark : bgLight;
 
   /// Get foreground/text color based on dark mode
-  Color fg(bool isDark) => isDark ? fgDark : fgLight;
+  Color fg({required bool isDark}) => isDark ? fgDark : fgLight;
 
   /// Get surface color (slightly lighter/darker than bg)
-  Color surface(bool isDark) {
-    final bgColor = bg(isDark);
+  Color surface({required bool isDark}) {
+    final bgColor = bg(isDark: isDark);
     return isDark
         ? Color.lerp(bgColor, Colors.white, 0.05)!
         : Color.lerp(bgColor, Colors.black, 0.03)!;
   }
 
   /// Get subtitle color (dimmed foreground)
-  Color subtitle(bool isDark) => fg(isDark).withValues(alpha: 0.7);
+  Color subtitle({required bool isDark}) =>
+      fg(isDark: isDark).withValues(alpha: 0.7);
 
   /// Get border color (very dimmed foreground)
-  Color border(bool isDark) => fg(isDark).withValues(alpha: 0.15);
+  Color border({required bool isDark}) =>
+      fg(isDark: isDark).withValues(alpha: 0.15);
 
   /// Get player colors list (fg as first player, then accent colors)
-  List<Color> playerColors(bool isDark) => [
-    fg(isDark),
+  List<Color> playerColors({required bool isDark}) => [
+    fg(isDark: isDark),
     red,
     green,
     yellow,
@@ -76,10 +78,10 @@ class AppTheme {
   ];
 
   /// Get all 10 colors for display in Palette Screen
-  List<Color> paletteColors(bool isDark) => [
-    bg(isDark),
-    surface(isDark),
-    fg(isDark),
+  List<Color> paletteColors({required bool isDark}) => [
+    bg(isDark: isDark),
+    surface(isDark: isDark),
+    fg(isDark: isDark),
     red,
     green,
     yellow,
@@ -90,8 +92,8 @@ class AppTheme {
   ];
 
   /// Returns a player color by index (1-indexed)
-  Color getPlayerColor(int playerIndex, bool isDark) {
-    final colors = playerColors(isDark);
+  Color getPlayerColor(int playerIndex, {required bool isDark}) {
+    final colors = playerColors(isDark: isDark);
     if (playerIndex <= 0 || colors.isEmpty) return Colors.transparent;
     return colors[(playerIndex - 1) % colors.length];
   }

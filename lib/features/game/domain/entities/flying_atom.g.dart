@@ -12,7 +12,7 @@ _FlyingAtom _$FlyingAtomFromJson(Map<String, dynamic> json) => _FlyingAtom(
   fromY: (json['fromY'] as num).toInt(),
   toX: (json['toX'] as num).toInt(),
   toY: (json['toY'] as num).toInt(),
-  color: const ColorConverter().fromJson((json['color'] as num).toInt()),
+  color: (json['color'] as num).toInt(),
 );
 
 Map<String, dynamic> _$FlyingAtomToJson(_FlyingAtom instance) =>
@@ -22,5 +22,5 @@ Map<String, dynamic> _$FlyingAtomToJson(_FlyingAtom instance) =>
       'fromY': instance.fromY,
       'toX': instance.toX,
       'toY': instance.toY,
-      'color': const ColorConverter().toJson(instance.color),
+      'color': instance.color,
     };

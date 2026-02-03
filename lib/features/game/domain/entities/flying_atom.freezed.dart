@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FlyingAtom implements DiagnosticableTreeMixin {
 
- String get id; int get fromX; int get fromY; int get toX; int get toY;@ColorConverter() Color get color;
+ String get id; int get fromX; int get fromY; int get toX; int get toY; int get color;
 /// Create a copy of FlyingAtom
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -54,7 +54,7 @@ abstract mixin class $FlyingAtomCopyWith<$Res>  {
   factory $FlyingAtomCopyWith(FlyingAtom value, $Res Function(FlyingAtom) _then) = _$FlyingAtomCopyWithImpl;
 @useResult
 $Res call({
- String id, int fromX, int fromY, int toX, int toY,@ColorConverter() Color color
+ String id, int fromX, int fromY, int toX, int toY, int color
 });
 
 
@@ -79,7 +79,7 @@ as int,fromY: null == fromY ? _self.fromY : fromY // ignore: cast_nullable_to_no
 as int,toX: null == toX ? _self.toX : toX // ignore: cast_nullable_to_non_nullable
 as int,toY: null == toY ? _self.toY : toY // ignore: cast_nullable_to_non_nullable
 as int,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
-as Color,
+as int,
   ));
 }
 
@@ -164,7 +164,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int fromX,  int fromY,  int toX,  int toY, @ColorConverter()  Color color)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int fromX,  int fromY,  int toX,  int toY,  int color)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FlyingAtom() when $default != null:
 return $default(_that.id,_that.fromX,_that.fromY,_that.toX,_that.toY,_that.color);case _:
@@ -185,7 +185,7 @@ return $default(_that.id,_that.fromX,_that.fromY,_that.toX,_that.toY,_that.color
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int fromX,  int fromY,  int toX,  int toY, @ColorConverter()  Color color)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int fromX,  int fromY,  int toX,  int toY,  int color)  $default,) {final _that = this;
 switch (_that) {
 case _FlyingAtom():
 return $default(_that.id,_that.fromX,_that.fromY,_that.toX,_that.toY,_that.color);case _:
@@ -205,7 +205,7 @@ return $default(_that.id,_that.fromX,_that.fromY,_that.toX,_that.toY,_that.color
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int fromX,  int fromY,  int toX,  int toY, @ColorConverter()  Color color)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int fromX,  int fromY,  int toX,  int toY,  int color)?  $default,) {final _that = this;
 switch (_that) {
 case _FlyingAtom() when $default != null:
 return $default(_that.id,_that.fromX,_that.fromY,_that.toX,_that.toY,_that.color);case _:
@@ -220,7 +220,7 @@ return $default(_that.id,_that.fromX,_that.fromY,_that.toX,_that.toY,_that.color
 @JsonSerializable()
 
 class _FlyingAtom with DiagnosticableTreeMixin implements FlyingAtom {
-  const _FlyingAtom({required this.id, required this.fromX, required this.fromY, required this.toX, required this.toY, @ColorConverter() required this.color});
+  const _FlyingAtom({required this.id, required this.fromX, required this.fromY, required this.toX, required this.toY, required this.color});
   factory _FlyingAtom.fromJson(Map<String, dynamic> json) => _$FlyingAtomFromJson(json);
 
 @override final  String id;
@@ -228,7 +228,7 @@ class _FlyingAtom with DiagnosticableTreeMixin implements FlyingAtom {
 @override final  int fromY;
 @override final  int toX;
 @override final  int toY;
-@override@ColorConverter() final  Color color;
+@override final  int color;
 
 /// Create a copy of FlyingAtom
 /// with the given fields replaced by the non-null parameter values.
@@ -269,7 +269,7 @@ abstract mixin class _$FlyingAtomCopyWith<$Res> implements $FlyingAtomCopyWith<$
   factory _$FlyingAtomCopyWith(_FlyingAtom value, $Res Function(_FlyingAtom) _then) = __$FlyingAtomCopyWithImpl;
 @override @useResult
 $Res call({
- String id, int fromX, int fromY, int toX, int toY,@ColorConverter() Color color
+ String id, int fromX, int fromY, int toX, int toY, int color
 });
 
 
@@ -294,7 +294,7 @@ as int,fromY: null == fromY ? _self.fromY : fromY // ignore: cast_nullable_to_no
 as int,toX: null == toX ? _self.toX : toX // ignore: cast_nullable_to_non_nullable
 as int,toY: null == toY ? _self.toY : toY // ignore: cast_nullable_to_non_nullable
 as int,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
-as Color,
+as int,
   ));
 }
 

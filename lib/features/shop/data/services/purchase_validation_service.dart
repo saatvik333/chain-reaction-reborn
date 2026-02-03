@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -59,7 +60,7 @@ class PurchaseValidationService {
       }
     } on Object catch (e) {
       if (kDebugMode) {
-        print('Purchase validation error: $e');
+        log('Purchase validation error: $e');
       }
       return ValidatedPurchase(
         productId: purchase.productID,

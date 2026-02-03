@@ -6,9 +6,13 @@ import 'package:flutter/material.dart';
 
 /// Renders a single cell in the game grid.
 class CellWidget extends StatelessWidget {
-
   const CellWidget({
-    required this.cell, required this.borderColor, required this.cellColor, required this.onTap, required this.animation, super.key,
+    required this.cell,
+    required this.borderColor,
+    required this.cellColor,
+    required this.onTap,
+    required this.animation,
+    super.key,
     this.angleOffset = 0.0,
     this.isAtomRotationOn = true,
     this.isAtomVibrationOn = true,

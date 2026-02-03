@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/game/domain/entities/flying_atom.dart';
 import 'package:flutter/material.dart';
 
 class FlyingAtomWidget extends StatefulWidget {
-
   const FlyingAtomWidget({
-    required this.atom, required this.cellSize, super.key,
+    required this.atom,
+    required this.cellSize,
+    super.key,
     this.duration = const Duration(milliseconds: 250),
   });
   final FlyingAtom atom;
@@ -43,7 +46,7 @@ class _FlyingAtomWidgetState extends State<FlyingAtomWidget>
       end: endOffset,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    _controller.forward();
+    unawaited(_controller.forward());
   }
 
   @override
@@ -69,11 +72,11 @@ class _FlyingAtomWidgetState extends State<FlyingAtomWidget>
         width: AppDimensions.orbSizeSmall,
         height: AppDimensions.orbSizeSmall,
         decoration: BoxDecoration(
-          color: widget.atom.color,
+          color: Color(widget.atom.color),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: widget.atom.color.withValues(alpha: 0.4),
+              color: Color(widget.atom.color).withValues(alpha: 0.4),
               blurRadius: 8,
               spreadRadius: 1,
             ),

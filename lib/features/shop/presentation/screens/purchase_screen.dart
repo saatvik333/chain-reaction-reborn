@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 import 'package:chain_reaction/core/presentation/widgets/responsive_container.dart';
@@ -89,9 +91,11 @@ class PurchaseScreen extends ConsumerWidget {
                         price: price,
                         onTap: canBuy
                             ? () {
-                                ref
-                                    .read(shopProvider.notifier)
-                                    .purchaseTheme(product);
+                                unawaited(
+                                  ref
+                                      .read(shopProvider.notifier)
+                                      .purchaseTheme(product),
+                                );
                               }
                             : null,
                         theme: theme,

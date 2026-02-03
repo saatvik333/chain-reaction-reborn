@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chain_reaction/core/errors/domain_exceptions.dart';
 import 'package:chain_reaction/features/game/domain/ai/ai_strategy.dart';
 import 'package:chain_reaction/features/game/domain/entities/cell.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
@@ -10,17 +11,20 @@ import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
 /// It simulates its own move, and then anticipates the opponent's best counter-move.
 class ExtremeStrategy extends AIStrategy {
   ExtremeStrategy(this._rules);
-  final Random _random = Random();
   final GameRules _rules;
 
   @override
-  Future<Point<int>> getMove(GameState state, Player player) async {
+  Future<Point<int>> getMove(
+    GameState state,
+    Player player,
+    Random random,
+  ) async {
     // Variable thinking time to feel more natural
-    final thinkingTime = 300 + _random.nextInt(401); // 300 to 700ms
+    final thinkingTime = 300 + random.nextInt(401); // 300 to 700ms
     await Future<void>.delayed(Duration(milliseconds: thinkingTime));
 
     final validMoves = getValidMoves(state, player);
-    if (validMoves.isEmpty) throw Exception('No valid moves');
+    if (validMoves.isEmpty) throw const AIException('No valid moves');
 
     // If only one move, just take it (early exit)
     if (validMoves.length == 1) return validMoves.first;
@@ -30,7 +34,7 @@ class ExtremeStrategy extends AIStrategy {
 
     // 22% chance to have a "lapse" and fail to look ahead (Depth 1 only)
     // This simulates human error and allows players to win more often
-    final isLapse = _random.nextDouble() < 0.22;
+    final isLapse = random.nextDouble() < 0.22;
 
     for (final move in validMoves) {
       // 1. Simulate AI Move
@@ -81,7 +85,7 @@ class ExtremeStrategy extends AIStrategy {
         moveScore = minOpponentScore;
       }
 
-      final jitter = _random.nextDouble();
+      final jitter = random.nextDouble();
       final totalScore = moveScore + jitter;
 
       if (totalScore > maxScore) {
@@ -90,7 +94,7 @@ class ExtremeStrategy extends AIStrategy {
       }
     }
 
-    return bestMove ?? validMoves[_random.nextInt(validMoves.length)];
+    return bestMove ?? validMoves[random.nextInt(validMoves.length)];
   }
 
   // --- Helpers ---
@@ -185,9 +189,7 @@ class ExtremeStrategy extends AIStrategy {
       // queue.addAll(result.newlyCriticalCells);
       // We need to be careful not to add duplicates if using a simple List
       // But standard BFS/queue is fine.
-      for (final newCrit in result.newlyCriticalCells) {
-        queue.add(newCrit);
-      }
+      queue.addAll(result.newlyCriticalCells);
     }
 
     return state.copyWith(grid: grid);

@@ -1,18 +1,21 @@
 import 'dart:math';
+import 'package:chain_reaction/core/errors/domain_exceptions.dart';
 import 'package:chain_reaction/features/game/domain/ai/ai_strategy.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
 
 class GreedyStrategy extends AIStrategy {
-  final Random _random = Random();
-
   @override
-  Future<Point<int>> getMove(GameState state, Player player) async {
+  Future<Point<int>> getMove(
+    GameState state,
+    Player player,
+    Random random,
+  ) async {
     // Variable thinking time to feel more natural
-    final thinkingTime = 300 + _random.nextInt(401); // 300 to 700ms
+    final thinkingTime = 300 + random.nextInt(401); // 300 to 700ms
     await Future<void>.delayed(Duration(milliseconds: thinkingTime));
     final validMoves = getValidMoves(state, player);
-    if (validMoves.isEmpty) throw Exception('No valid moves');
+    if (validMoves.isEmpty) throw const AIException('No valid moves');
 
     // 1. Critical Attack: If a move causes an explosion, do it.
     // Bonus: If it explodes AND captures neighbors, that's even better, but pure Greedy just loves explosions.
@@ -22,7 +25,7 @@ class GreedyStrategy extends AIStrategy {
     }).toList();
 
     if (explodingMoves.isNotEmpty) {
-      return explodingMoves[_random.nextInt(explodingMoves.length)];
+      return explodingMoves[random.nextInt(explodingMoves.length)];
     }
 
     // 2. Safe Moves: Filter out moves that are adjacent to critical ENEMY cells.
@@ -41,11 +44,11 @@ class GreedyStrategy extends AIStrategy {
     }).toList();
 
     if (reinforcementMoves.isNotEmpty) {
-      return reinforcementMoves[_random.nextInt(reinforcementMoves.length)];
+      return reinforcementMoves[random.nextInt(reinforcementMoves.length)];
     }
 
     // 4. Fallback: Random safe move (or random unsafemove if no choice)
-    return candidateMoves[_random.nextInt(candidateMoves.length)];
+    return candidateMoves[random.nextInt(candidateMoves.length)];
   }
 
   bool _isNextToCriticalEnemy(GameState state, Point<int> move, Player player) {

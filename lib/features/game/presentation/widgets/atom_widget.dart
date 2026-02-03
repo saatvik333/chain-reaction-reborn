@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 /// This widget is purely stateless and driven by the [animation] passed from above.
 /// All drawing logic is handled by [AtomPainter].
 class AtomWidget extends StatelessWidget {
-
   const AtomWidget({
-    required this.color, required this.count, required this.animation, super.key,
+    required this.color,
+    required this.count,
+    required this.animation,
+    super.key,
     this.angleOffset = 0.0,
     this.isUnstable = false,
     this.isCritical = false,

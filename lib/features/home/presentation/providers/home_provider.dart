@@ -11,7 +11,6 @@ enum GameMode { localMultiplayer, vsComputer }
 
 @freezed
 abstract class HomeState with _$HomeState {
-
   const factory HomeState({
     required HomeStep currentStep,
     required GameMode selectedMode,
@@ -83,7 +82,7 @@ class HomeNotifier extends _$HomeNotifier {
     // Ensure player count is valid for mode if needed, e.g. vsComputer implies specific setup
   }
 
-  void cycleDifficulty(bool forward) {
+  void cycleDifficulty({required bool forward}) {
     const values = AIDifficulty.values;
     final currentIndex = values.indexOf(state.aiDifficulty);
     final nextIndex = forward
@@ -92,7 +91,7 @@ class HomeNotifier extends _$HomeNotifier {
     state = state.copyWith(aiDifficulty: values[nextIndex]);
   }
 
-  void cycleGridSize(bool forward) {
+  void cycleGridSize({required bool forward}) {
     final nextIndex = forward
         ? (state.gridSizeIndex + 1) % state.gridSizes.length
         : (state.gridSizeIndex - 1 + state.gridSizes.length) %

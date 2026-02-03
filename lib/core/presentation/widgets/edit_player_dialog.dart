@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EditPlayerDialog extends ConsumerStatefulWidget {
-
   const EditPlayerDialog({required this.playerIndex, super.key});
   final int playerIndex;
 

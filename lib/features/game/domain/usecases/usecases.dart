@@ -3,7 +3,4 @@
 /// Re-exports all use case classes for convenient importing.
 library;
 
-export 'check_winner.dart';
-export 'initialize_game.dart';
-export 'next_turn.dart';
 export 'place_atom.dart';

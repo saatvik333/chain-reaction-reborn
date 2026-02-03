@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 /// Use this as the root of your Screen's body to prevent UI elements
 /// from stretching uncomfortably wide on Desktop/Tablets.
 class ResponsiveContainer extends StatelessWidget {
-
   const ResponsiveContainer({
-    required this.child, super.key,
+    required this.child,
+    super.key,
     this.maxWidth = 600.0,
   });
   final Widget child;

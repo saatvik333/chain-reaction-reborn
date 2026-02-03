@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Player implements DiagnosticableTreeMixin {
 
- String get id; String get name;@ColorConverter() Color get color; PlayerType get type; AIDifficulty? get difficulty;
+ String get id; String get name; int get color; PlayerType get type; AIDifficulty? get difficulty;
 /// Create a copy of Player
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -54,7 +54,7 @@ abstract mixin class $PlayerCopyWith<$Res>  {
   factory $PlayerCopyWith(Player value, $Res Function(Player) _then) = _$PlayerCopyWithImpl;
 @useResult
 $Res call({
- String id, String name,@ColorConverter() Color color, PlayerType type, AIDifficulty? difficulty
+ String id, String name, int color, PlayerType type, AIDifficulty? difficulty
 });
 
 
@@ -76,7 +76,7 @@ class _$PlayerCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
-as Color,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as int,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as PlayerType,difficulty: freezed == difficulty ? _self.difficulty : difficulty // ignore: cast_nullable_to_non_nullable
 as AIDifficulty?,
   ));
@@ -163,7 +163,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name, @ColorConverter()  Color color,  PlayerType type,  AIDifficulty? difficulty)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  int color,  PlayerType type,  AIDifficulty? difficulty)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Player() when $default != null:
 return $default(_that.id,_that.name,_that.color,_that.type,_that.difficulty);case _:
@@ -184,7 +184,7 @@ return $default(_that.id,_that.name,_that.color,_that.type,_that.difficulty);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name, @ColorConverter()  Color color,  PlayerType type,  AIDifficulty? difficulty)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  int color,  PlayerType type,  AIDifficulty? difficulty)  $default,) {final _that = this;
 switch (_that) {
 case _Player():
 return $default(_that.id,_that.name,_that.color,_that.type,_that.difficulty);case _:
@@ -204,7 +204,7 @@ return $default(_that.id,_that.name,_that.color,_that.type,_that.difficulty);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name, @ColorConverter()  Color color,  PlayerType type,  AIDifficulty? difficulty)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  int color,  PlayerType type,  AIDifficulty? difficulty)?  $default,) {final _that = this;
 switch (_that) {
 case _Player() when $default != null:
 return $default(_that.id,_that.name,_that.color,_that.type,_that.difficulty);case _:
@@ -219,12 +219,12 @@ return $default(_that.id,_that.name,_that.color,_that.type,_that.difficulty);cas
 @JsonSerializable()
 
 class _Player extends Player with DiagnosticableTreeMixin {
-   _Player({required this.id, required this.name, @ColorConverter() required this.color, this.type = PlayerType.human, this.difficulty}): assert(id.isNotEmpty, 'Player ID cannot be empty'),assert(name.isNotEmpty, 'Player name cannot be empty'),super._();
+   _Player({required this.id, required this.name, required this.color, this.type = PlayerType.human, this.difficulty}): assert(id.isNotEmpty, 'Player ID cannot be empty'),assert(name.isNotEmpty, 'Player name cannot be empty'),super._();
   factory _Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
 
 @override final  String id;
 @override final  String name;
-@override@ColorConverter() final  Color color;
+@override final  int color;
 @override@JsonKey() final  PlayerType type;
 @override final  AIDifficulty? difficulty;
 
@@ -267,7 +267,7 @@ abstract mixin class _$PlayerCopyWith<$Res> implements $PlayerCopyWith<$Res> {
   factory _$PlayerCopyWith(_Player value, $Res Function(_Player) _then) = __$PlayerCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name,@ColorConverter() Color color, PlayerType type, AIDifficulty? difficulty
+ String id, String name, int color, PlayerType type, AIDifficulty? difficulty
 });
 
 
@@ -289,7 +289,7 @@ class __$PlayerCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
-as Color,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as int,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as PlayerType,difficulty: freezed == difficulty ? _self.difficulty : difficulty // ignore: cast_nullable_to_non_nullable
 as AIDifficulty?,
   ));

@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 enum PillButtonType { primary, secondary, destructive }
 
 class PillButton extends ConsumerStatefulWidget {
-
   const PillButton({
-    required this.text, super.key,
+    required this.text,
+    super.key,
     this.onTap,
     this.width,
     this.height = AppDimensions.pillButtonHeight,

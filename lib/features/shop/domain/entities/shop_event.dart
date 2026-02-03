@@ -7,6 +7,8 @@ sealed class ShopEvent with _$ShopEvent {
   const factory ShopEvent.purchaseCompleted(String productId) =
       PurchaseCompleted;
   const factory ShopEvent.purchaseError(String message) = PurchaseError;
-  const factory ShopEvent.validationComplete(String productId, bool isValid) =
-      ValidationComplete;
+  const factory ShopEvent.validationComplete(
+    String productId, {
+    required bool isValid,
+  }) = ValidationComplete;
 }

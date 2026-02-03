@@ -22,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
 
     return PopScope(
       canPop: currentStep == HomeStep.modeSelection,
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
+      onPopInvokedWithResult: (didPop, dynamic result) {
         if (didPop) return;
         notifier.setStep(HomeStep.modeSelection);
       },
@@ -50,7 +50,7 @@ class HomeScreen extends ConsumerWidget {
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 300),
                           transitionBuilder:
-                              (Widget child, Animation<double> animation) {
+                              (child, animation) {
                                 return FadeTransition(
                                   opacity: animation,
                                   child: child,

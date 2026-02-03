@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameSelector extends ConsumerWidget {
-
   const GameSelector({
-    required this.label, required this.value, required this.onPrevious, required this.onNext, super.key,
+    required this.label,
+    required this.value,
+    required this.onPrevious,
+    required this.onNext,
+    super.key,
   });
   final String label;
   final String value;
@@ -63,7 +66,6 @@ class GameSelector extends ConsumerWidget {
 }
 
 class _ArrowButton extends StatelessWidget {
-
   const _ArrowButton({
     required this.icon,
     required this.onTap,

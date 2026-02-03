@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class FadeEntryWidget extends StatefulWidget {
-
   const FadeEntryWidget({
-    required this.child, super.key,
+    required this.child,
+    super.key,
     this.delay = Duration.zero,
     this.duration = const Duration(milliseconds: 400),
     this.verticalOffset = 20.0,
@@ -39,11 +41,13 @@ class _FadeEntryWidgetState extends State<FadeEntryWidget>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     if (widget.delay == Duration.zero) {
-      _controller.forward();
+      unawaited(_controller.forward());
     } else {
-      Future.delayed(widget.delay, () {
-        if (mounted) _controller.forward();
-      });
+      unawaited(
+        Future.delayed(widget.delay, () {
+          if (mounted) unawaited(_controller.forward());
+        }),
+      );
     }
   }
 

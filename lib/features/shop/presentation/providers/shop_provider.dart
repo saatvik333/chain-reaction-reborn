@@ -70,7 +70,7 @@ class ShopNotifier extends _$ShopNotifier {
 
     // Ensure subscription is cancelled when notifier is disposed
     ref.onDispose(() {
-      _eventSubscription?.cancel();
+      unawaited(_eventSubscription?.cancel());
     });
 
     // Initialize IAP
@@ -129,7 +129,7 @@ class ShopNotifier extends _$ShopNotifier {
   void _onShopEvent(ShopEvent event) {
     switch (event) {
       case PurchaseCompleted(:final productId):
-        _handlePurchaseCompleted(productId);
+        unawaited(_handlePurchaseCompleted(productId));
       case PurchaseError(:final message):
         _handlePurchaseError(message);
       case ValidationComplete(:final productId, :final isValid):

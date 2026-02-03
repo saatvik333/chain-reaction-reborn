@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('App smoke test', (WidgetTester tester) async {
+  testWidgets('App smoke test', (tester) async {
     // Mock SharedPreferences
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();

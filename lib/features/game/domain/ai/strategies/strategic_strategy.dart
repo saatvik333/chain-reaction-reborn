@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chain_reaction/core/errors/domain_exceptions.dart';
 import 'package:chain_reaction/features/game/domain/ai/ai_strategy.dart';
 import 'package:chain_reaction/features/game/domain/entities/cell.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
@@ -10,22 +11,25 @@ import 'package:chain_reaction/features/game/domain/entities/player.dart';
 /// due to the chaotic nature of Chain Reaction explosions which makes
 /// state prediction depth extremely computationally expensive.
 class StrategicStrategy extends AIStrategy {
-  final Random _random = Random();
   // 75% chance to play the "best" move, 25% chance to play randomly.
   // This simulates human error and prevents the AI from being perfectly ruthless.
   static const double _difficultyFactor = 0.75;
 
   @override
-  Future<Point<int>> getMove(GameState state, Player player) async {
+  Future<Point<int>> getMove(
+    GameState state,
+    Player player,
+    Random random,
+  ) async {
     // Variable thinking time to feel more natural
-    final thinkingTime = 300 + _random.nextInt(401); // 300 to 700ms
+    final thinkingTime = 300 + random.nextInt(401); // 300 to 700ms
     await Future<void>.delayed(Duration(milliseconds: thinkingTime));
     final validMoves = getValidMoves(state, player);
-    if (validMoves.isEmpty) throw Exception('No valid moves');
+    if (validMoves.isEmpty) throw const AIException('No valid moves');
 
     // Simulate human error
-    if (_random.nextDouble() > _difficultyFactor) {
-      return validMoves[_random.nextInt(validMoves.length)];
+    if (random.nextDouble() > _difficultyFactor) {
+      return validMoves[random.nextInt(validMoves.length)];
     }
 
     Point<int>? bestMove;
@@ -36,7 +40,7 @@ class StrategicStrategy extends AIStrategy {
       final score = _evaluateMove(state, move, player);
 
       // Add a tiny bit of randomness to break ties and feel organic
-      final jitter = _random.nextDouble() * 2.0;
+      final jitter = random.nextDouble() * 2.0;
 
       if (score + jitter > bestScore) {
         bestScore = score + jitter;
@@ -44,7 +48,7 @@ class StrategicStrategy extends AIStrategy {
       }
     }
 
-    return bestMove ?? validMoves[_random.nextInt(validMoves.length)];
+    return bestMove ?? validMoves[random.nextInt(validMoves.length)];
   }
 
   double _evaluateMove(GameState state, Point<int> move, Player player) {

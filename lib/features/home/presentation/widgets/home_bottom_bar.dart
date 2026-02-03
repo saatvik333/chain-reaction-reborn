@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:chain_reaction/routing/routes.dart';
@@ -20,25 +22,25 @@ class HomeBottomBar extends ConsumerWidget {
           IconButton(
             icon: Icon(Icons.settings, color: theme.fg),
             onPressed: () {
-              context.pushNamed(AppRouteNames.settings);
+              unawaited(context.pushNamed(AppRouteNames.settings));
             },
           ),
           IconButton(
             icon: Icon(Icons.shopping_cart, color: theme.fg),
             onPressed: () {
-              context.pushNamed(AppRouteNames.shop);
+              unawaited(context.pushNamed(AppRouteNames.shop));
             },
           ),
           IconButton(
             icon: Icon(Icons.palette, color: theme.fg),
             onPressed: () {
-              context.pushNamed(AppRouteNames.palette);
+              unawaited(context.pushNamed(AppRouteNames.palette));
             },
           ),
           IconButton(
             icon: Icon(Icons.info, color: theme.fg),
             onPressed: () {
-              context.pushNamed(AppRouteNames.info);
+              unawaited(context.pushNamed(AppRouteNames.info));
             },
           ),
         ],

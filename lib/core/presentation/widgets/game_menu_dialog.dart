@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/custom_popup.dart';
 import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
@@ -10,7 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameMenuDialog extends ConsumerWidget {
   const GameMenuDialog({
-    required this.playerCount, required this.gridSize, super.key,
+    required this.playerCount,
+    required this.gridSize,
+    super.key,
     this.aiDifficulty,
   });
   final int playerCount;
@@ -47,14 +51,16 @@ class GameMenuDialog extends ConsumerWidget {
           PillButton(
             text: l10n.newGame,
             onTap: () {
-              final navigator = Navigator.of(context);
-              navigator.pop();
-              navigator.pushReplacement(
-                MaterialPageRoute<void>(
-                  builder: (context) => GameScreen(
-                    playerCount: playerCount,
-                    gridSize: gridSize,
-                    aiDifficulty: aiDifficulty,
+              final navigator = Navigator.of(context)
+              ..pop();
+              unawaited(
+                navigator.pushReplacement(
+                  MaterialPageRoute<void>(
+                    builder: (context) => GameScreen(
+                      playerCount: playerCount,
+                      gridSize: gridSize,
+                      aiDifficulty: aiDifficulty,
+                    ),
                   ),
                 ),
               );

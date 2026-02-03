@@ -127,7 +127,7 @@ final class ShopNotifierProvider
   ShopNotifier create() => ShopNotifier();
 }
 
-String _$shopNotifierHash() => r'f456c904192fbcb06d64d1566ea0fbbf51c417c8';
+String _$shopNotifierHash() => r'fc623f71cb5b4448aa1e54a69e7b6dd494d807d5';
 
 abstract class _$ShopNotifier extends $AsyncNotifier<ShopState> {
   FutureOr<ShopState> build();

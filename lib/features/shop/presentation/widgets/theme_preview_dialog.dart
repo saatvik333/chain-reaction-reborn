@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 import 'package:chain_reaction/core/theme/app_theme.dart';
@@ -6,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ThemePreviewDialog extends ConsumerWidget {
-
   const ThemePreviewDialog({required this.themeToPreview, super.key});
   final AppTheme themeToPreview;
 
@@ -34,10 +35,10 @@ class ThemePreviewDialog extends ConsumerWidget {
         );
       },
       child: Dialog(
-        backgroundColor: theme.bg(isDark),
+        backgroundColor: theme.bg(isDark: isDark),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          side: BorderSide(color: theme.border(isDark), width: 2),
+          side: BorderSide(color: theme.border(isDark: isDark), width: 2),
         ),
         child: Padding(
           padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -47,7 +48,7 @@ class ThemePreviewDialog extends ConsumerWidget {
               Text(
                 '${theme.name} Theme',
                 style: TextStyle(
-                  color: theme.fg(isDark),
+                  color: theme.fg(isDark: isDark),
                   fontSize: AppDimensions.fontL,
                   fontWeight: FontWeight.bold,
                 ),
@@ -58,7 +59,7 @@ class ThemePreviewDialog extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(AppDimensions.paddingS),
                 decoration: BoxDecoration(
-                  color: theme.surface(isDark),
+                  color: theme.surface(isDark: isDark),
                   borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                 ),
                 child: Wrap(
@@ -66,7 +67,7 @@ class ThemePreviewDialog extends ConsumerWidget {
                   runSpacing: 8,
                   alignment: WrapAlignment.center,
                   children: theme
-                      .playerColors(isDark)
+                      .playerColors(isDark: isDark)
                       .map(
                         (c) => Container(
                           width: 24,
@@ -93,7 +94,7 @@ class ThemePreviewDialog extends ConsumerWidget {
               Text(
                 'Unlock this theme for $price',
                 style: TextStyle(
-                  color: theme.subtitle(isDark),
+                  color: theme.subtitle(isDark: isDark),
                   fontSize: AppDimensions.fontS,
                 ),
                 textAlign: TextAlign.center,
@@ -123,9 +124,11 @@ class ThemePreviewDialog extends ConsumerWidget {
                       onTap: (isLoading || !canBuy)
                           ? null
                           : () {
-                              ref
-                                  .read(shopProvider.notifier)
-                                  .purchaseTheme(product);
+                              unawaited(
+                                ref
+                                    .read(shopProvider.notifier)
+                                    .purchaseTheme(product),
+                              );
                               if (context.mounted) Navigator.of(context).pop();
                             },
                       type: PillButtonType.primary,

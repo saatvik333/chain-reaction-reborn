@@ -313,7 +313,7 @@ as String,
 
 
 class ValidationComplete implements ShopEvent {
-  const ValidationComplete(this.productId, this.isValid);
+  const ValidationComplete(this.productId, {required this.isValid});
   
 
  final  String productId;
@@ -369,7 +369,7 @@ class _$ValidationCompleteCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') $Res call({Object? productId = null,Object? isValid = null,}) {
   return _then(ValidationComplete(
 null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
-as String,null == isValid ? _self.isValid : isValid // ignore: cast_nullable_to_non_nullable
+as String,isValid: null == isValid ? _self.isValid : isValid // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

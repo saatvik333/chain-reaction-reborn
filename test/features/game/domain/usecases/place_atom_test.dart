@@ -2,30 +2,28 @@ import 'package:chain_reaction/features/game/domain/entities/cell.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
-import 'package:chain_reaction/features/game/domain/usecases/initialize_game.dart';
+
 import 'package:chain_reaction/features/game/domain/usecases/place_atom.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  late InitializeGameUseCase initializeGame;
   late PlaceAtomUseCase placeAtom;
   late List<Player> players;
   late GameRules rules;
 
   setUp(() {
     rules = const GameRules();
-    initializeGame = InitializeGameUseCase(rules);
     placeAtom = PlaceAtomUseCase(rules);
     players = [
-      Player(id: 'p1', name: 'Player 1', color: const Color(0xFF000000)),
-      Player(id: 'p2', name: 'Player 2', color: const Color(0xFFFFFFFF)),
+      Player(id: 'p1', name: 'Player 1', color: 0xFF000000),
+      Player(id: 'p2', name: 'Player 2', color: 0xFFFFFFFF),
     ];
   });
 
   group('PlaceAtomUseCase', () {
     test('should place atom on empty cell and update owner', () async {
-      final initialState = initializeGame(players, gridSize: 'Small');
+      final initialState = rules.initializeGame(players, gridSize: 'Small');
       final stream = placeAtom(initialState, 0, 0);
 
       final states = await stream.toList();
@@ -38,7 +36,7 @@ void main() {
     });
 
     test('should increment atom count on own cell', () async {
-      var state = initializeGame(players, gridSize: 'Small');
+      var state = rules.initializeGame(players, gridSize: 'Small');
 
       // Place on 0,1 (Edge, capacity 2)
       var stream = placeAtom(state, 1, 0);
@@ -54,7 +52,7 @@ void main() {
     });
 
     test('should trigger explosion on critical mass', () async {
-      var state = initializeGame(players, gridSize: 'Small');
+      var state = rules.initializeGame(players, gridSize: 'Small');
 
       // Seed P2 atom to prevent instant win
       final grid = List<List<Cell>>.from(
@@ -81,7 +79,7 @@ void main() {
     });
 
     test('should propagate chain reaction', () async {
-      var state = initializeGame(players, gridSize: 'Small');
+      var state = rules.initializeGame(players, gridSize: 'Small');
 
       // Seed P2 atom to prevent instant win
       final grid = List<List<Cell>>.from(
@@ -112,7 +110,8 @@ void main() {
       // Trigger chain at (0,0)
       state = await play(0, 0); // (0,0) count 1
 
-      // Final trigger: explode (0,0). Neighbors (0,1) and (1,0) get +1 -> 3 -> EXPLODE!
+      // Final trigger: explode (0,0). Neighbors (0,1) and (1,0) get +1 -> 3
+      // -> EXPLODE!
       final stream = placeAtom(state, 0, 0);
       final reactionStates = await stream.toList();
 

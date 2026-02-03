@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/game/domain/entities/entities.dart';
 import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
-import 'package:uuid/uuid.dart';
 
 /// Use case for placing an atom on the grid.
 ///
@@ -16,7 +15,12 @@ class PlaceAtomUseCase {
   ///
   /// Returns a stream of intermediate states for animating chain reactions.
   /// The stream will be empty if the move is invalid.
-  Stream<GameState> call(GameState state, int x, int y) async* {
+  Stream<GameState> call(
+    GameState state,
+    int x,
+    int y, {
+    DateTime? now,
+  }) async* {
     if (!_rules.isValidMove(state, x, y)) return;
 
     final currentPlayer = state.currentPlayer;
@@ -39,22 +43,25 @@ class PlaceAtomUseCase {
     yield workingState;
 
     if (needsExplosion) {
-      yield* _propagateExplosions(workingState, Queue<Cell>.from([grid[y][x]]));
+      yield* _propagateExplosions(
+        workingState,
+        Queue<Cell>.from([grid[y][x]]),
+        now: now ?? DateTime.now(),
+      );
     }
   }
 
   /// Handles chain explosions using a queue-based approach with flight animation phases.
   Stream<GameState> _propagateExplosions(
     GameState state,
-    Queue<Cell> explosionQueue,
-  ) async* {
+    Queue<Cell> explosionQueue, {
+    required DateTime now,
+  }) async* {
     final grid = _copyGrid(state.grid);
     final rows = grid.length;
     final cols = grid[0].length;
     final currentOwnerId = state.currentPlayer.id;
     final currentPlayer = state.currentPlayer; // Used for color
-
-    const uuid = Uuid();
 
     while (explosionQueue.isNotEmpty) {
       // 1. Check Win Condition
@@ -67,7 +74,7 @@ class PlaceAtomUseCase {
             isGameOver: true,
             winner: winner,
             isProcessing: false,
-            endTime: DateTime.now(),
+            endTime: now,
           );
           return;
         }
@@ -93,10 +100,12 @@ class PlaceAtomUseCase {
       );
 
       final flyingAtoms = <FlyingAtom>[];
+      var neighborIndex = 0;
       for (final n in neighbors) {
         flyingAtoms.add(
           FlyingAtom(
-            id: uuid.v4(),
+            // Deterministic ID: "fly_moveCount_fromX_fromY_neighborIndex"
+            id: 'fly_${state.totalMoves}_${cx}_${cy}_$neighborIndex',
             fromX: cx,
             fromY: cy,
             toX: n.x,
@@ -104,6 +113,7 @@ class PlaceAtomUseCase {
             color: currentPlayer.color,
           ),
         );
+        neighborIndex++;
       }
 
       // Yield State: Source empty, atoms flying
