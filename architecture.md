@@ -32,42 +32,38 @@ The functionality is structured using **Feature-First Clean Architecture**. This
 ### Architectural Diagram
 
 ```mermaid
-block-beta
-  columns 3
-  
-  block:presentation
-    columns 1
-    UI["<b>Presentation Layer</b><br>(Widgets, Screens)"]
-    Notifiers["<b>Application Layer</b><br>(Riverpod Notifiers)"]
-  end
+graph TD
+    subgraph Presentation ["Presentation Layer"]
+        direction TB
+        UI["UI (Widgets, Screens)"]
+        Notifiers["Notifiers (Riverpod)"]
+    end
 
-  space
+    subgraph Domain ["Domain Layer"]
+        direction TB
+        UseCases["Use Cases & Rules"]
+        Entities["Entities (GameState)"]
+        RepoInt["Repositories (Interfaces)"]
+    end
 
-  block:domain
-    columns 1
-    UseCases["<b>Domain Layer</b><br>(Use Cases, GameRules)"]
-    Entities["<b>Entities</b><br>(GameState, Cell, Player)"]
-    RepoInt["<b>Repository Interfaces</b><br>(Abstract Contracts)"]
-  end
+    subgraph Data ["Data Layer"]
+        direction TB
+        RepoImpl["Repositories (Impl)"]
+        Sources["Data Sources (API, DB)"]
+    end
 
-  space
+    %% Dependencies
+    UI --> Notifiers
+    Notifiers --> UseCases
+    UseCases --> Entities
+    UseCases --> RepoInt
+    RepoImpl -. implements .-> RepoInt
+    RepoImpl --> Sources
 
-  block:data
-    columns 1
-    RepoImpl["<b>Data Layer</b><br>(Repository Impl)"]
-    Sources["<b>Data Sources</b><br>(SharedPrefs, IAP, SQLite)"]
-  end
-
-  UI --> Notifiers
-  Notifiers --> UseCases
-  UseCases --> Entities
-  UseCases --> RepoInt
-  RepoImpl -- implements --> RepoInt
-  RepoImpl --> Sources
-
-  style presentation fill:#f9f9f9,stroke:#333
-  style domain fill:#e3f2fd,stroke:#1565c0
-  style data fill:#fff3e0,stroke:#ef6c00
+    %% Styling
+    style Presentation fill:#f9f9f9,stroke:#333
+    style Domain fill:#e3f2fd,stroke:#1565c0
+    style Data fill:#fff3e0,stroke:#ef6c00
 ```
 
 ### Layer Definitions
@@ -305,9 +301,9 @@ graph TD
     Theme[themeProvider]
     
     %% Game Scope
-    GameNotifier[gameProvider (Notifier)]
-    Grid[gridProvider (Select)]
-    Players[playersProvider (Select)]
+    GameNotifier["gameProvider (Notifier)"]
+    Grid["gridProvider (Select)"]
+    Players["playersProvider (Select)"]
     Active[currentPlayerProvider]
     
     %% Connections
