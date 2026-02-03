@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,28 +15,27 @@ class HomeOrb extends ConsumerStatefulWidget {
 
 class _HomeOrbState extends ConsumerState<HomeOrb>
     with SingleTickerProviderStateMixin {
-  late AnimationController _orbController;
-  late Animation<double> _orbScaleAnimation;
+  late final AnimationController _orbController;
+  late final Animation<double> _orbScaleAnimation;
+  late final Animation<double> _orbOpacityAnimation;
 
   @override
   void initState() {
     super.initState();
     _orbController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
     );
     unawaited(_orbController.repeat(reverse: true));
 
-    _orbScaleAnimation =
-        Tween<double>(
-          begin: 0.95,
-          end: 1.05,
-        ).animate(
-          CurvedAnimation(
-            parent: _orbController,
-            curve: Curves.easeInOut,
-          ),
-        );
+    _orbScaleAnimation = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _orbController, curve: Curves.easeInOut));
+
+    _orbOpacityAnimation = Tween<double>(
+      begin: 0.9,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _orbController, curve: Curves.easeInOut));
   }
 
   @override
@@ -47,54 +48,80 @@ class _HomeOrbState extends ConsumerState<HomeOrb>
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
 
-    return AnimatedBuilder(
-      animation: _orbScaleAnimation,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _orbScaleAnimation.value,
-          child: Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: theme.currentTheme.red.withValues(alpha: 0.2),
-              boxShadow: [
-                BoxShadow(
-                  color: theme.currentTheme.red.withValues(alpha: 0.4),
-                  blurRadius: 40,
-                  spreadRadius: 10,
-                ),
-              ],
-            ),
-            child: Center(
-              child: Container(
-                width: 120,
-                height: 120,
+    final Widget orbContent = Container(
+      width: AppDimensions.orbSizeLarge,
+      height: AppDimensions.orbSizeLarge,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.fg.withValues(alpha: 0.1),
+          width: AppDimensions.orbBorderWidth,
+        ),
+      ),
+      child: Center(
+        child: Container(
+          width: 80,
+          height: 80,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: theme.bg,
                   border: Border.all(
-                    color: theme.currentTheme.red,
+                    color: theme.fg.withValues(alpha: 0.1),
                     width: 4,
                   ),
+                ),
+              ),
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: theme.fg.withValues(alpha: 0.9),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.currentTheme.red.withValues(alpha: 0.6),
-                      blurRadius: 20,
+                      color: theme.fg.withValues(alpha: 0.2),
+                      blurRadius: 10,
                       spreadRadius: 2,
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.gesture, // Placeholder icon or game logo
-                  size: 64,
-                  color: theme.currentTheme.red,
+              ),
+              Positioned(
+                top: 20,
+                left: 20,
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.subtitle.withValues(alpha: 0.5),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
+        ),
+      ),
+    );
+
+    return AnimatedBuilder(
+      animation: _orbController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _orbScaleAnimation.value,
+          child: Opacity(opacity: _orbOpacityAnimation.value, child: child),
         );
       },
+      child: orbContent,
     );
   }
 }
