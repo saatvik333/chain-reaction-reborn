@@ -47,41 +47,51 @@ class CellWidget extends StatelessWidget {
                 (defaultTargetPlatform == TargetPlatform.android ||
                     defaultTargetPlatform == TargetPlatform.iOS);
 
-            final childContainer = AnimatedContainer(
-              duration: const Duration(
-                milliseconds: AppDimensions.cellAnimationDurationMs,
-              ),
-              curve: Curves.easeOut,
-              decoration: BoxDecoration(
-                color: (isCellHighlightOn && cell.ownerId != null)
-                    ? cellColor.withValues(
-                        alpha: AppDimensions.cellHighlightOpacity,
-                      )
-                    : Colors.transparent,
-                border: Border.all(
-                  color: borderColor.withValues(
-                    alpha: AppDimensions.gridBorderOpacity,
+            final childContainer = LayoutBuilder(
+              builder: (context, constraints) {
+                // Use the smaller dimension for atom sizing
+                final cellSize = constraints.maxWidth < constraints.maxHeight
+                    ? constraints.maxWidth
+                    : constraints.maxHeight;
+
+                return AnimatedContainer(
+                  duration: const Duration(
+                    milliseconds: AppDimensions.cellAnimationDurationMs,
                   ),
-                  width: AppDimensions.gridBorderWidth,
-                ),
-              ),
-              child: Center(
-                child: AtomWidget(
-                  color: cellColor,
-                  // Visually cap the atoms to capacity to prevent "overloaded" shapes
-                  // (e.g. 4 atoms in a 3-capacity cell) from appearing briefly before explosion.
-                  count: cell.atomCount > cell.capacity
-                      ? cell.capacity
-                      : cell.atomCount,
-                  isUnstable: isUnstable,
-                  isCritical: isCritical,
-                  isAtomRotationOn: isAtomRotationOn,
-                  isAtomVibrationOn: isAtomVibrationOn,
-                  isAtomBreathingOn: isAtomBreathingOn,
-                  animation: animation,
-                  angleOffset: angleOffset,
-                ),
-              ),
+                  curve: Curves.easeOut,
+                  decoration: BoxDecoration(
+                    color: (isCellHighlightOn && cell.ownerId != null)
+                        ? cellColor.withValues(
+                            alpha: AppDimensions.cellHighlightOpacity,
+                          )
+                        : Colors.transparent,
+                    border: Border.all(
+                      color: borderColor.withValues(
+                        alpha: AppDimensions.gridBorderOpacity,
+                      ),
+                      width: AppDimensions.gridBorderWidth,
+                    ),
+                  ),
+                  child: Center(
+                    child: AtomWidget(
+                      color: cellColor,
+                      // Visually cap the atoms to capacity to prevent "overloaded" shapes
+                      // (e.g. 4 atoms in a 3-capacity cell) from appearing briefly before explosion.
+                      count: cell.atomCount > cell.capacity
+                          ? cell.capacity
+                          : cell.atomCount,
+                      isUnstable: isUnstable,
+                      isCritical: isCritical,
+                      isAtomRotationOn: isAtomRotationOn,
+                      isAtomVibrationOn: isAtomVibrationOn,
+                      isAtomBreathingOn: isAtomBreathingOn,
+                      animation: animation,
+                      angleOffset: angleOffset,
+                      cellSize: cellSize,
+                    ),
+                  ),
+                );
+              },
             );
 
             if (isMobile) {

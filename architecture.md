@@ -1,6 +1,6 @@
 # Chain Reaction Reborn - Comprehensive Technical Architecture
 
-**Version**: 1.2.0
+**Version**: 1.2.1
 **Last Updated**: February 2026
 **Maintainer**: Saatvik
 

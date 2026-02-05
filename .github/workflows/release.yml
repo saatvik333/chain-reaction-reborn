@@ -171,7 +171,7 @@ jobs:
         run: ls -R
         
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: false
           prerelease: false
@@ -181,5 +181,4 @@ jobs:
             chain_reaction_windows/chain_reaction_windows.zip
             chain_reaction_macos/chain_reaction_macos.zip
             chain_reaction_web/chain_reaction_web.zip
-          body_path: RELEASE_NOTES_v1.2.0.md
-          generate_release_notes: false
+          generate_release_notes: true

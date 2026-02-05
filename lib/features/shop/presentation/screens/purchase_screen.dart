@@ -184,7 +184,7 @@ class PurchaseScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: AppDimensions.paddingL),
+                    const SizedBox(height: AppDimensions.paddingXL),
                   ],
                 ),
               ),

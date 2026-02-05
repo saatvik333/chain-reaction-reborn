@@ -1,3 +1,4 @@
+import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/core/presentation/widgets/game_selector.dart';
 import 'package:chain_reaction/core/presentation/widgets/pill_button.dart';
 import 'package:chain_reaction/features/home/presentation/providers/home_provider.dart';
@@ -16,6 +17,7 @@ class HomeModeSelection extends ConsumerWidget {
 
     return Column(
       key: const ValueKey('ModeSelection'),
+      mainAxisSize: MainAxisSize.min,
       children: [
         GameSelector(
           label: l10n.gameModeLabel,
@@ -25,7 +27,20 @@ class HomeModeSelection extends ConsumerWidget {
           onPrevious: notifier.toggleMode,
           onNext: notifier.toggleMode,
         ),
-        const Spacer(),
+        const SizedBox(height: AppDimensions.paddingXL),
+        // Invisible GameSelector placeholder to match HomeConfiguration exactly
+        IgnorePointer(
+          child: Opacity(
+            opacity: 0,
+            child: GameSelector(
+              label: l10n.gridSizeLabel,
+              value: 'Medium',
+              onPrevious: () {},
+              onNext: () {},
+            ),
+          ),
+        ),
+        const SizedBox(height: AppDimensions.paddingXXL),
         PillButton(
           text: l10n.next,
           onTap: () => notifier.setStep(HomeStep.configuration),

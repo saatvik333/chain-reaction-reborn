@@ -60,7 +60,7 @@ class PaletteScreen extends ConsumerWidget {
                   style: TextStyle(color: themeState.fg),
                 ),
               ),
-              data: (shopState) => Padding(
+              data: (shopState) => SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingL,
                   vertical: AppDimensions.paddingM,
@@ -78,23 +78,22 @@ class PaletteScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
-                    Expanded(
-                      child: ListView.separated(
-                        itemCount: AppThemes.all.length,
-                        separatorBuilder: (context, index) => Divider(
-                          color: themeState.border,
-                          height: AppDimensions.paddingXL,
-                        ),
-                        itemBuilder: (context, index) {
-                          final theme = AppThemes.all[index];
-                          final isSelected =
-                              theme.name == themeState.currentTheme.name;
+                    // Theme list (not using ListView since we're in a scroll view)
+                    ...List.generate(AppThemes.all.length, (index) {
+                      final theme = AppThemes.all[index];
+                      final isSelected =
+                          theme.name == themeState.currentTheme.name;
+                      final isOwned =
+                          !theme.isPremium || shopState.isOwned(theme.name);
 
-                          // Logic: Owned if NOT premium OR if in shop purchased list
-                          final isOwned =
-                              !theme.isPremium || shopState.isOwned(theme.name);
-
-                          return FadeEntryWidget(
+                      return Column(
+                        children: [
+                          if (index > 0)
+                            Divider(
+                              color: themeState.border,
+                              height: AppDimensions.paddingXL,
+                            ),
+                          FadeEntryWidget(
                             delay: Duration(milliseconds: index * 50),
                             child: _ThemeRow(
                               theme: theme,
@@ -107,7 +106,6 @@ class PaletteScreen extends ConsumerWidget {
                                       .read(themeProvider.notifier)
                                       .setTheme(theme);
                                 } else {
-                                  // Show Preview Dialog
                                   unawaited(
                                     showFluidDialog<void>(
                                       context: context,
@@ -121,11 +119,11 @@ class PaletteScreen extends ConsumerWidget {
                               textColor: themeState.fg,
                               backgroundColor: themeState.bg,
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: AppDimensions.paddingL),
+                          ),
+                        ],
+                      );
+                    }),
+                    const SizedBox(height: AppDimensions.paddingXL),
                     PillButton(
                       text: l10n.getMoreThemes,
                       onTap: () {
@@ -215,27 +213,41 @@ class _ThemeRow extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
-            height: 30,
-            width: 180,
-            child: Stack(
-              alignment: Alignment.centerRight,
-              children: List.generate(paletteColors.length, (index) {
-                final color = paletteColors[paletteColors.length - 1 - index];
-                return Positioned(
-                  right: index * 14.0,
-                  child: Container(
-                    width: AppDimensions.colorCircleSize,
-                    height: AppDimensions.colorCircleSize,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: backgroundColor, width: 2),
-                    ),
-                  ),
-                );
-              }),
-            ),
+          // Palette colors - constraint-based sizing
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // Use 40% of available width, clamped to reasonable bounds
+              final paletteWidth = (constraints.maxWidth * 0.4).clamp(
+                100.0,
+                200.0,
+              );
+              const circleSize = AppDimensions.colorCircleSize;
+              const overlap = 14.0;
+
+              return SizedBox(
+                height: circleSize + 6, // Circle + border allowance
+                width: paletteWidth,
+                child: Stack(
+                  alignment: Alignment.centerRight,
+                  children: List.generate(paletteColors.length, (index) {
+                    final color =
+                        paletteColors[paletteColors.length - 1 - index];
+                    return Positioned(
+                      right: index * overlap,
+                      child: Container(
+                        width: circleSize,
+                        height: circleSize,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: backgroundColor, width: 2),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              );
+            },
           ),
         ],
       ),

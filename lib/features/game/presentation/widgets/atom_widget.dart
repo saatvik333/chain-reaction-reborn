@@ -1,4 +1,3 @@
-import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/game/presentation/widgets/atom_painter.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +10,7 @@ class AtomWidget extends StatelessWidget {
     required this.color,
     required this.count,
     required this.animation,
+    required this.cellSize,
     super.key,
     this.angleOffset = 0.0,
     this.isUnstable = false,
@@ -29,6 +29,10 @@ class AtomWidget extends StatelessWidget {
   final Animation<double> animation;
   final double angleOffset;
 
+  /// The size of the cell containing this atom.
+  /// Atoms scale proportionally to cell size.
+  final double cellSize;
+
   @override
   Widget build(BuildContext context) {
     if (color == Colors.transparent || count == 0) {
@@ -40,10 +44,7 @@ class AtomWidget extends StatelessWidget {
       builder: (context, child) {
         return RepaintBoundary(
           child: CustomPaint(
-            size: const Size(
-              AppDimensions.orbSizeSmall * 3,
-              AppDimensions.orbSizeSmall * 3,
-            ),
+            size: Size(cellSize, cellSize),
             painter: AtomPainter(
               color: color,
               count: count,
@@ -54,6 +55,7 @@ class AtomWidget extends StatelessWidget {
               isBreathingOn: isAtomBreathingOn,
               animationValue: animation.value,
               angleOffset: angleOffset,
+              cellSize: cellSize,
             ),
           ),
         );

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chain_reaction/core/constants/app_dimensions.dart';
 import 'package:chain_reaction/features/game/domain/entities/flying_atom.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +22,12 @@ class _FlyingAtomWidgetState extends State<FlyingAtomWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _positionAnimation;
+
+  /// Base reference cell size for scaling calculations.
+  static const double _referenceCellSize = 60;
+
+  /// Base orb size at reference cell size.
+  static const double _baseOrbSize = 20;
 
   @override
   void initState() {
@@ -57,6 +62,14 @@ class _FlyingAtomWidgetState extends State<FlyingAtomWidget>
 
   @override
   Widget build(BuildContext context) {
+    // Calculate orb size based on cell size (same scaling as AtomPainter)
+    final smallerDimension = widget.cellSize.width < widget.cellSize.height
+        ? widget.cellSize.width
+        : widget.cellSize.height;
+    final scaleFactor = (smallerDimension / _referenceCellSize).clamp(0.5, 2.0);
+    final orbSize = _baseOrbSize * scaleFactor;
+    final blurRadius = 8.0 * scaleFactor;
+
     return AnimatedBuilder(
       animation: _positionAnimation,
       builder: (context, child) {
@@ -69,15 +82,15 @@ class _FlyingAtomWidgetState extends State<FlyingAtomWidget>
         );
       },
       child: Container(
-        width: AppDimensions.orbSizeSmall,
-        height: AppDimensions.orbSizeSmall,
+        width: orbSize,
+        height: orbSize,
         decoration: BoxDecoration(
           color: Color(widget.atom.color),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
               color: Color(widget.atom.color).withValues(alpha: 0.4),
-              blurRadius: 8,
+              blurRadius: blurRadius,
               spreadRadius: 1,
             ),
           ],

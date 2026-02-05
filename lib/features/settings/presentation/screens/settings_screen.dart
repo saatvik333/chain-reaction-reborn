@@ -195,32 +195,33 @@ class SettingsScreen extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: theme.fg,
-                fontSize: AppDimensions.fontM,
-                fontWeight: FontWeight.w600,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: theme.fg,
+                  fontSize: AppDimensions.fontM,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const SizedBox(height: AppDimensions.paddingXS),
-            Text(
-              subtitle,
-              style: TextStyle(
-                color: theme.subtitle,
-                fontSize: AppDimensions.fontS,
+              const SizedBox(height: AppDimensions.paddingXS),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: theme.subtitle,
+                  fontSize: AppDimensions.fontS,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         TextButton(
           onPressed: () => onChanged(value: !value),
           style: TextButton.styleFrom(
             foregroundColor: theme.fg,
-            // Ensure no splash if "mechanical" feel is desired, or keep default
           ),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 120),

@@ -27,11 +27,20 @@ extension ColorX on Color {
 /// Extension methods for [BuildContext].
 extension ContextX on BuildContext {
   /// Shorthand for MediaQuery.sizeOf(context).
+  ///
+  /// **Deprecated**: Use `LayoutBuilder` constraints instead for responsive
+  /// layouts. Screen size assumptions break in split-screen and resizable
+  /// windows.
+  @Deprecated('Use LayoutBuilder constraints instead of screen size.')
   Size get screenSize => MediaQuery.sizeOf(this);
 
   /// Shorthand for MediaQuery.paddingOf(context).
   EdgeInsets get screenPadding => MediaQuery.paddingOf(this);
 
   /// Returns true if screen width > 600.
+  ///
+  /// **Deprecated**: Use `breakpointForWidth(constraints.maxWidth)` instead
+  /// for proper constraint-aware responsive checks.
+  @Deprecated('Use breakpointForWidth with LayoutBuilder constraints.')
   bool get isTablet => screenSize.width > 600;
 }

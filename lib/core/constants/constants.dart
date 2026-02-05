@@ -4,5 +4,5 @@ library;
 export 'app_dimensions.dart';
 
 class AppConstants {
-  static const String appVersion = '1.2.0';
+  static const String appVersion = '1.2.1';
 }

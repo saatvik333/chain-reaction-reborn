@@ -22,6 +22,7 @@ class HomeConfiguration extends ConsumerWidget {
 
     return Column(
       key: const ValueKey('Configuration'),
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (isVsComputer)
@@ -45,8 +46,7 @@ class HomeConfiguration extends ConsumerWidget {
           onPrevious: () => notifier.cycleGridSize(forward: false),
           onNext: () => notifier.cycleGridSize(forward: true),
         ),
-        const SizedBox(height: AppDimensions.paddingL),
-        const Spacer(),
+        const SizedBox(height: AppDimensions.paddingXXL),
         PillButton(
           text: l10n.startGame,
           onTap: () {
