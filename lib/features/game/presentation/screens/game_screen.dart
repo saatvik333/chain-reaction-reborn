@@ -202,6 +202,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               AppRouteNames.winner,
               extra: {
                 'winnerPlayerIndex': winnerIndex,
+                'winnerName': next.winner!.name,
                 'totalMoves': next.totalMoves,
                 'gameDuration': next.formattedDuration,
                 'territoryPercentage': next.territoryPercentage,

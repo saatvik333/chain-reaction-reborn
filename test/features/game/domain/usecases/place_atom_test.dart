@@ -117,5 +117,24 @@ void main() {
 
       expect(reactionStates.length, greaterThan(2));
     });
+
+    test('should not end game during opening explosion phase', () async {
+      final threePlayers = [
+        Player(id: 'p1', name: 'Player 1', color: 0xFF000000),
+        Player(id: 'p2', name: 'Player 2', color: 0xFFFFFFFF),
+        Player(id: 'p3', name: 'Player 3', color: 0xFFFF0000),
+      ];
+
+      var state = rules.initializeGame(threePlayers, rows: 2, cols: 2);
+
+      // First placement fills the corner up to capacity (no explosion yet).
+      state = await placeAtom(state, 0, 0).last;
+
+      // Second placement overflows the corner and triggers an explosion.
+      final postExplosion = await placeAtom(state, 0, 0).last;
+
+      expect(postExplosion.isGameOver, isFalse);
+      expect(postExplosion.winner, isNull);
+    });
   });
 }

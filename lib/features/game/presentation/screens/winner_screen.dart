@@ -16,12 +16,14 @@ class WinnerScreen extends ConsumerWidget {
     required this.gridSize,
     super.key,
     this.winnerPlayerIndex = 1,
+    this.winnerName,
     this.totalMoves = 0,
     this.gameDuration = '00:00',
     this.territoryPercentage = 100,
     this.aiDifficulty,
   });
   final int winnerPlayerIndex;
+  final String? winnerName;
   final int totalMoves;
   final String gameDuration;
   final int territoryPercentage;
@@ -32,7 +34,8 @@ class WinnerScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
-    final winnerName = ref.read(playerNamesProvider).getName(winnerPlayerIndex);
+    final resolvedWinnerName =
+        winnerName ?? ref.read(playerNamesProvider).getName(winnerPlayerIndex);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -97,7 +100,7 @@ class WinnerScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: AppDimensions.paddingL),
                         Text(
-                          winnerName,
+                          resolvedWinnerName,
                           style: TextStyle(
                             color: theme.fg,
                             fontSize: AppDimensions.fontXXL,

@@ -71,41 +71,40 @@ class GameNotifier extends _$GameNotifier {
     GameState? lastState;
     var hasEmitted = false;
 
-    _explosionSubscription = _placeAtom(currentState, x, y, now: DateTime.now())
-        .listen(
-          (newState) {
-            // Detect explosion start (atoms flying)
-            if (newState.flyingAtoms.isNotEmpty &&
-                (lastState?.flyingAtoms.isEmpty ?? true)) {
-              if (ref.read(isHapticOnProvider)) {
-                unawaited(_hapticService.explosionPattern());
-              }
-            }
+    _explosionSubscription = _placeAtom(currentState, x, y).listen(
+      (newState) {
+        // Detect explosion start (atoms flying)
+        if (newState.flyingAtoms.isNotEmpty &&
+            (lastState?.flyingAtoms.isEmpty ?? true)) {
+          if (ref.read(isHapticOnProvider)) {
+            unawaited(_hapticService.explosionPattern());
+          }
+        }
 
-            lastState = newState;
-            state = newState;
-            hasEmitted = true;
-          },
-          onDone: () {
-            if (lastState != null && !lastState!.isGameOver) {
-              _advanceTurn();
-            } else if (!hasEmitted) {
-              if (currentState.currentPlayer.isAI) {
-                _advanceTurn();
-              } else {
-                state = currentState.copyWith(isProcessing: false);
-              }
-            } else if (lastState != null && lastState!.isGameOver) {
-              unawaited(_gameRepository.clearGame());
-              if (ref.read(isHapticOnProvider)) {
-                unawaited(_hapticService.heavyImpact());
-              }
-            }
-          },
-          onError: (error) {
+        lastState = newState;
+        state = newState;
+        hasEmitted = true;
+      },
+      onDone: () {
+        if (lastState != null && !lastState!.isGameOver) {
+          _advanceTurn();
+        } else if (!hasEmitted) {
+          if (currentState.currentPlayer.isAI) {
+            _advanceTurn();
+          } else {
             state = currentState.copyWith(isProcessing: false);
-          },
-        );
+          }
+        } else if (lastState != null && lastState!.isGameOver) {
+          unawaited(_gameRepository.clearGame());
+          if (ref.read(isHapticOnProvider)) {
+            unawaited(_hapticService.heavyImpact());
+          }
+        }
+      },
+      onError: (error) {
+        state = currentState.copyWith(isProcessing: false);
+      },
+    );
   }
 
   /// Undo the last move.

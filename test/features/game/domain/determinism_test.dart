@@ -57,7 +57,6 @@ void main() {
           state1,
           move.x,
           move.y,
-          now: DateTime(2025),
         )) {
           state1 = s;
           history1.add(s);
@@ -96,7 +95,6 @@ void main() {
           state2,
           move.x,
           move.y,
-          now: DateTime(2025),
         )) {
           state2 = s;
           history2.add(s);

@@ -18,9 +18,8 @@ class PlaceAtomUseCase {
   Stream<GameState> call(
     GameState state,
     int x,
-    int y, {
-    DateTime? now,
-  }) async* {
+    int y,
+  ) async* {
     if (!_rules.isValidMove(state, x, y)) return;
 
     final currentPlayer = state.currentPlayer;
@@ -46,7 +45,6 @@ class PlaceAtomUseCase {
       yield* _propagateExplosions(
         workingState,
         Queue<Cell>.from([grid[y][x]]),
-        now: now ?? DateTime.now(),
       );
     }
   }
@@ -54,9 +52,8 @@ class PlaceAtomUseCase {
   /// Handles chain explosions using a queue-based approach with flight animation phases.
   Stream<GameState> _propagateExplosions(
     GameState state,
-    Queue<Cell> explosionQueue, {
-    required DateTime now,
-  }) async* {
+    Queue<Cell> explosionQueue,
+  ) async* {
     final grid = _copyGrid(state.grid);
     final rows = grid.length;
     final cols = grid[0].length;
@@ -64,36 +61,20 @@ class PlaceAtomUseCase {
     final currentPlayer = state.currentPlayer; // Used for color
 
     while (explosionQueue.isNotEmpty) {
-      // 1. Check Win Condition
-      if (_checkWinnerDuringExplosion(grid, state.players)) {
-        final owners = _getUniqueOwners(grid);
-        if (owners.length == 1) {
-          final winner = state.players.firstWhere((p) => p.id == owners.first);
-          yield state.copyWith(
-            grid: _copyGrid(grid),
-            isGameOver: true,
-            winner: winner,
-            isProcessing: false,
-            endTime: now,
-          );
-          return;
-        }
-      }
-
-      // 2. Identify Cells Exploding in this Wave
+      // 1. Identify Cells Exploding in this Wave
       final explodingCell = explosionQueue.removeFirst();
       final cx = explodingCell.x;
       final cy = explodingCell.y;
 
       if (!grid[cy][cx].isAtCriticalMass) continue;
 
-      // 3. Prepare Explosion Data
+      // 2. Prepare Explosion Data
       final neighbors = _rules.getNeighbors(cx, cy, rows, cols);
       final atomsToRemove = neighbors.length; // 2, 3, or 4
 
       final newAtomCount = grid[cy][cx].atomCount - atomsToRemove;
 
-      // 4. Phase 1: Remove atoms from source, Spawn Flying Atoms
+      // 3. Phase 1: Remove atoms from source, Spawn Flying Atoms
       grid[cy][cx] = grid[cy][cx].copyWith(
         atomCount: newAtomCount,
         ownerId: newAtomCount <= 0 ? null : grid[cy][cx].ownerId,
@@ -124,7 +105,7 @@ class PlaceAtomUseCase {
         const Duration(milliseconds: AppDimensions.flightDurationMs),
       ); // Flight duration
 
-      // 5. Phase 2: Land Atoms
+      // 4. Phase 2: Land Atoms
       for (final n in neighbors) {
         final neighbor = grid[n.y][n.x];
         grid[n.y][n.x] = neighbor.copyWith(
@@ -148,36 +129,6 @@ class PlaceAtomUseCase {
   /// Creates a deep copy of the grid.
   List<List<Cell>> _copyGrid(List<List<Cell>> grid) {
     return grid.map(List<Cell>.from).toList();
-  }
-
-  /// Checks if there's a winner during explosions.
-  bool _checkWinnerDuringExplosion(
-    List<List<Cell>> grid,
-    List<Player> players,
-  ) {
-    final owners = _getUniqueOwners(grid);
-    var totalAtoms = 0;
-    for (final row in grid) {
-      for (final cell in row) {
-        if (cell.ownerId != null) {
-          totalAtoms += cell.atomCount;
-        }
-      }
-    }
-    return owners.length == 1 && totalAtoms > 1;
-  }
-
-  /// Gets unique owner IDs from the grid.
-  Set<String> _getUniqueOwners(List<List<Cell>> grid) {
-    final owners = <String>{};
-    for (final row in grid) {
-      for (final cell in row) {
-        if (cell.ownerId != null) {
-          owners.add(cell.ownerId!);
-        }
-      }
-    }
-    return owners;
   }
 }
 

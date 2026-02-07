@@ -54,6 +54,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           final extras = state.extra as Map<String, dynamic>?;
           final winnerPlayerIndex = extras?['winnerPlayerIndex'] as int? ?? 1;
+          final winnerName = extras?['winnerName'] as String?;
           final totalMoves = extras?['totalMoves'] as int? ?? 0;
           final gameDuration = extras?['gameDuration'] as String? ?? '00:00';
           final territoryPercentage =
@@ -67,6 +68,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             state,
             WinnerScreen(
               winnerPlayerIndex: winnerPlayerIndex,
+              winnerName: winnerName,
               totalMoves: totalMoves,
               gameDuration: gameDuration,
               territoryPercentage: territoryPercentage,

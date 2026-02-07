@@ -1,3 +1,4 @@
+import 'package:chain_reaction/core/theme/app_theme.dart';
 import 'package:chain_reaction/features/shop/data/services/purchase_state_manager.dart';
 import 'package:chain_reaction/features/shop/domain/repositories/shop_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,7 +66,10 @@ class ShopRepositoryImpl implements ShopRepository {
 
   /// Check if a product ID is a theme product
   bool _isThemeProduct(String productId) {
-    const themeIds = {'theme_neon', 'theme_dark', 'theme_retro'};
+    final themeIds = AppThemes.all
+        .where((theme) => theme.isPremium)
+        .map((theme) => theme.name)
+        .toSet();
     return themeIds.contains(productId);
   }
 

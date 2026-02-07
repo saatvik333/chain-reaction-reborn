@@ -108,25 +108,41 @@ class IAPService {
   }
 
   /// Validate a purchase and update its state
-  Future<void> _validatePurchase(String transactionId, String productId) async {
+  Future<void> _validatePurchase(
+    String transactionId,
+    String productId, {
+    PurchaseDetails? purchaseDetails,
+  }) async {
     try {
       // Get the current purchase details
       final purchaseInfo = await _stateManager.getPurchase(transactionId);
       if (purchaseInfo == null) return;
 
-      // Simulate validation - in real implementation, you'd validate with app stores
+      // If backend validation is not configured, trust completed store flow.
+      if (!_validationService.isConfigured) {
+        await _stateManager.updatePurchaseState(
+          transactionId,
+          PurchaseState.validated,
+          validationDate: DateTime.now(),
+        );
+        _eventController.add(
+          ShopEvent.validationComplete(productId, isValid: true),
+        );
+        return;
+      }
+
+      // Pending revalidation has no receipt payload in local storage.
+      if (purchaseDetails == null) {
+        if (kDebugMode) {
+          log(
+            'Skipping revalidation for $transactionId: missing purchase payload',
+          );
+        }
+        return;
+      }
+
       final validation = await _validationService.validatePurchase(
-        PurchaseDetails(
-          purchaseID: transactionId,
-          productID: productId,
-          status: PurchaseStatus.purchased,
-          transactionDate: purchaseInfo.purchaseDate.toIso8601String(),
-          verificationData: PurchaseVerificationData(
-            source: 'app_store',
-            localVerificationData: '',
-            serverVerificationData: '',
-          ),
-        ),
+        purchaseDetails,
       );
 
       // Update purchase state based on validation
@@ -239,7 +255,11 @@ class IAPService {
           await _stateManager.savePurchase(purchaseInfo);
 
           // Validate the purchase
-          await _validatePurchase(transactionId, productId);
+          await _validatePurchase(
+            transactionId,
+            productId,
+            purchaseDetails: purchaseDetails,
+          );
 
           // Check if purchase is still valid after validation
           final updatedPurchase = await _stateManager.getPurchase(
