@@ -62,19 +62,23 @@ class PaletteScreen extends ConsumerWidget {
               ),
               data: (shopState) => SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
                   vertical: AppDimensions.paddingM,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      l10n.availableThemesHeader,
-                      style: TextStyle(
-                        color: themeState.subtitle,
-                        fontSize: AppDimensions.fontXS,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: AppDimensions.letterSpacingHeader,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: Text(
+                        l10n.availableThemesHeader,
+                        style: TextStyle(
+                          color: themeState.subtitle,
+                          fontSize: AppDimensions.fontXS,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: AppDimensions.letterSpacingHeader,
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
@@ -89,9 +93,14 @@ class PaletteScreen extends ConsumerWidget {
                       return Column(
                         children: [
                           if (index > 0)
-                            Divider(
-                              color: themeState.border,
-                              height: AppDimensions.paddingXL,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppDimensions.paddingL,
+                              ),
+                              child: Divider(
+                                color: themeState.border,
+                                height: AppDimensions.paddingXL,
+                              ),
                             ),
                           FadeEntryWidget(
                             delay: Duration(milliseconds: index * 50),
@@ -124,19 +133,24 @@ class PaletteScreen extends ConsumerWidget {
                       );
                     }),
                     const SizedBox(height: AppDimensions.paddingXL),
-                    PillButton(
-                      text: l10n.getMoreThemes,
-                      onTap: () {
-                        unawaited(
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (context) => const PurchaseScreen(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: PillButton(
+                        text: l10n.getMoreThemes,
+                        onTap: () {
+                          unawaited(
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (context) => const PurchaseScreen(),
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      width: double.infinity,
-                      type: PillButtonType.primary,
+                          );
+                        },
+                        width: double.infinity,
+                        type: PillButtonType.primary,
+                      ),
                     ),
                     const SizedBox(height: AppDimensions.paddingL),
                   ],
@@ -173,83 +187,111 @@ class _ThemeRow extends StatelessWidget {
     final playerColors = theme.playerColors(isDark: isDarkMode);
     final paletteColors = theme.paletteColors(isDark: isDarkMode);
 
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              if (isSelected)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Icon(
-                    Icons.check_circle,
-                    color: playerColors.isNotEmpty
-                        ? playerColors[0]
-                        : textColor,
-                    size: AppDimensions.iconM,
-                  ),
-                )
-              else if (isLocked)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Icon(
-                    Icons.lock,
-                    color: textColor.withValues(alpha: 0.5),
-                    size: AppDimensions.iconM,
-                  ),
-                ),
-              Text(
-                theme.name,
-                style: TextStyle(
-                  color: isLocked
-                      ? textColor.withValues(alpha: 0.5)
-                      : textColor,
-                  fontSize: AppDimensions.fontL,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                ),
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: isLocked ? '${theme.name}, locked theme' : '${theme.name} theme',
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingS),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+            splashColor: textColor.withValues(alpha: 0.12),
+            highlightColor: textColor.withValues(alpha: 0.06),
+            hoverColor: textColor.withValues(alpha: 0.04),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimensions.paddingL - AppDimensions.paddingS,
+                vertical: AppDimensions.paddingS,
               ),
-            ],
-          ),
-          // Palette colors - constraint-based sizing
-          LayoutBuilder(
-            builder: (context, constraints) {
-              // Use 40% of available width, clamped to reasonable bounds
-              final paletteWidth = (constraints.maxWidth * 0.4).clamp(
-                100.0,
-                200.0,
-              );
-              const circleSize = AppDimensions.colorCircleSize;
-              const overlap = 14.0;
-
-              return SizedBox(
-                height: circleSize + 6, // Circle + border allowance
-                width: paletteWidth,
-                child: Stack(
-                  alignment: Alignment.centerRight,
-                  children: List.generate(paletteColors.length, (index) {
-                    final color =
-                        paletteColors[paletteColors.length - 1 - index];
-                    return Positioned(
-                      right: index * overlap,
-                      child: Container(
-                        width: circleSize,
-                        height: circleSize,
-                        decoration: BoxDecoration(
-                          color: color,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: backgroundColor, width: 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      if (isSelected)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: Icon(
+                            Icons.check_circle,
+                            color: playerColors.isNotEmpty
+                                ? playerColors[0]
+                                : textColor,
+                            size: AppDimensions.iconM,
+                          ),
+                        )
+                      else if (isLocked)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: Icon(
+                            Icons.lock,
+                            color: textColor.withValues(alpha: 0.5),
+                            size: AppDimensions.iconM,
+                          ),
+                        ),
+                      Text(
+                        theme.name,
+                        style: TextStyle(
+                          color: isLocked
+                              ? textColor.withValues(alpha: 0.5)
+                              : textColor,
+                          fontSize: AppDimensions.fontL,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                         ),
                       ),
-                    );
-                  }),
-                ),
-              );
-            },
+                    ],
+                  ),
+                  // Palette colors - constraint-based sizing
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Use 40% of available width, clamped to reasonable bounds
+                      final paletteWidth = (constraints.maxWidth * 0.4).clamp(
+                        100.0,
+                        200.0,
+                      );
+                      const circleSize = AppDimensions.colorCircleSize;
+                      const overlap = 14.0;
+
+                      return SizedBox(
+                        height: circleSize + 6, // Circle + border allowance
+                        width: paletteWidth,
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: List.generate(paletteColors.length, (
+                            index,
+                          ) {
+                            final color =
+                                paletteColors[paletteColors.length - 1 - index];
+                            return Positioned(
+                              right: index * overlap,
+                              child: Container(
+                                width: circleSize,
+                                height: circleSize,
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: backgroundColor,
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

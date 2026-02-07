@@ -44,6 +44,8 @@ abstract class HomeState with _$HomeState {
         return 'Hard';
       case AIDifficulty.extreme:
         return 'Extreme';
+      case AIDifficulty.god:
+        return 'God';
     }
   }
 }

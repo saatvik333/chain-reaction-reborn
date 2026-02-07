@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:chain_reaction/core/errors/domain_exceptions.dart';
 import 'package:chain_reaction/features/game/domain/ai/ai_strategy.dart';
 import 'package:chain_reaction/features/game/domain/ai/strategies/extreme_strategy.dart';
+import 'package:chain_reaction/features/game/domain/ai/strategies/god_strategy.dart';
 import 'package:chain_reaction/features/game/domain/ai/strategies/greedy_strategy.dart';
 import 'package:chain_reaction/features/game/domain/ai/strategies/random_strategy.dart';
 import 'package:chain_reaction/features/game/domain/ai/strategies/strategic_strategy.dart';
@@ -30,6 +31,8 @@ Future<Point<int>> _computeMove(AIComputeParams params) async {
       strategy = StrategicStrategy();
     case AIDifficulty.extreme:
       strategy = ExtremeStrategy(params.rules);
+    case AIDifficulty.god:
+      strategy = GodStrategy(params.rules);
     case null:
       strategy = GreedyStrategy();
     // default handled by exhaustive enum switch

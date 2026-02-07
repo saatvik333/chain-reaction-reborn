@@ -31,4 +31,5 @@ const _$AIDifficultyEnumMap = {
   AIDifficulty.medium: 'medium',
   AIDifficulty.hard: 'hard',
   AIDifficulty.extreme: 'extreme',
+  AIDifficulty.god: 'god',
 };

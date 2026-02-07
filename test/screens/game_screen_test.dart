@@ -4,12 +4,13 @@ import 'package:chain_reaction/core/services/haptic/haptic_service.dart';
 import 'package:chain_reaction/features/game/domain/ai/ai_service.dart';
 import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/repositories/game_repository.dart';
-import 'package:chain_reaction/features/game/presentation/providers/game_providers.dart';
+import 'package:chain_reaction/features/game/presentation/providers/providers.dart';
 import 'package:chain_reaction/features/game/presentation/screens/game_screen.dart';
 import 'package:chain_reaction/features/game/presentation/widgets/game_grid.dart';
 import 'package:chain_reaction/features/settings/domain/repositories/settings_repository.dart';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -167,5 +168,44 @@ void main() {
     await tester.pump();
 
     // If no crash, pass.
+  });
+
+  testWidgets('Keyboard arrows and enter place atom on selected cell', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(
+            MockSettingsRepository(),
+          ),
+          hapticServiceProvider.overrideWithValue(MockHapticService()),
+          gameRepositoryProvider.overrideWithValue(FakeGameRepository()),
+          aiServiceProvider.overrideWithValue(MockAIService()),
+        ],
+        child: const MaterialApp(
+          home: GameScreen(playerCount: 2, gridSize: 'Small'),
+        ),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowRight);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.enter);
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final context = tester.element(find.byType(GameScreen));
+    final container = ProviderScope.containerOf(context);
+    final gameState = container.read<GameState?>(gameProvider);
+
+    expect(gameState, isNotNull);
+    expect(gameState!.grid[0][1].atomCount, 1);
+    expect(gameState.grid[0][1].ownerId, 'player_1');
   });
 }

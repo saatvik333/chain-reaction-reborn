@@ -615,6 +615,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SUPPORT DEVELOPMENT'**
   String get supportDevelopmentHeader;
+
+  /// No description provided for @continueGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Game'**
+  String get continueGame;
+
+  /// No description provided for @noSavedGameFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved game found.'**
+  String get noSavedGameFound;
 }
 
 class _AppLocalizationsDelegate

@@ -39,11 +39,13 @@ class GameNotifier extends _$GameNotifier {
   }
 
   /// Loads a saved game from persistence.
-  Future<void> loadSavedGame() async {
+  Future<bool> loadSavedGame() async {
     final savedState = await _gameRepository.loadGame();
     if (savedState != null) {
       state = savedState;
+      return true;
     }
+    return false;
   }
 
   /// Initializes a new game with the given players and grid size.

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:chain_reaction/features/settings/presentation/providers/settings_providers.dart';
 import 'package:chain_reaction/features/shop/data/repositories/shop_repository_impl.dart';
 import 'package:chain_reaction/features/shop/data/services/iap_service.dart';
+import 'package:chain_reaction/features/shop/data/services/purchase_validation_service.dart';
 import 'package:chain_reaction/features/shop/domain/entities/shop_event.dart';
 import 'package:chain_reaction/features/shop/domain/repositories/shop_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,15 @@ part 'shop_provider.g.dart';
 // In a real app, you might map 'Earthy' -> 'chain_reaction_earthy'.
 const String kCoffeeId = 'support_coffee';
 const Set<String> kThemeIds = {'Earthy', 'Pastel', 'Amoled'};
+const String _androidPublisherApiKey = String.fromEnvironment(
+  'ANDROID_PUBLISHER_API_KEY',
+);
+const String _iosSharedSecret = String.fromEnvironment('IOS_SHARED_SECRET');
+const bool _allowLocalValidationFallback = bool.fromEnvironment(
+  'ALLOW_LOCAL_IAP_VALIDATION_FALLBACK',
+);
+
+String? _nonEmptyOrNull(String value) => value.isEmpty ? null : value;
 
 /// Provider for [ShopRepository].
 @riverpod
@@ -30,7 +40,16 @@ ShopRepository shopRepository(Ref ref) {
 /// This allows us to override the service in tests with a mock.
 @riverpod
 IAPService iapService(Ref ref) {
-  final service = IAPService();
+  final validationService = PurchaseValidationService(
+    androidApiKey: _nonEmptyOrNull(_androidPublisherApiKey),
+    iosSharedSecret: _nonEmptyOrNull(_iosSharedSecret),
+  );
+
+  final service = IAPService(
+    validationService: validationService,
+    allowUnconfiguredValidationFallback:
+        kDebugMode || _allowLocalValidationFallback,
+  );
   ref.onDispose(service.dispose);
   return service;
 }

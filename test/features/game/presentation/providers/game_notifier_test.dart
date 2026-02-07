@@ -154,6 +154,39 @@ void main() {
       expect(state, isNull);
     });
 
+    test('loadSavedGame returns false when no saved state exists', () async {
+      final notifier = container.read(gameProvider.notifier);
+
+      final loaded = await notifier.loadSavedGame();
+
+      expect(loaded, isFalse);
+      expect(container.read<GameState?>(gameProvider), isNull);
+    });
+
+    test('loadSavedGame returns true and restores saved state', () async {
+      final notifier = container.read(gameProvider.notifier);
+      final players = [
+        Player(id: '1', name: 'P1', color: 0xFF000000),
+        Player(id: '2', name: 'P2', color: 0xFFFFFFFF),
+      ];
+      final savedState = container
+          .read(gameRulesProvider)
+          .initializeGame(
+            players,
+            gridSize: 'small',
+          );
+      fakeRepository.savedState = savedState;
+
+      final loaded = await notifier.loadSavedGame();
+
+      final restored = container.read<GameState?>(gameProvider);
+      expect(loaded, isTrue);
+      expect(restored, isNotNull);
+      expect(restored!.grid.length, 8);
+      expect(restored.grid[0].length, 5);
+      expect(restored.currentPlayer.id, '1');
+    });
+
     test('initGame creates a valid GameState', () {
       final notifier = container.read(gameProvider.notifier);
       final players = [

@@ -8,8 +8,11 @@ import 'package:chain_reaction/core/theme/providers/theme_provider.dart';
 import 'package:chain_reaction/features/shop/presentation/providers/shop_provider.dart';
 import 'package:chain_reaction/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+const String _supportCoffeeUrl = 'https://buymeacoffee.com/saatvik333';
 
 class PurchaseScreen extends ConsumerWidget {
   const PurchaseScreen({super.key});
@@ -119,20 +122,74 @@ class PurchaseScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: AppDimensions.paddingM),
-                    _buildShopItem(
-                      title: 'Buy me a coffee',
-                      subtitle: 'Support the developer',
-                      price: 'OPEN',
-                      theme: theme,
-                      onTap: () async {
-                        final url = Uri.parse(
-                          'https://buymeacoffee.com/saatvik333',
+                    Builder(
+                      builder: (context) {
+                        final coffeeProduct = state.getProduct(kCoffeeId);
+                        return _buildShopItem(
+                          title: 'Buy me a coffee',
+                          subtitle: coffeeProduct == null
+                              ? 'Support the developer (external checkout)'
+                              : 'Support the developer',
+                          price: coffeeProduct?.price ?? 'OPEN',
+                          theme: theme,
+                          onTap: () async {
+                            if (coffeeProduct != null) {
+                              unawaited(
+                                ref
+                                    .read(shopProvider.notifier)
+                                    .buyCoffee(coffeeProduct),
+                              );
+                              return;
+                            }
+
+                            final url = Uri.parse(_supportCoffeeUrl);
+                            var launched = false;
+                            try {
+                              launched = await launchUrl(url);
+                            } on Object {
+                              launched = false;
+                            }
+
+                            if (!launched) {
+                              try {
+                                launched = await launchUrl(
+                                  url,
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              } on Object {
+                                launched = false;
+                              }
+                            }
+
+                            if (launched || !context.mounted) {
+                              return;
+                            }
+
+                            var copiedToClipboard = false;
+                            try {
+                              await Clipboard.setData(
+                                const ClipboardData(text: _supportCoffeeUrl),
+                              );
+                              copiedToClipboard = true;
+                            } on Object {
+                              copiedToClipboard = false;
+                            }
+
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  copiedToClipboard
+                                      ? 'Could not open browser. Support link copied to clipboard.'
+                                      : 'Could not open browser. Visit $_supportCoffeeUrl',
+                                  style: TextStyle(color: theme.bg),
+                                ),
+                                backgroundColor: theme.fg,
+                                duration: const Duration(seconds: 3),
+                              ),
+                            );
+                          },
                         );
-                        try {
-                          await launchUrl(url);
-                        } on Object {
-                          // Fail silently
-                        }
                       },
                     ),
                     const SizedBox(height: AppDimensions.paddingS),
@@ -215,65 +272,73 @@ class PurchaseScreen extends ConsumerWidget {
     VoidCallback? onTap,
   }) {
     final isUnavailable = price == 'N/A';
+    final interactive = onTap != null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingS,
       ), // Add horizontal padding for touch target spacing
-      child: InkWell(
-        onTap: onTap,
+      child: Material(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal:
-                AppDimensions.paddingL -
-                AppDimensions
-                    .paddingS, // Adjust padding to align with core layout
-            vertical: AppDimensions.paddingM,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: isUnavailable ? theme.subtitle : theme.fg,
-                      fontSize: AppDimensions.fontM,
-                      fontWeight: FontWeight.w600,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+          splashColor: theme.fg.withValues(alpha: interactive ? 0.12 : 0.0),
+          highlightColor: theme.fg.withValues(alpha: interactive ? 0.06 : 0.0),
+          hoverColor: theme.fg.withValues(alpha: interactive ? 0.04 : 0.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal:
+                  AppDimensions.paddingL -
+                  AppDimensions
+                      .paddingS, // Adjust padding to align with core layout
+              vertical: AppDimensions.paddingM,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: isUnavailable ? theme.subtitle : theme.fg,
+                        fontSize: AppDimensions.fontM,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: theme.subtitle,
+                        fontSize: AppDimensions.fontS,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
+                  decoration: BoxDecoration(
+                    color: onTap == null ? theme.surface : theme.fg,
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                  ),
+                  child: Text(
+                    price,
                     style: TextStyle(
-                      color: theme.subtitle,
+                      color: onTap == null ? theme.subtitle : theme.bg,
                       fontSize: AppDimensions.fontS,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
                 ),
-                decoration: BoxDecoration(
-                  color: onTap == null ? theme.surface : theme.fg,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-                ),
-                child: Text(
-                  price,
-                  style: TextStyle(
-                    color: onTap == null ? theme.subtitle : theme.bg,
-                    fontSize: AppDimensions.fontS,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

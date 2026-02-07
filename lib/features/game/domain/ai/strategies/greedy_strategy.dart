@@ -17,11 +17,11 @@ class GreedyStrategy extends AIStrategy {
     final validMoves = getValidMoves(state, player);
     if (validMoves.isEmpty) throw const AIException('No valid moves');
 
-    // 1. Critical Attack: If a move causes an explosion, do it.
+    // 1. Critical Attack: If a move causes an explosion immediately, do it.
     // Bonus: If it explodes AND captures neighbors, that's even better, but pure Greedy just loves explosions.
     final explodingMoves = validMoves.where((move) {
       final cell = state.grid[move.y][move.x];
-      return cell.atomCount == cell.capacity - 1;
+      return cell.atomCount == cell.capacity;
     }).toList();
 
     if (explodingMoves.isNotEmpty) {
@@ -62,10 +62,10 @@ class GreedyStrategy extends AIStrategy {
 
     for (final n in neighbors) {
       final cell = state.grid[n.y][n.x];
-      // Enemy cell is at critical mass - it will explode and capture our cell
+      // Enemy cell is primed to explode on its next move.
       if (cell.ownerId != null &&
           cell.ownerId != player.id &&
-          cell.isAtCriticalMass) {
+          cell.atomCount >= cell.capacity) {
         return true;
       }
     }

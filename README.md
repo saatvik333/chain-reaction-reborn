@@ -14,100 +14,122 @@
 
 ## Overview
 
-**Chain Reaction Reborn** brings the addictive gameplay of the classic strategy board game to modern devices with a complete visual overhaul. Strategic placement, explosive reactions, and tactical dominance await.
+**Chain Reaction Reborn** is a cross-platform strategy game built with Flutter.
 
-Compete against friends or challenge the smart AI in a battle for board control.
+Place atoms, trigger chain reactions, capture enemy cells, and eliminate all opponents. Play locally with friends or against multi-tier AI.
 
 ![Chain Reaction Reborn Showcase](assets/images/showcase.png)
 
 ## Features
 
-- **Strategic Depth**: Classic atomic chain reaction mechanics that are easy to learn but hard to master.
-- **Smart AI Opponents**:
-  - **Easy**: Perfect for beginners.
-  - **Medium**: A balanced challenge.
-  - **Hard**: Uses heuristic evaluation.
-  - **Extreme**: Minimax algorithm with Alpha-Beta pruning for tactical supremacy.
-- **Local Multiplayer**: Support for up to **8 players** on a single device.
-- **Visual Fidelity**:
-  - Supports native refresh-rate for smooth animations.
-  - Breathing atoms and dynamic particle explosions.
-  - Haptic feedback integration.
-- **Customization**:
-  - **Theming System**: Unlockable themes (Earthy, Pastel, Amoled, etc.).
-  - **Player Colors**: Customizable player identifiers.
-- **Cross-Platform**:
-  - **Mobile**: Optimized for Android and iOS.
-  - **Desktop**: Full support for Windows, Linux, and macOS with native keybindings (F11 - Fullscreen, Esc - Back).
+- **Classic Chain Reaction Rules**
+  - Corner critical mass: 2
+  - Edge critical mass: 3
+  - Center critical mass: 4
+  - Chain reactions capture neighboring cells
+- **AI Difficulties**
+  - **Easy**: random valid moves
+  - **Medium**: greedy tactical heuristics (immediate explosions, safety checks)
+  - **Hard**: 1-ply strategic evaluation with heuristics + limited humanization
+  - **Extreme**: depth-2 minimax with alpha-beta pruning
+  - **God**: strongest tier, deeper minimax with alpha-beta pruning and move ordering
+- **Local Multiplayer**
+  - 2 to 8 players on one device
+- **Responsive UI**
+  - mobile single-column and tablet/desktop two-pane home layouts
+  - keyboard navigation in game grid (arrows + Enter/Space)
+- **Customization**
+  - light/dark mode and multiple visual toggles
+  - editable player names
+  - theme system with premium theme packs
+- **Shop / Support**
+  - in-app purchases for premium themes
+  - support option (buy me a coffee), with external-link fallback
+- **Desktop Integration**
+  - menu bar, fullscreen toggle (`F11`), quit (`Ctrl+Q`), back (`Esc`)
 
-## Technology Stack
+## Platform Support
 
-Built with a commitment to clean architecture and modern Flutter practices:
+- **Mobile**: Android, iOS
+- **Desktop**: Windows, Linux, macOS
 
-- **Framework**: Flutter & Dart
-- **State Management**: [Riverpod](https://riverpod.dev) (v3+ with Code Generation)
-- **Routing**: [GoRouter](https://pub.dev/packages/go_router)
-- **Architecture**: Feature-First Clean Architecture (Domain-Driven Design principles)
-- **Code Generation**: [Freezed](https://pub.dev/packages/freezed) & [JSON Serializable](https://pub.dev/packages/json_serializable) for immutable data models.
+## Tech Stack
 
-For a deep dive into the code structure, check out the [Architecture Documentation](architecture.md).
+- Flutter + Dart
+- Riverpod (`flutter_riverpod`, `riverpod_annotation`)
+- GoRouter
+- Freezed + JSON Serializable
+- SharedPreferences + Flutter Secure Storage
+- In-App Purchase (`in_app_purchase`)
+- Window Manager (`window_manager`)
 
-## Getting Started
+## Architecture
 
-### Prerequisites
+The app uses a feature-first architecture with clear domain/data/presentation boundaries per feature.
 
-- Flutter SDK (3.10.x or higher)
-- Dart SDK
-
-### Installation
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/saatvik333/chain-reaction-reborn.git
-cd chain-reaction-reborn
-```
-
-2. Install dependencies
-
-```bash
-flutter pub get
-```
-
-3. Run the app
-
-```bash
-# For Mobile
-flutter run
-
-# For Desktop (Linux/Windows/macOS)
-flutter run -d linux # or windows/macos
-```
-
-### Building for Release
-
-```bash
-# Android APK
-flutter build apk --release
-
-# Linux AppImage/Bundle
-flutter build linux --release
-```
+Read the full technical reference here: [architecture.md](architecture.md)
 
 ## Project Structure
 
 ```text
 lib/
-├── core/            # Shared utilities, constants, themes, and UI widgets
-├── features/        # Feature modules
-│   ├── game/        # Game engine, AI logic, and board rendering
-│   ├── home/        # Main menu and setup wizard
-│   ├── settings/    # User preferences (Theme, Audio)
-│   └── shop/        # In-game store and content management
-├── routing/         # Application navigation configuration
-└── l10n/            # Localization files
+├── core/            # Shared constants, theme, reusable widgets, utilities
+├── features/
+│   ├── game/        # Game engine, AI, gameplay providers/screens/widgets
+│   ├── home/        # Home flow (mode selection + configuration)
+│   ├── settings/    # Settings repository, providers, screen
+│   └── shop/        # Shop providers, IAP services, palette/shop screens
+├── l10n/            # Localization resources (ARB + generated)
+├── routing/         # Route constants and GoRouter setup
+└── main.dart        # App bootstrap and ProviderScope wiring
 ```
+
+## Getting Started
+
+### Prerequisites
+
+- Flutter SDK 3.10.7+
+- Dart SDK (matching Flutter)
+
+### Installation
+
+```bash
+git clone https://github.com/saatvik333/chain-reaction-reborn.git
+cd chain-reaction-reborn
+flutter pub get
+```
+
+### Run
+
+```bash
+# Android / iOS / Desktop
+flutter run
+
+# Example desktop target
+flutter run -d linux
+```
+
+### Test
+
+```bash
+flutter test
+```
+
+## Release Build
+
+```bash
+# Android APK
+flutter build apk --release
+
+# Linux
+flutter build linux --release
+```
+
+## Notes
+
+- In debug mode, premium themes are auto-unlocked for development/testing.
+- Purchase validation configuration differs by platform and environment.
 
 ## License
 
-This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for details.
+Licensed under **GNU GPL v3.0**. See [LICENSE](LICENSE).

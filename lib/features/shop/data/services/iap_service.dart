@@ -13,13 +13,17 @@ class IAPService {
     InAppPurchase? iap,
     PurchaseStateManager? stateManager,
     PurchaseValidationService? validationService,
+    bool allowUnconfiguredValidationFallback = false,
   }) : _iap = iap ?? InAppPurchase.instance,
        _stateManager = stateManager ?? PurchaseStateManager(),
-       _validationService = validationService ?? PurchaseValidationService();
+       _validationService = validationService ?? PurchaseValidationService(),
+       _allowUnconfiguredValidationFallback =
+           allowUnconfiguredValidationFallback;
   final InAppPurchase _iap;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   final PurchaseValidationService _validationService;
   final PurchaseStateManager _stateManager;
+  final bool _allowUnconfiguredValidationFallback;
 
   final StreamController<ShopEvent> _eventController =
       StreamController<ShopEvent>.broadcast();
@@ -118,16 +122,31 @@ class IAPService {
       final purchaseInfo = await _stateManager.getPurchase(transactionId);
       if (purchaseInfo == null) return;
 
-      // If backend validation is not configured, trust completed store flow.
+      // Unconfigured backend is only allowed for local/dev fallback.
       if (!_validationService.isConfigured) {
+        if (_allowUnconfiguredValidationFallback) {
+          await _stateManager.updatePurchaseState(
+            transactionId,
+            PurchaseState.validated,
+            validationDate: DateTime.now(),
+          );
+          _eventController.add(
+            ShopEvent.validationComplete(productId, isValid: true),
+          );
+          return;
+        }
+
+        const errorMessage =
+            'Purchase validation backend is not configured. '
+            'Set Android/iOS validation credentials or enable local fallback.';
         await _stateManager.updatePurchaseState(
           transactionId,
-          PurchaseState.validated,
-          validationDate: DateTime.now(),
+          PurchaseState.failed,
+          errorMessage: errorMessage,
         );
-        _eventController.add(
-          ShopEvent.validationComplete(productId, isValid: true),
-        );
+        _eventController
+          ..add(const ShopEvent.purchaseError(errorMessage))
+          ..add(ShopEvent.validationComplete(productId, isValid: false));
         return;
       }
 

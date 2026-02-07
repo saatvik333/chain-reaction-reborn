@@ -86,5 +86,7 @@
   "localMultiplayer": "Local Multiplayer",
   "vsComputer": "Vs Computer",
   "next": "Next",
-  "supportDevelopmentHeader": "SUPPORT DEVELOPMENT"
+  "supportDevelopmentHeader": "SUPPORT DEVELOPMENT",
+  "continueGame": "Continue Game",
+  "noSavedGameFound": "No saved game found."
 }

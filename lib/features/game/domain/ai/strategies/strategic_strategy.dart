@@ -104,10 +104,10 @@ class StrategicStrategy extends AIStrategy {
           final neighbors = _getNeighbors(simulatedState, Point(x, y));
           for (final n in neighbors) {
             final nCell = simulatedState.grid[n.y][n.x];
-            // Enemy cell at critical mass will explode on their turn
+            // Enemy cell primed at threshold can explode on their turn
             if (nCell.ownerId != null &&
                 nCell.ownerId != player.id &&
-                nCell.isAtCriticalMass) {
+                nCell.atomCount >= nCell.capacity) {
               score -= 5.0; // Penalty for being next to a bomb
             }
           }

@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -46,17 +45,20 @@ class PurchaseValidationService {
   /// Validate a purchase receipt
   Future<ValidatedPurchase> validatePurchase(PurchaseDetails purchase) async {
     try {
-      if (Platform.isAndroid) {
-        return await _validateAndroidPurchase(purchase);
-      } else if (Platform.isIOS) {
-        return await _validateIOSPurchase(purchase);
-      } else {
-        return ValidatedPurchase(
-          productId: purchase.productID,
-          transactionId: purchase.purchaseID ?? '',
-          result: ValidationResult.error,
-          errorMessage: 'Unsupported platform',
-        );
+      if (kIsWeb) {
+        return _unsupportedPurchase(purchase);
+      }
+
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          return await _validateAndroidPurchase(purchase);
+        case TargetPlatform.iOS:
+          return await _validateIOSPurchase(purchase);
+        case TargetPlatform.fuchsia:
+        case TargetPlatform.linux:
+        case TargetPlatform.macOS:
+        case TargetPlatform.windows:
+          return _unsupportedPurchase(purchase);
       }
     } on Object catch (e) {
       if (kDebugMode) {
@@ -69,6 +71,15 @@ class PurchaseValidationService {
         errorMessage: e.toString(),
       );
     }
+  }
+
+  ValidatedPurchase _unsupportedPurchase(PurchaseDetails purchase) {
+    return ValidatedPurchase(
+      productId: purchase.productID,
+      transactionId: purchase.purchaseID ?? '',
+      result: ValidationResult.error,
+      errorMessage: 'Unsupported platform',
+    );
   }
 
   /// Validate Android purchase
@@ -124,11 +135,20 @@ class PurchaseValidationService {
 
   /// Check if validation service is properly configured
   bool get isConfigured {
-    if (Platform.isAndroid) {
-      return _androidApiKey != null;
-    } else if (Platform.isIOS) {
-      return _iosSharedSecret != null;
+    if (kIsWeb) return false;
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        final apiKey = _androidApiKey;
+        return apiKey != null && apiKey.isNotEmpty;
+      case TargetPlatform.iOS:
+        final sharedSecret = _iosSharedSecret;
+        return sharedSecret != null && sharedSecret.isNotEmpty;
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+        return false;
     }
-    return false;
   }
 }

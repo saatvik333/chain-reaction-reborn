@@ -88,10 +88,7 @@ class InfoScreen extends ConsumerWidget {
                     l10n.privacyPolicy,
                     Icons.arrow_outward,
                     () async {
-                      // Placeholder privacy policy Gist - Replace with your own hosted URL before release
-                      final url = Uri.parse(
-                        'https://gist.github.com/saatvik333/c864ffe4ed126430d719643c8ea068ad',
-                      );
+                      final url = Uri.parse(AppConstants.privacyPolicyUrl);
                       try {
                         await launchUrl(url);
                       } on Object {
@@ -186,41 +183,57 @@ class InfoScreen extends ConsumerWidget {
     ThemeState theme, {
     VoidCallback? onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: theme.subtitle,
-              fontSize: AppDimensions.fontM,
-            ),
+    final row = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: theme.subtitle,
+            fontSize: AppDimensions.fontM,
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  color: theme.fg,
-                  fontSize: AppDimensions.fontM,
-                  fontWeight: FontWeight.w600,
-                ),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                color: theme.fg,
+                fontSize: AppDimensions.fontM,
+                fontWeight: FontWeight.w600,
               ),
-              if (onTap != null) ...[
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_outward,
-                  color: theme.subtitle,
-                  size: AppDimensions.iconS,
-                ),
-              ],
+            ),
+            if (onTap != null) ...[
+              const SizedBox(width: 4),
+              Icon(
+                Icons.arrow_outward,
+                color: theme.subtitle,
+                size: AppDimensions.iconS,
+              ),
             ],
+          ],
+        ),
+      ],
+    );
+
+    if (onTap == null) return row;
+
+    return Semantics(
+      button: true,
+      label: '$label, $value',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: AppDimensions.paddingS,
+            ),
+            child: row,
           ),
-        ],
+        ),
       ),
     );
   }
@@ -231,20 +244,33 @@ class InfoScreen extends ConsumerWidget {
     VoidCallback onTap,
     ThemeState theme,
   ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: theme.subtitle,
-              fontSize: AppDimensions.fontM,
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: AppDimensions.paddingS,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: theme.subtitle,
+                    fontSize: AppDimensions.fontM,
+                  ),
+                ),
+                Icon(icon, color: theme.subtitle, size: AppDimensions.iconS),
+              ],
             ),
           ),
-          Icon(icon, color: theme.subtitle, size: AppDimensions.iconS),
-        ],
+        ),
       ),
     );
   }

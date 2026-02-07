@@ -8,7 +8,7 @@ part 'player.g.dart';
 enum PlayerType { human, ai }
 
 /// Difficulty levels for AI players
-enum AIDifficulty { easy, medium, hard, extreme }
+enum AIDifficulty { easy, medium, hard, extreme, god }
 
 /// Represents a player in the game.
 ///

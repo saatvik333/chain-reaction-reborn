@@ -46,10 +46,19 @@ Future<void> main() async {
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS)) {
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    final view = WidgetsBinding.instance.platformDispatcher.views.first;
+    final logicalSize = view.physicalSize / view.devicePixelRatio;
+    final isPhone = logicalSize.shortestSide < 600;
+
+    // Keep portrait lock for compact phones, allow full rotation on tablets.
+    await SystemChrome.setPreferredOrientations(
+      isPhone
+          ? <DeviceOrientation>[
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+            ]
+          : <DeviceOrientation>[],
+    );
   }
 
   final prefs = await SharedPreferences.getInstance();

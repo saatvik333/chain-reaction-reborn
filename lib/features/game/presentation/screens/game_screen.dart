@@ -38,10 +38,23 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     super.initState();
     // Initialize game after first frame to ensure providers are ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!widget.isResuming) {
+      if (widget.isResuming) {
+        unawaited(_resumeGame());
+      } else {
         _initializeGame();
       }
     });
+  }
+
+  Future<void> _resumeGame() async {
+    final didLoad = await ref.read(gameProvider.notifier).loadSavedGame();
+    if (!mounted || didLoad) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.noSavedGameFound)),
+    );
+    context.goNamed(AppRouteNames.home);
   }
 
   void _initializeGame() {

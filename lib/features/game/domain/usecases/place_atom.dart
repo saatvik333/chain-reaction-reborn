@@ -118,12 +118,55 @@ class PlaceAtomUseCase {
         }
       }
 
-      // Yield State: Atoms landed (flying cleared)
-      yield state.copyWith(
+      final landedState = state.copyWith(
         grid: _copyGrid(grid),
         flyingAtoms: [], // Clear flying atoms
       );
+
+      // Stop propagation immediately once winner is determined.
+      final winner = _winnerAfterExplosionWave(state, grid);
+      if (winner != null) {
+        yield landedState.copyWith(
+          winner: winner,
+          isGameOver: true,
+          isProcessing: false,
+          endTime: DateTime.now(),
+        );
+        return;
+      }
+
+      // Yield State: Atoms landed (flying cleared)
+      yield landedState;
     }
+  }
+
+  Player? _winnerAfterExplosionWave(
+    GameState state,
+    List<List<Cell>> grid,
+  ) {
+    final ownersOnBoard = <String>{};
+    for (final row in grid) {
+      for (final cell in row) {
+        final ownerId = cell.ownerId;
+        if (ownerId != null) {
+          ownersOnBoard.add(ownerId);
+        }
+      }
+    }
+
+    final effectiveTurnCount = state.turnCount + 1;
+    if (ownersOnBoard.length != 1 ||
+        effectiveTurnCount <= state.players.length) {
+      return null;
+    }
+
+    final winnerId = ownersOnBoard.first;
+    for (final player in state.players) {
+      if (player.id == winnerId) {
+        return player;
+      }
+    }
+    return null;
   }
 
   /// Creates a deep copy of the grid.

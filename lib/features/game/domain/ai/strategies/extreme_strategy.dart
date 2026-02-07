@@ -7,8 +7,9 @@ import 'package:chain_reaction/features/game/domain/entities/game_state.dart';
 import 'package:chain_reaction/features/game/domain/entities/player.dart';
 import 'package:chain_reaction/features/game/domain/logic/game_rules.dart';
 
-/// An "Extreme" AI that uses Minimax (Depth 2) to look ahead.
-/// It simulates its own move, and then anticipates the opponent's best counter-move.
+/// An "Extreme" AI that uses Minimax (Depth 2) with alpha-beta pruning.
+/// It simulates its own move, and then anticipates the opponent's best
+/// counter-move.
 class ExtremeStrategy extends AIStrategy {
   ExtremeStrategy(this._rules);
   final GameRules _rules;
@@ -31,10 +32,7 @@ class ExtremeStrategy extends AIStrategy {
 
     Point<int>? bestMove;
     var maxScore = double.negativeInfinity;
-
-    // 22% chance to have a "lapse" and fail to look ahead (Depth 1 only)
-    // This simulates human error and allows players to win more often
-    final isLapse = random.nextDouble() < 0.22;
+    var alpha = double.negativeInfinity;
 
     for (final move in validMoves) {
       // 1. Simulate AI Move
@@ -45,51 +43,55 @@ class ExtremeStrategy extends AIStrategy {
         return move; // Instant win, take it!
       }
 
-      double moveScore;
+      // 2. Minimax Step: Anticipate Opponent's Best Response
+      var minOpponentScore = double.infinity;
+      final opponent = _getNextPlayer(
+        stateAfterAi,
+        player,
+        nextTurnCount: state.turnCount + 1,
+      );
 
-      if (isLapse) {
-        // Short-sighted: Just evaluate the board after my move (Depth 1)
-        moveScore = _evaluateState(stateAfterAi, player);
-      } else {
-        // 2. Minimax Step: Anticipate Opponent's Best Response
-        var minOpponentScore = double.infinity;
-        final opponent = _getNextPlayer(stateAfterAi, player);
+      if (opponent != null) {
+        final opponentMoves = getValidMoves(stateAfterAi, opponent);
 
-        if (opponent != null) {
-          final opponentMoves = getValidMoves(stateAfterAi, opponent);
+        if (opponentMoves.isEmpty) {
+          minOpponentScore = 1000.0; // Good for me
+        } else {
+          for (final oppMove in opponentMoves) {
+            final stateAfterOpp = _simulateMove(
+              stateAfterAi,
+              oppMove,
+              opponent,
+            );
 
-          if (opponentMoves.isEmpty) {
-            minOpponentScore = 1000.0; // Good for me
-          } else {
-            for (final oppMove in opponentMoves) {
-              final stateAfterOpp = _simulateMove(
-                stateAfterAi,
-                oppMove,
-                opponent,
-              );
+            if (_isWin(stateAfterOpp, opponent)) {
+              minOpponentScore = double.negativeInfinity;
+              break;
+            }
 
-              if (_isWin(stateAfterOpp, opponent)) {
-                minOpponentScore = double.negativeInfinity;
-                break;
-              }
+            final score = _evaluateState(stateAfterOpp, player);
+            if (score < minOpponentScore) {
+              minOpponentScore = score;
+            }
 
-              final score = _evaluateState(stateAfterOpp, player);
-              if (score < minOpponentScore) {
-                minOpponentScore = score;
-              }
+            // Alpha-beta pruning at minimizing layer.
+            if (minOpponentScore <= alpha) {
+              break;
             }
           }
-        } else {
-          minOpponentScore = 10000.0;
         }
-        moveScore = minOpponentScore;
+      } else {
+        minOpponentScore = 10000.0;
       }
 
-      final jitter = random.nextDouble();
-      final totalScore = moveScore + jitter;
+      final moveScore = minOpponentScore;
 
-      if (totalScore > maxScore) {
-        maxScore = totalScore;
+      if (moveScore > maxScore) {
+        maxScore = moveScore;
+        bestMove = move;
+        alpha = maxScore;
+      } else if (moveScore == maxScore && random.nextBool()) {
+        // Keep play less deterministic when scores are exactly tied.
         bestMove = move;
       }
     }
@@ -104,7 +106,11 @@ class ExtremeStrategy extends AIStrategy {
         state.activeOwnerIds.first == player.id;
   }
 
-  Player? _getNextPlayer(GameState state, Player current) {
+  Player? _getNextPlayer(
+    GameState state,
+    Player current, {
+    required int nextTurnCount,
+  }) {
     final startIdx = state.players.indexWhere((p) => p.id == current.id);
     if (startIdx == -1) return null;
 
@@ -112,7 +118,9 @@ class ExtremeStrategy extends AIStrategy {
     for (var i = 1; i < count; i++) {
       final nextIdx = (startIdx + i) % count;
       final p = state.players[nextIdx];
-      if (state.cellCountForPlayer(p.id) > 0) {
+      final hasCells = state.cellCountForPlayer(p.id) > 0;
+      final isEarlyRound = nextTurnCount <= count;
+      if (hasCells || isEarlyRound) {
         return p;
       }
     }

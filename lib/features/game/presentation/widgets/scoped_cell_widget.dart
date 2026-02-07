@@ -14,6 +14,7 @@ class ScopedCellWidget extends ConsumerWidget {
     required this.animation,
     required this.angleOffset,
     required this.borderColor,
+    this.isKeyboardSelected = false,
     super.key,
   });
 
@@ -23,6 +24,7 @@ class ScopedCellWidget extends ConsumerWidget {
   final Animation<double> animation;
   final double angleOffset;
   final Color borderColor;
+  final bool isKeyboardSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,18 +44,25 @@ class ScopedCellWidget extends ConsumerWidget {
 
     // We need owner color.
     var cellColor = Colors.transparent;
+    var ownerName = 'Empty';
     if (cell.ownerId != null) {
       final players = ref.read(
         playersProvider,
       ); // Read players list (unlikely to change during game)
       if (players != null) {
-        final owner = players.firstWhere(
-          (p) => p.id == cell.ownerId,
-          orElse: () => players.first,
-        );
-        cellColor = Color(owner.color);
+        for (final player in players) {
+          if (player.id == cell.ownerId) {
+            cellColor = Color(player.color);
+            ownerName = player.name;
+            break;
+          }
+        }
       }
     }
+
+    final orbLabel = cell.atomCount == 1 ? 'orb' : 'orbs';
+    final semanticLabel =
+        'Row ${row + 1}, Column ${col + 1}. $ownerName. ${cell.atomCount} $orbLabel.';
 
     return CellWidget(
       cell: cell,
@@ -66,6 +75,9 @@ class ScopedCellWidget extends ConsumerWidget {
       isCellHighlightOn: themeState.isCellHighlightOn,
       animation: animation,
       angleOffset: angleOffset,
+      isKeyboardSelected: isKeyboardSelected,
+      semanticLabel: semanticLabel,
+      semanticHint: 'Double tap to place an orb.',
     );
   }
 }

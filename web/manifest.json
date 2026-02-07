@@ -6,7 +6,7 @@
     "background_color": "#121212",
     "theme_color": "#121212",
     "description": "A polished strategy game.",
-    "orientation": "portrait-primary",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

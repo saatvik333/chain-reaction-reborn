@@ -273,4 +273,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportDevelopmentHeader => 'SUPPORT DEVELOPMENT';
+
+  @override
+  String get continueGame => 'Continue Game';
+
+  @override
+  String get noSavedGameFound => 'No saved game found.';
 }

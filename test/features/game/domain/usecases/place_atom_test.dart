@@ -136,5 +136,36 @@ void main() {
       expect(postExplosion.isGameOver, isFalse);
       expect(postExplosion.winner, isNull);
     });
+
+    test(
+      'should stop chain reaction immediately after winner is determined',
+      () async {
+        var state = rules.initializeGame(players, rows: 2, cols: 2);
+        final grid = List<List<Cell>>.from(
+          state.grid.map(List<Cell>.from),
+        );
+
+        // Prepare an in-progress board where first explosion wave captures
+        // the final opponent cell while additional critical cells are queued.
+        grid[0][0] = grid[0][0].copyWith(atomCount: 2, ownerId: 'p1');
+        grid[0][1] = grid[0][1].copyWith(atomCount: 2, ownerId: 'p1');
+        grid[1][0] = grid[1][0].copyWith(atomCount: 1, ownerId: 'p2');
+        grid[1][1] = grid[1][1].copyWith(atomCount: 1, ownerId: 'p1');
+
+        state = state.copyWith(
+          grid: grid,
+          currentPlayerIndex: 0,
+          turnCount: 3, // Opening phase already over for 2 players.
+        );
+
+        final states = await placeAtom(state, 0, 0).toList();
+        final finalState = states.last;
+
+        expect(finalState.isGameOver, isTrue);
+        expect(finalState.winner?.id, 'p1');
+        expect(finalState.flyingAtoms, isEmpty);
+        expect(states.length, lessThanOrEqualTo(3));
+      },
+    );
   });
 }
