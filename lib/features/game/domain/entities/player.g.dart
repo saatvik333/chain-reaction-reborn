@@ -20,13 +20,16 @@ Map<String, dynamic> _$PlayerToJson(_Player instance) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
   'color': instance.color,
-  'type': _$PlayerTypeEnumMap[instance.type]!,
+  'type': _$PlayerTypeEnumMap[instance.type],
   'difficulty': _$AIDifficultyEnumMap[instance.difficulty],
 };
 
-const _$PlayerTypeEnumMap = {PlayerType.human: 'human', PlayerType.ai: 'ai'};
+const Map<PlayerType, String> _$PlayerTypeEnumMap = {
+  PlayerType.human: 'human',
+  PlayerType.ai: 'ai',
+};
 
-const _$AIDifficultyEnumMap = {
+const Map<AIDifficulty, String> _$AIDifficultyEnumMap = {
   AIDifficulty.easy: 'easy',
   AIDifficulty.medium: 'medium',
   AIDifficulty.hard: 'hard',
